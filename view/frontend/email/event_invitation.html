@@ -1,0 +1,19 @@
+<!--@subject [#{{var ticket.getMaskId()}}]:  {{var ticket.getTitle()}} @-->
+<!--@styles
+body,p { color:#2f2f2f; font:11px/1.35em Verdana, Arial, Helvetica, sans-serif; }
+@-->
+<p>
+Dear {{var ticket.getCustomerName()}}, <br/><br/>
+Thank you for contacting us. This is an automated response confirming the receipt of your ticket. One of our staffs will get back to you as soon as possible.
+For your records, the details of the ticket are listed below.
+<br/><br/>
+</p>
+<p>
+	<strong>Ticket ID:</strong> {{var ticket.getMaskId()}}<br/>
+	<strong>Subject:</strong> {{var ticket.getTitle()}}<br/>
+	<strong>Department:</strong> {{var ticket.getDepartmentTitle()}}<br/>
+	<strong>Status:</strong> {{var ticket.getStatusLabel()}}<br/>
+	<strong>Priority:</strong> {{var ticket.getPriorityLabel()}}<br/>
+</p>
+<p>You can update to this ticket by replying to this email. Anytime you wish you can view your question online:</p>
+<p><a href="{{var ticket.getTicketUrlInMail()}}" target="_blank">{{var ticket.getTicketUrlInMail()}}</a></p>
