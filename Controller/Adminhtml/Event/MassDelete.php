@@ -1,57 +1,42 @@
 <?php
-namespace Ashsmith\Blog\Controller\Adminhtml\Post;
+
+namespace Magebuzz\Events\Controller\Adminhtml\Event;
 
 use Magento\Backend\App\Action\Context;
 use Magento\Ui\Component\MassAction\Filter;
-use Ashsmith\Blog\Model\ResourceModel\Post\CollectionFactory;
+use Magebuzz\Events\Model\ResourceModel\Event\CollectionFactory;
 use Magento\Framework\Controller\ResultFactory;
 
-/**
- * Class MassDisable
- */
-class MassDisable  extends \Magento\Backend\App\Action
-{
-    /**
-     * @var Filter
-     */
-    protected $filter;
+class MassDelete extends \Magento\Backend\App\Action {
 
-    /**
-     * @var CollectionFactory
-     */
+    protected $filter;
     protected $collectionFactory;
 
-
-    /**
-     * @param Context $context
-     * @param Filter $filter
-     * @param CollectionFactory $collectionFactory
-     */
-    public function __construct(Context $context, Filter $filter, CollectionFactory $collectionFactory)
-    {
+    public function __construct(Context $context, Filter $filter, CollectionFactory $collectionFactory) {
         $this->filter = $filter;
         $this->collectionFactory = $collectionFactory;
         parent::__construct($context);
     }
+
     /**
      * Execute action
      *
      * @return \Magento\Backend\Model\View\Result\Redirect
      * @throws \Magento\Framework\Exception\LocalizedException|\Exception
      */
-    public function execute()
-    {
+    public function execute() {
         $collection = $this->filter->getCollection($this->collectionFactory->create());
+        $collectionSize = $collection->getSize();
 
         foreach ($collection as $item) {
-            $item->setIsActive(false);
-            $item->save();
+            $item->delete();
         }
 
-        $this->messageManager->addSuccess(__('A total of %1 record(s) have been disabled.', $collection->getSize()));
+        $this->messageManager->addSuccess(__('A total of %1 record(s) have been deleted.', $collectionSize));
 
         /** @var \Magento\Backend\Model\View\Result\Redirect $resultRedirect */
         $resultRedirect = $this->resultFactory->create(ResultFactory::TYPE_REDIRECT);
         return $resultRedirect->setPath('*/*/');
     }
+
 }

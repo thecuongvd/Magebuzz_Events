@@ -1,6 +1,6 @@
 <?php
 
-namespace Magebuzz\Events\Controller\Adminhtml\Category;
+namespace Magebuzz\Events\Controller\Adminhtml\Event;
 
 use Magento\Backend\App\Action\Context;
 use Magento\Framework\View\Result\PageFactory;
@@ -24,10 +24,10 @@ class Index extends \Magento\Backend\App\Action {
     public function execute() {
         /** @var \Magento\Backend\Model\View\Result\Page $resultPage */
         $resultPage = $this->resultPageFactory->create();
-        $resultPage->setActiveMenu('Magebuzz_Events::manage_categories');
-        $resultPage->addBreadcrumb(__('Events Categories'), __('Events Categories'));
-        $resultPage->addBreadcrumb(__('Manage Events Categories'), __('Manage Events Categories'));
-        $resultPage->getConfig()->getTitle()->prepend(__('Events Categories'));
+        $resultPage->setActiveMenu('Magebuzz_Events::manage_events');
+        $resultPage->addBreadcrumb(__('Events'), __('Events'));
+        $resultPage->addBreadcrumb(__('Manage Events'), __('Manage Events'));
+        $resultPage->getConfig()->getTitle()->prepend(__('Events'));
 
         return $resultPage;
     }
@@ -38,7 +38,7 @@ class Index extends \Magento\Backend\App\Action {
      * @return bool
      */
     protected function _isAllowed() {
-        return $this->_authorization->isAllowed('Magebuzz_Events::manage_categories');
+        return $this->_authorization->isAllowed('Magebuzz_Events::manage_events');
     }
 
 }

@@ -1,6 +1,6 @@
 <?php
 
-namespace Magebuzz\Events\Controller\Adminhtml\Category;
+namespace Magebuzz\Events\Controller\Adminhtml\Event;
 
 use Magento\Backend\App\Action;
 
@@ -33,9 +33,9 @@ class Edit extends \Magento\Backend\App\Action {
         // load layout, set active menu and breadcrumbs
         /** @var \Magento\Backend\Model\View\Result\Page $resultPage */
         $resultPage = $this->resultPageFactory->create();
-        $resultPage->setActiveMenu('Magebuzz_Events::manage_categories')
-                ->addBreadcrumb(__('Events Categories'), __('Events Categories'))
-                ->addBreadcrumb(__('Manage Events Categories'), __('Manage Events Categories'));
+        $resultPage->setActiveMenu('Magebuzz_Events::manage_events')
+                ->addBreadcrumb(__('Events'), __('Events'))
+                ->addBreadcrumb(__('Manage Events'), __('Manage Events'));
         return $resultPage;
     }
 
@@ -46,13 +46,13 @@ class Edit extends \Magento\Backend\App\Action {
      * @SuppressWarnings(PHPMD.NPathComplexity)
      */
     public function execute() {
-        $id = $this->getRequest()->getParam('category_id');
-        $model = $this->_objectManager->create('Magebuzz\Events\Model\Category');
+        $id = $this->getRequest()->getParam('event_id');
+        $model = $this->_objectManager->create('Magebuzz\Events\Model\Event');
 
         if ($id) {
             $model->load($id);
             if (!$model->getId()) {
-                $this->messageManager->addError(__('This category no longer exists.'));
+                $this->messageManager->addError(__('This event no longer exists.'));
                 /** \Magento\Backend\Model\View\Result\Redirect $resultRedirect */
                 $resultRedirect = $this->resultRedirectFactory->create();
                 return $resultRedirect->setPath('*/*/');
@@ -64,16 +64,16 @@ class Edit extends \Magento\Backend\App\Action {
             $model->setData($data);
         }
 
-        $this->_coreRegistry->register('events_category', $model);
+        $this->_coreRegistry->register('events_event', $model);
 
         /** @var \Magento\Backend\Model\View\Result\Page $resultPage */
         $resultPage = $this->_initAction();
         $resultPage->addBreadcrumb(
-                $id ? __('Edit Events Category') : __('New Events Category'), $id ? __('Edit Events Category') : __('New Events Category')
+                $id ? __('Edit Events') : __('New Events'), $id ? __('Edit Events') : __('New Events')
         );
-        $resultPage->getConfig()->getTitle()->prepend(__('Events Category'));
+        $resultPage->getConfig()->getTitle()->prepend(__('Events'));
         $resultPage->getConfig()->getTitle()
-                ->prepend($model->getId() ? __('Edit Category ') . $model->getCategoryTitle() : __('New Category'));
+                ->prepend($model->getId() ? __('Edit Event ') . $model->getTitle() : __('New Event'));
 
         return $resultPage;
     }

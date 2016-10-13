@@ -1,13 +1,13 @@
 <?php
 
-namespace Magebuzz\Events\Controller\Adminhtml\Category;
+namespace Magebuzz\Events\Controller\Adminhtml\Event;
 
 use Magento\Backend\App\Action\Context;
 use Magento\Ui\Component\MassAction\Filter;
-use Magebuzz\Events\Model\ResourceModel\Category\CollectionFactory;
+use Magebuzz\Events\Model\ResourceModel\Event\CollectionFactory;
 use Magento\Framework\Controller\ResultFactory;
 
-class MassDelete extends \Magento\Backend\App\Action {
+class MassChangeStatus extends \Magento\Backend\App\Action {
 
     protected $filter;
     protected $collectionFactory;
@@ -26,13 +26,15 @@ class MassDelete extends \Magento\Backend\App\Action {
      */
     public function execute() {
         $collection = $this->filter->getCollection($this->collectionFactory->create());
-        $collectionSize = $collection->getSize();
 
         foreach ($collection as $item) {
-            $item->delete();
+            $status = $item->getStatus();
+            $status = !$status;
+            $item->setStatus($status);
+            $item->save();
         }
 
-        $this->messageManager->addSuccess(__('A total of %1 record(s) have been deleted.', $collectionSize));
+        $this->messageManager->addSuccess(__('A total of %1 record(s) have been changed status.', $collection->getSize()));
 
         /** @var \Magento\Backend\Model\View\Result\Redirect $resultRedirect */
         $resultRedirect = $this->resultFactory->create(ResultFactory::TYPE_REDIRECT);

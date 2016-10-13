@@ -1,17 +1,17 @@
 <?php
 
-namespace Ashsmith\Blog\Ui\Component\Listing\Column;
+namespace Magebuzz\Events\Ui\Component\Listing\Column;
 
 use Magento\Framework\View\Element\UiComponent\ContextInterface;
 use Magento\Framework\View\Element\UiComponentFactory;
 use Magento\Ui\Component\Listing\Columns\Column;
 use Magento\Framework\UrlInterface;
 
-class PostActions extends Column {
+class CategoryActions extends Column {
 
     /** Url path */
-    const BLOG_URL_PATH_EDIT = 'blog/post/edit';
-    const BLOG_URL_PATH_DELETE = 'blog/post/delete';
+    const GRID_URL_PATH_EDIT = 'events/category/edit';
+    const GRID_URL_PATH_DELETE = 'events/category/delete';
 
     /** @var UrlInterface */
     protected $urlBuilder;
@@ -30,7 +30,7 @@ class PostActions extends Column {
      * @param string $editUrl
      */
     public function __construct(
-    ContextInterface $context, UiComponentFactory $uiComponentFactory, UrlInterface $urlBuilder, array $components = [], array $data = [], $editUrl = self::BLOG_URL_PATH_EDIT
+    ContextInterface $context, UiComponentFactory $uiComponentFactory, UrlInterface $urlBuilder, array $components = [], array $data = [], $editUrl = self::GRID_URL_PATH_EDIT
     ) {
         $this->urlBuilder = $urlBuilder;
         $this->editUrl = $editUrl;
@@ -47,23 +47,22 @@ class PostActions extends Column {
         if (isset($dataSource['data']['items'])) {
             foreach ($dataSource['data']['items'] as & $item) {
                 $name = $this->getData('name');
-                if (isset($item['post_id'])) {
+                if (isset($item['category_id'])) {
                     $item[$name]['edit'] = [
-                        'href' => $this->urlBuilder->getUrl($this->editUrl, ['post_id' => $item['post_id']]),
+                        'href' => $this->urlBuilder->getUrl($this->editUrl, ['category_id' => $item['category_id']]),
                         'label' => __('Edit')
                     ];
                     $item[$name]['delete'] = [
-                        'href' => $this->urlBuilder->getUrl(self::BLOG_URL_PATH_DELETE, ['post_id' => $item['post_id']]),
+                        'href' => $this->urlBuilder->getUrl(self::GRID_URL_PATH_DELETE, ['category_id' => $item['category_id']]),
                         'label' => __('Delete'),
                         'confirm' => [
-                            'title' => __('Delete "${ $.$data.title }"'),
-                            'message' => __('Are you sure you wan\'t to delete a "${ $.$data.title }" record?')
+                            'title' => __('Delete "${ $.$data.category_title }"'),
+                            'message' => __('Are you sure you wan\'t to delete "${ $.$data.category_title }" record?')
                         ]
                     ];
                 }
             }
         }
-
         return $dataSource;
     }
 

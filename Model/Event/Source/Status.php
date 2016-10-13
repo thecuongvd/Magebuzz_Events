@@ -1,12 +1,12 @@
 <?php
 
-namespace Magebuzz\Events\Model\Category\Source;
+namespace Magebuzz\Events\Model\Event\Source;
 
 class Status implements \Magento\Framework\Data\OptionSourceInterface {
 
     protected $_model;
 
-    public function __construct(\Magebuzz\Events\Model\Category $model) {
+    public function __construct(\Magebuzz\Events\Model\Event $model) {
         $this->_model = $model;
     }
 

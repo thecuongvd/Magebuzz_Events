@@ -2,7 +2,7 @@
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Backend:etc/menu.xsd">
     <menu>
         <add id="Magebuzz_Events::events" title="Events" module="Magebuzz_Events" sortOrder="20" resource="Magebuzz_Events::events" />
-        <add id="Magebuzz_Events::manage_events" title="Manage Events" module="Magebuzz_Events" sortOrder="0" parent="Magebuzz_Events::events" resource="Magebuzz_Events::manage_events" action="events" />
+        <add id="Magebuzz_Events::manage_events" title="Manage Events" module="Magebuzz_Events" sortOrder="0" parent="Magebuzz_Events::events" resource="Magebuzz_Events::manage_events" action="events/event" />
         <add id="Magebuzz_Events::manage_categories" title="Manage Categories" module="Magebuzz_Events" sortOrder="0" parent="Magebuzz_Events::events" resource="Magebuzz_Events::manage_categories" action="events/category" />
         <add id="Magebuzz_Events::settings" title="Settings" module="Magebuzz_Events" sortOrder="0" parent="Magebuzz_Events::events" resource="Magebuzz_Events::settings" action="adminhtml/system_config/edit/section/events" />
     </menu>

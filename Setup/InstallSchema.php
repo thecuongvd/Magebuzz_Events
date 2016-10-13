@@ -9,13 +9,6 @@ use Magento\Framework\DB\Ddl\Table;
 
 class InstallSchema implements InstallSchemaInterface {
 
-    /**
-     * Installs DB schema for a module
-     *
-     * @param SchemaSetupInterface $setup
-     * @param ModuleContextInterface $context
-     * @return void
-     */
     public function install(SchemaSetupInterface $setup, ModuleContextInterface $context) {
         $installer = $setup;
 
@@ -82,7 +75,6 @@ class InstallSchema implements InstallSchemaInterface {
                         'event_id', $installer->getTable('mb_events'), 'event_id', \Magento\Framework\DB\Ddl\Table::ACTION_CASCADE
                 )
                 ->setComment('Events Categories');
-
         $installer->getConnection()->createTable($table);
 
         $installer->endSetup();

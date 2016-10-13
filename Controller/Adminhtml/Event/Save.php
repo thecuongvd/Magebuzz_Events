@@ -1,6 +1,6 @@
 <?php
 
-namespace Magebuzz\Events\Controller\Adminhtml\Category;
+namespace Magebuzz\Events\Controller\Adminhtml\Event;
 
 use Magento\Backend\App\Action;
 use Magento\TestFramework\ErrorLog\Logger;
@@ -31,8 +31,8 @@ class Save extends \Magento\Backend\App\Action {
         /** @var \Magento\Backend\Model\View\Result\Redirect $resultRedirect */
         $resultRedirect = $this->resultRedirectFactory->create();
         if ($data) {
-            $model = $this->_objectManager->create('Magebuzz\Events\Model\Category');
-            $id = $this->getRequest()->getParam('category_id');
+            $model = $this->_objectManager->create('Magebuzz\Events\Model\Event');
+            $id = $this->getRequest()->getParam('event_id');
             if ($id) {
                 $model->load($id);
             }
@@ -40,15 +40,15 @@ class Save extends \Magento\Backend\App\Action {
             $model->setData($data);
 
             $this->_eventManager->dispatch(
-                    'events_category_prepare_save', ['category' => $model, 'request' => $this->getRequest()]
+                    'events_event_prepare_save', ['event' => $model, 'request' => $this->getRequest()]
             );
 
             try {
                 $model->save();
-                $this->messageManager->addSuccess(__('You saved this Category.'));
+                $this->messageManager->addSuccess(__('You saved this Event.'));
                 $this->_objectManager->get('Magento\Backend\Model\Session')->setFormData(false);
                 if ($this->getRequest()->getParam('back')) {
-                    return $resultRedirect->setPath('*/*/edit', ['category_id' => $model->getId(), '_current' => true]);
+                    return $resultRedirect->setPath('*/*/edit', ['event_id' => $model->getId(), '_current' => true]);
                 }
                 return $resultRedirect->setPath('*/*/');
             } catch (\Magento\Framework\Exception\LocalizedException $e) {
@@ -56,11 +56,11 @@ class Save extends \Magento\Backend\App\Action {
             } catch (\RuntimeException $e) {
                 $this->messageManager->addError($e->getMessage());
             } catch (\Exception $e) {
-                $this->messageManager->addException($e, __('Something went wrong while saving the category.'));
+                $this->messageManager->addException($e, __('Something went wrong while saving the event.'));
             }
 
             $this->_getSession()->setFormData($data);
-            return $resultRedirect->setPath('*/*/edit', ['category_id' => $this->getRequest()->getParam('category_id')]);
+            return $resultRedirect->setPath('*/*/edit', ['event_id' => $this->getRequest()->getParam('event_id')]);
         }
         return $resultRedirect->setPath('*/*/');
     }

@@ -6,14 +6,14 @@ use Magento\Framework\Model\AbstractModel;
 /**
 * Mysql resource
 */
-class Category extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
+class Event extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
 {
   /**
   * Block entity table
   *
   * @var string
   */
-  protected $_blockCategoryTable;
+  protected $_blockEventTable;
  
   public function __construct(
       \Magento\Framework\Model\ResourceModel\Db\Context $context,
@@ -29,7 +29,7 @@ class Category extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
   */
   protected function _construct()
   {
-      $this->_init('mb_categories', 'category_id');
+      $this->_init('mb_events', 'event_id');
   }
  
 }

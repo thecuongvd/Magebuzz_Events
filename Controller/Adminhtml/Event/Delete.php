@@ -1,6 +1,6 @@
 <?php
 
-namespace Magebuzz\Events\Controller\Adminhtml\Category;
+namespace Magebuzz\Events\Controller\Adminhtml\Event;
 
 use Magento\Backend\App\Action;
 use Magento\TestFramework\ErrorLog\Logger;
@@ -20,22 +20,22 @@ class Delete extends \Magento\Backend\App\Action {
      * @return \Magento\Framework\Controller\ResultInterface
      */
     public function execute() {
-        $id = $this->getRequest()->getParam('category_id');
+        $id = $this->getRequest()->getParam('event_id');
         /** @var \Magento\Backend\Model\View\Result\Redirect $resultRedirect */
         $resultRedirect = $this->resultRedirectFactory->create();
         if ($id) {
             try {
-                $model = $this->_objectManager->create('Magebuzz\Events\Model\Category');
+                $model = $this->_objectManager->create('Magebuzz\Events\Model\Event');
                 $model->load($id);
                 $model->delete();
-                $this->messageManager->addSuccess(__('The category has been deleted.'));
+                $this->messageManager->addSuccess(__('The event has been deleted.'));
                 return $resultRedirect->setPath('*/*/');
             } catch (\Exception $e) {
                 $this->messageManager->addError($e->getMessage());
-                return $resultRedirect->setPath('*/*/edit', ['category_id' => $id]);
+                return $resultRedirect->setPath('*/*/edit', ['event_id' => $id]);
             }
         }
-        $this->messageManager->addError(__('We can\'t find a category to delete.'));
+        $this->messageManager->addError(__('We can\'t find a event to delete.'));
         return $resultRedirect->setPath('*/*/');
     }
 

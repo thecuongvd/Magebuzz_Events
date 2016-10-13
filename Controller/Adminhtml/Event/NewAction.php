@@ -1,6 +1,6 @@
 <?php
 
-namespace Magebuzz\Events\Controller\Adminhtml\Category;
+namespace Magebuzz\Events\Controller\Adminhtml\Event;
 
 class NewAction extends \Magento\Backend\App\Action {
 
