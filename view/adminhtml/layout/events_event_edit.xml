@@ -4,9 +4,16 @@
  * @copyright Copyright (c) 2016 www.magebuzz.com
  */
 -->
-<page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd">
-   <update handle="editor"/>
+<page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" layout="admin-2columns-left" xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd">
+    <head>
+        <script src="Magebuzz_Events::js/jscolor.js" />
+    </head>
     <body>
+        <referenceContainer name="left">
+            <block class="Magebuzz\Events\Block\Adminhtml\Event\Edit\Tabs" name="events_event_edit_tabs">
+                <block class="Magebuzz\Events\Block\Adminhtml\Event\Edit\Tab\Main" name="events_event_edit_tab_main"/>
+            </block>
+        </referenceContainer>
         <referenceContainer name="content">
             <block class="Magebuzz\Events\Block\Adminhtml\Event\Edit" name="events_event_edit"/>
         </referenceContainer>

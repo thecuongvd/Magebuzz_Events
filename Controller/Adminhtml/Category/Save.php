@@ -35,6 +35,9 @@ class Save extends \Magento\Backend\App\Action {
             $id = $this->getRequest()->getParam('category_id');
             if ($id) {
                 $model->load($id);
+                if ($id != $model->getId()) {
+                    throw new \Magento\Framework\Exception\LocalizedException(__('The wrong category is specified.'));
+                }
             }
 
             $model->setData($data);
@@ -60,7 +63,12 @@ class Save extends \Magento\Backend\App\Action {
             }
 
             $this->_getSession()->setFormData($data);
-            return $resultRedirect->setPath('*/*/edit', ['category_id' => $this->getRequest()->getParam('category_id')]);
+            if ($id) {
+                return $resultRedirect->setPath('*/*/edit', ['category_id' => $this->getRequest()->getParam('category_id')]);
+            }
+            else {
+                return $resultRedirect->setPath('*/*/new');
+            }
         }
         return $resultRedirect->setPath('*/*/');
     }

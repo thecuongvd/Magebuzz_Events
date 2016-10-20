@@ -8,12 +8,9 @@ namespace Magebuzz\Events\Block\Adminhtml\Event;
 
 class Edit extends \Magento\Backend\Block\Widget\Form\Container {
 
-    protected $_coreRegistry = null;
-
     public function __construct(
-    \Magento\Backend\Block\Widget\Context $context, \Magento\Framework\Registry $registry, array $data = []
+    \Magento\Backend\Block\Widget\Context $context, array $data = []
     ) {
-        $this->_coreRegistry = $registry;
         parent::__construct($context, $data);
     }
 
@@ -29,7 +26,6 @@ class Edit extends \Magento\Backend\Block\Widget\Form\Container {
 
         parent::_construct();
 
-        $model = $this->_coreRegistry->registry('events_event');
         if ($this->_isAllowedAction('Magebuzz_Events::save')) {
             $this->buttonList->update('save', 'label', __('Save Event'));
             $this->buttonList->add(
@@ -60,8 +56,9 @@ class Edit extends \Magento\Backend\Block\Widget\Form\Container {
      * @return \Magento\Framework\Phrase
      */
     public function getHeaderText() {
+        $model = $this->_coreRegistry->registry('events_event');
         if ($model->getId()) {
-            return __("Edit Event '%1'", $this->escapeHtml($model->getTitle()));
+            return __("Edit Events '%1'", $this->escapeHtml($model->getTitle()));
         } else {
             return __('New Event');
         }

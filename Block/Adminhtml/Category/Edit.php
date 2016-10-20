@@ -29,7 +29,6 @@ class Edit extends \Magento\Backend\Block\Widget\Form\Container {
 
         parent::_construct();
 
-        $model = $this->_coreRegistry->registry('events_category');
         if ($this->_isAllowedAction('Magebuzz_Events::save')) {
             $this->buttonList->update('save', 'label', __('Save Category'));
             $this->buttonList->add(
@@ -60,6 +59,7 @@ class Edit extends \Magento\Backend\Block\Widget\Form\Container {
      * @return \Magento\Framework\Phrase
      */
     public function getHeaderText() {
+        $model = $this->_coreRegistry->registry('events_category');
         if ($model->getId()) {
             return __("Edit Category '%1'", $this->escapeHtml($model->getCategoryTitle()));
         } else {

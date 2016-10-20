@@ -5,27 +5,13 @@
  
 namespace Magebuzz\Events\Block\Adminhtml\Category\Edit;
  
+use Magento\Backend\Block\Widget\Form as WidgetForm;
+
 /**
  * Adminhtml edit form
  */
 class Form extends \Magento\Backend\Block\Widget\Form\Generic
 {
- 
-    protected $_systemStore;
- 
-    protected $_status;
- 
-    public function __construct(
-        \Magento\Backend\Block\Template\Context $context,
-        \Magento\Framework\Registry $registry,
-        \Magento\Framework\Data\FormFactory $formFactory,
-        \Magento\Store\Model\System\Store $systemStore,
-        array $data = []
-    ) {
-        $this->_systemStore = $systemStore;
-        parent::__construct($context, $registry, $formFactory, $data);
-    }
- 
     /**
      * Init form
      *
@@ -45,57 +31,20 @@ class Form extends \Magento\Backend\Block\Widget\Form\Generic
      */
     protected function _prepareForm()
     {
-        $model = $this->_coreRegistry->registry('events_category');
- 
         /** @var \Magento\Framework\Data\Form $form */
         $form = $this->_formFactory->create(
-            ['data' => ['id' => 'edit_form', 'action' => $this->getData('action'), 'method' => 'post']]
-        );
- 
-        $form->setHtmlIdPrefix('category_');
- 
-        $fieldset = $form->addFieldset(
-            'base_fieldset',
-            ['legend' => __('General Information'), 'class' => 'fieldset-wide']
-        );
- 
-        if ($model->getId()) {
-            $fieldset->addField('category_id', 'hidden', ['name' => 'category_id']);
-        }
- 
-        $fieldset->addField(
-            'category_title',
-            'text',
-            ['name' => 'category_title', 'label' => __('Title'), 'title' => __('Title'), 'required' => true]
-        );
-        $fieldset->addField(
-            'category_description',
-            'editor',
-            ['name' => 'category_description',
-                'label' => __('Description'),
-                'title' => __('Description'),
-                'style' => 'height:18em']
-        );
-        $fieldset->addField(
-            'status',
-            'select',
             [
-                'label' => __('Status'),
-                'title' => __('Status'),
-                'name' => 'status',
-                'required' => true,
-                'options' => ['1' => __('Enabled'), '0' => __('Disabled')]
+                'data' => [
+                    'id' => 'edit_form',
+                    'class' => 'admin__scope-old',
+                    'action' => $this->getUrl('events/category/save'),
+                    'method' => 'post',
+                    'enctype' => 'multipart/form-data'
+                ],
             ]
         );
-        
-        if (!$model->getId()) {
-            $model->setData('status', '1');
-        }
-        
-        $form->setValues($model->getData());
         $form->setUseContainer(true);
         $this->setForm($form);
- 
         return parent::_prepareForm();
     }
 }
