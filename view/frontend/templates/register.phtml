@@ -1,0 +1,48 @@
+<?php
+$event = $block->getEvent();
+?>
+<div class="content">
+    <div class="registration-note"><?php echo __("Register for Event: ") . $event->getTitle(); ?></div>
+    
+    <form action="<?php echo $block->getPostActionUrl() ?>" method="post" id="event-registration" 
+          data-hasrequired="<?php echo __('* Required Fields') ?>" data-mage-init='{"validation":{}}'>
+        <input type="hidden" name="event_id" value="<?php echo $event->getId() ?>" id="event_id" />
+        <div class="fieldset">
+            <h2 class="legend"><?php echo __('Contact Information') ?></h2>
+            <div class="fields">
+                <div class="field required">
+                    <label for="fullname" class="label"><?php echo __('Full Name') ?></label>
+                    <div class="input-box">
+                        <input name="fullname" id="fullname" title="<?php echo __('Full Name') ?>" 
+                               class="input-text required-entry" type="text" data-validate="{required:true}"/>
+                    </div>
+                </div>
+                <div class="field required">
+                    <label for="email" class="label"><?php echo __('Email') ?></label>
+                    <div class="input-box">
+                        <input name="email" id="email" title="<?php echo __('Email') ?>" 
+                               class="input-text required-entry validate-email" type="text" data-validate="{required:true}" />
+                    </div>
+                </div>
+                <div class="field">
+                    <label for="phone" class="label"><?php echo __('Telephone') ?></label>
+                    <div class="input-box">
+                        <input name="phone" id="phone" title="<?php echo __('Phone') ?>" 
+                               class="input-text" type="text" />
+                    </div>
+                </div>
+                <div class="field required wide">
+                    <label for="address" class="label"><?php echo __('Address') ?></label>
+                    <div class="input-box">
+                        <textarea name="address" id="address" title="<?php echo __('Address') ?>" 
+                                  class="required-entry input-text" cols="5" rows="3" data-validate="{required:true}"></textarea>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="buttons-set">
+            <p class="required"><?php echo __('* Required Fields') ?></p>
+            <button type="submit" id="invite-form-button" title="<?php echo __('Submit') ?>" class="button"><span><span><?php echo __('Submit') ?></span></span></button>
+        </div>
+    </form>  
+</div>

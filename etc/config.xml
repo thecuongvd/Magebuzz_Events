@@ -5,17 +5,17 @@
             <general_setting>
                 <view_mode>calendar-list</view_mode>
                 <show_url_in_top_link>1</show_url_in_top_link>
-                <!--<allow_filter_by_cat>1</allow_filter_by_cat>-->
+                <allow_filter_by_cat>1</allow_filter_by_cat>
                 <show_num_participants>1</show_num_participants>
                 <show_social_share>1</show_social_share>
-                <show_upcoming_events>rightcolumn</show_upcoming_events>
-                <!--<allow_send_invitation>0</allow_send_invitation>-->
+                <show_upcoming_events>1</show_upcoming_events>
+                <allow_send_invitation>1</allow_send_invitation>
                 <invitation_email>events_general_setting_invitation_email</invitation_email>
             </general_setting>
             <calendar_setting>
                 <page_title>Events Calendar</page_title>
                 <default_view_mode>month</default_view_mode>
-                <!--<allow_switch_mode>1</allow_switch_mode>-->
+                <allow_switch_mode>1</allow_switch_mode>
                 <language>en</language>
                 <show_event_color>1</show_event_color>
             </calendar_setting>

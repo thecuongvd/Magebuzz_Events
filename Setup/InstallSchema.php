@@ -14,6 +14,9 @@ class InstallSchema implements InstallSchemaInterface {
 
         $installer->startSetup();
 
+        /**
+         * Create table 'mb_events'
+         */
         $table = $installer->getConnection()
                 ->newTable($installer->getTable('mb_events'))
                 ->addColumn(
@@ -25,16 +28,16 @@ class InstallSchema implements InstallSchemaInterface {
                 ->addColumn('images', Table::TYPE_TEXT, null, ['nullable' => false])
                 ->addColumn('video', Table::TYPE_TEXT, null, ['nullable' => false])
                 ->addColumn('location', Table::TYPE_TEXT, 255, ['nullable' => false])
-                ->addColumn('price', Table::TYPE_DECIMAL, '12,4', [])
-                ->addColumn('number_of_participant', Table::TYPE_INTEGER, 11, ['unsigned' => true])
-                ->addColumn('allow_register', Table::TYPE_SMALLINT, 6, ['nullable' => false, 'default' => '0'])
+                ->addColumn('price', Table::TYPE_DECIMAL, '12,4', ['nullable' => false, 'default' => '0.0000'])
+                ->addColumn('number_of_participant', Table::TYPE_INTEGER, 11, ['nullable' => false, 'default' => '0'])
+                ->addColumn('allow_register', Table::TYPE_SMALLINT, 6, ['nullable' => false, 'default' => '1'])
                 ->addColumn('registration_deadline', Table::TYPE_DATETIME, null, [])
                 ->addColumn('created_time', Table::TYPE_DATETIME, null, [])
                 ->addColumn('start_time', Table::TYPE_DATETIME, null, [])
                 ->addColumn('end_time', Table::TYPE_DATETIME, null, [])
-                ->addColumn('status', Table::TYPE_SMALLINT, 6, ['nullable' => false, 'default' => '0'])
+                ->addColumn('status', Table::TYPE_SMALLINT, 6, ['nullable' => false, 'default' => '1'])
                 ->addColumn('color', Table::TYPE_TEXT, 10, ['nullable' => false])
-                ->addColumn('url_key', Table::TYPE_TEXT, 100, ['nullable' => true, 'default' => null])
+                ->addColumn('url_key', Table::TYPE_TEXT, 255, ['nullable' => true, 'default' => null])
                 ->addColumn('is_show_contact', Table::TYPE_SMALLINT, 6, ['nullable' => false, 'default' => '1'])
                 ->addColumn('contact_person', Table::TYPE_TEXT, 50, ['nullable' => false])
                 ->addColumn('contact_phone', Table::TYPE_TEXT, 20, ['nullable' => false])
@@ -43,6 +46,9 @@ class InstallSchema implements InstallSchemaInterface {
                 ->setComment('Events');
         $installer->getConnection()->createTable($table);
 
+        /**
+         * Create table 'mb_categories'
+         */
         $table = $installer->getConnection()
                 ->newTable($installer->getTable('mb_categories'))
                 ->addColumn(
@@ -50,11 +56,14 @@ class InstallSchema implements InstallSchemaInterface {
                 )
                 ->addColumn('category_title', Table::TYPE_TEXT, 255, ['nullable' => false])
                 ->addColumn('category_description', Table::TYPE_TEXT, null, ['nullable' => false])
-                ->addColumn('status', Table::TYPE_SMALLINT, 6, ['nullable' => false, 'default' => '0'])
+                ->addColumn('status', Table::TYPE_SMALLINT, 6, ['nullable' => false, 'default' => '1'])
                 ->addColumn('created_time', Table::TYPE_DATETIME, null, [])
                 ->setComment('Categories');
         $installer->getConnection()->createTable($table);
 
+        /**
+         * Create table 'mb_event_category'
+         */
         $table = $installer->getConnection()
                 ->newTable($installer->getTable('mb_event_category'))
                 ->addColumn('event_id', Table::TYPE_INTEGER, 11, ['unsigned' => true, 'nullable' => false, 'primary' => true])
@@ -74,6 +83,9 @@ class InstallSchema implements InstallSchemaInterface {
                 ->setComment('Events Categories');
         $installer->getConnection()->createTable($table);
 
+        /**
+         * Create table 'mb_event_category_store'
+         */
         $table = $installer->getConnection()
                 ->newTable($installer->getTable('mb_event_category_store'))
                 ->addColumn(
@@ -94,6 +106,9 @@ class InstallSchema implements InstallSchemaInterface {
                 ->setComment('Category Store');
         $installer->getConnection()->createTable($table);
         
+        /**
+         * Create table 'mb_event_store'
+         */
         $table = $installer->getConnection()
                 ->newTable($installer->getTable('mb_event_store'))
                 ->addColumn(
@@ -114,6 +129,9 @@ class InstallSchema implements InstallSchemaInterface {
                 ->setComment('Event Store');
         $installer->getConnection()->createTable($table);
         
+        /**
+         * Create table 'mb_participants'
+         */
         $table = $installer->getConnection()
                 ->newTable($installer->getTable('mb_participants'))
                 ->addColumn(
@@ -134,6 +152,9 @@ class InstallSchema implements InstallSchemaInterface {
                 ->setComment('Participants');
         $installer->getConnection()->createTable($table);
         
+        /**
+         * Create table 'mb_event_product'
+         */
         $table = $installer->getConnection()
                 ->newTable($installer->getTable('mb_event_product'))
                 ->addColumn(
@@ -156,6 +177,7 @@ class InstallSchema implements InstallSchemaInterface {
                 )
                 ->setComment('Event Product');
         $installer->getConnection()->createTable($table);
+        
 
         $installer->endSetup();
     }

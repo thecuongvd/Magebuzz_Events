@@ -9,8 +9,9 @@ class Edit extends \Magento\Backend\App\Action {
     protected $_coreRegistry = null;
     protected $resultPageFactory;
 
-    public function __construct(
-    Action\Context $context, \Magento\Framework\View\Result\PageFactory $resultPageFactory, \Magento\Framework\Registry $registry
+    public function __construct(Action\Context $context, 
+            \Magento\Framework\View\Result\PageFactory $resultPageFactory, 
+            \Magento\Framework\Registry $registry
     ) {
         $this->resultPageFactory = $resultPageFactory;
         $this->_coreRegistry = $registry;

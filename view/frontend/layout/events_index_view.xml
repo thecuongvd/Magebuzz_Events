@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+<page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" layout="1column" xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd">
+    <head>
+        <css src="Magebuzz_Events::css/events.css"/>
+        <css src="Magebuzz_Events::css/jquery.fancybox.css"/>
+        <css src="Magebuzz_Events::css/bootstrap.min.css"/>
+    </head>
+    <body>
+        <referenceContainer name="content">
+            <block class="Magebuzz\Events\Block\View" name="events_index_view" template="view.phtml" />
+        </referenceContainer>
+    </body>
+</page>

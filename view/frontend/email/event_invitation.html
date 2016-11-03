@@ -1,19 +1,16 @@
-<!--@subject [#{{var ticket.getMaskId()}}]:  {{var ticket.getTitle()}} @-->
+<!--@subject Event {{var event.getTitle()}} is waiting for you @-->
 <!--@styles
 body,p { color:#2f2f2f; font:11px/1.35em Verdana, Arial, Helvetica, sans-serif; }
 @-->
+
+<h3>Event {{var event.getTitle()}} is waiting for you</h3>
 <p>
-Dear {{var ticket.getCustomerName()}}, <br/><br/>
-Thank you for contacting us. This is an automated response confirming the receipt of your ticket. One of our staffs will get back to you as soon as possible.
-For your records, the details of the ticket are listed below.
-<br/><br/>
+    Dear {{var recipient}}, <br/><br/>
+    I would like you to take part in an attractive event.
+    <br/><br/>
 </p>
+<p>You can view this event by clicking the following link:</p>
+<p><a href="{{var event.getEventUrl()}}" target="_blank">{{var event.getTitle()}}</a></p>
 <p>
-	<strong>Ticket ID:</strong> {{var ticket.getMaskId()}}<br/>
-	<strong>Subject:</strong> {{var ticket.getTitle()}}<br/>
-	<strong>Department:</strong> {{var ticket.getDepartmentTitle()}}<br/>
-	<strong>Status:</strong> {{var ticket.getStatusLabel()}}<br/>
-	<strong>Priority:</strong> {{var ticket.getPriorityLabel()}}<br/>
+    {{var message}}
 </p>
-<p>You can update to this ticket by replying to this email. Anytime you wish you can view your question online:</p>
-<p><a href="{{var ticket.getTicketUrlInMail()}}" target="_blank">{{var ticket.getTicketUrlInMail()}}</a></p>

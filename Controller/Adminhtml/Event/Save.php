@@ -113,14 +113,19 @@ class Save extends \Magento\Backend\App\Action {
             }
             
             //Process products data
-            if (isset($data['products'])) {
-                $data['products'] = array_keys($this->jsHelper->decodeGridSerializedInput($data['products']));
+            if(!$id && !isset($data['product'])) {
+                $this->messageManager->addError( __('You must associate product before save.'));
+                $this->_getSession()->setFormData($data);
+                
+                return $resultRedirect->setPath('*/*/new');
+                
             }
             
 //            echo '<pre>';
 //            print_r($data); 
 //            echo '</pre>';
 //            die();
+            
             $model->setData($data);
             
             $this->_eventManager->dispatch(
@@ -144,7 +149,7 @@ class Save extends \Magento\Backend\App\Action {
 
             $this->_getSession()->setFormData($data);
             if ($id) {
-                return $resultRedirect->setPath('*/*/edit', ['event_id' => $this->getRequest()->getParam('event_id')]);
+                return $resultRedirect->setPath('*/*/edit', ['event_id' => $id]);
             }
             else {
                 return $resultRedirect->setPath('*/*/new');

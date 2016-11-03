@@ -72,15 +72,15 @@ class Gallery extends Generic implements TabInterface
             ]
         );
         
-        $fieldset->addField(
-            'gallery',
-            'file',
-            [
-                'name'  => 'gallery',
-                'label' => __('Images and Videos'),
-                'title'  => __('Images and Videos')
-            ]
-        );
+//        $fieldset->addField(
+//            'gallery',
+//            'file',
+//            [
+//                'name'  => 'gallery',
+//                'label' => __('Images and Videos'),
+//                'title'  => __('Images and Videos')
+//            ]
+//        );
    
         $form->setValues($model->getData());
         

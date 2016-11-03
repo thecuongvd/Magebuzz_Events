@@ -37,10 +37,11 @@ class Categories extends \Magento\Backend\Block\Widget\Grid\Extended
         parent::_construct();
         $this->setId('events_category_grid');
         $this->setDefaultSort('category_id');
-        $this->setUseAjax(true);
+        $this->setUseAjax(true); 
         if ($this->getEvent() && $this->getEvent()->getId()) {
             $this->setDefaultFilter(['in_categories' => 1]);
         }
+        
     }
 
     /**
@@ -119,6 +120,7 @@ class Categories extends \Magento\Backend\Block\Widget\Grid\Extended
             [
                 'header' => __('ID'),
                 'sortable' => true,
+                'type' => 'number',
                 'index' => 'category_id',
                 'header_css_class' => 'col-id',
                 'column_css_class' => 'col-id'
@@ -182,11 +184,7 @@ class Categories extends \Magento\Backend\Block\Widget\Grid\Extended
      */
     public function getSelectedCategories()
     {
-        $eventId = $this->getRequest()->getParam('event_id');
-        if(!isset($eventId)) {
-            $eventId = 0;
-        }
-
+        $eventId = $this->getRequest()->getParam('event_id', 0);
         $event = $this->_eventFactory->create()->load($eventId);
         $categories =  $event->getCategories();
 

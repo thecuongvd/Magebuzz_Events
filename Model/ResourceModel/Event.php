@@ -13,13 +13,18 @@ class Event extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb {
     protected $_categoryEventTable;
     protected $_participantTable;
     protected $_productEventTable;
+    protected $_productFactory;
     protected $_date;
 
     public function __construct(
-    \Magento\Framework\Model\ResourceModel\Db\Context $context, \Magento\Framework\Stdlib\DateTime\DateTime $date, $resourcePrefix = null
+    \Magento\Framework\Model\ResourceModel\Db\Context $context, 
+            \Magento\Framework\Stdlib\DateTime\DateTime $date, 
+            \Magento\Catalog\Model\ProductFactory $productFactory, 
+            $resourcePrefix = null
     ) {
         parent::__construct($context, $resourcePrefix);
         $this->_date = $date;
+        $this->_productFactory = $productFactory;
     }
 
     protected function _construct() {
@@ -122,6 +127,9 @@ class Event extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb {
             $productInsert = ['entity_id' => $productId, 'event_id' => $object->getId()];
             $connection->insert($this->_productEventTable, $productInsert);
         }
+        
+        //save quantity of associated product equal number of participants
+//        $this->_productFactory->create()->load($this->getProductId($object->getId()))->setQty($object->getNumberOfParticipant());
 
         return $this;
     }
@@ -144,7 +152,7 @@ class Event extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb {
         return $this->getConnection()->fetchCol($select);
     }
 
-    public function getParticipants($eventId) {
+    public function getParticipantIds($eventId) {
         $select = $this->getConnection()->select()->from(
                         $this->getTable($this->_participantTable), 'participant_id'
                 )->where(
@@ -152,14 +160,14 @@ class Event extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb {
         );
         return $this->getConnection()->fetchCol($select);
     }
-
+    
     public function getProductId($eventId) {
         $select = $this->getConnection()->select()->from(
                         $this->getTable($this->_productEventTable), 'entity_id'
                 )->where(
                 'event_id = ?', $eventId
         );
-        return $this->getConnection()->fetchCol($select);
+        return $this->getConnection()->fetchOne($select);
     }
 
 }

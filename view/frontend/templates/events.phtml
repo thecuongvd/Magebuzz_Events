@@ -1,31 +1,31 @@
 <?php
-$modelist = $this->getRequest()->getParam('mode');
-$catid = $this->getRequest()->getParams('c');
+$viewMode = $block->getRequest()->getParam('mode');
+$catId = $block->getRequest()->getParam('c');
+$eventsJson = $block->getEventJson();
+$events = json_decode($eventsJson, true);
 ?>
-<?php if ($this->getEventJson()): ?>
-    <?php $locale = Mage::helper('events')->getCalendarLanguage(); ?>
+<?php if (count($events)): ?>
+    <?php $locale = $block->getScopeConfig('events/calendar_setting/language'); ?>
     <?php if ($locale != 'en'): ?>
         <?php $jsFile = $locale . '.js'; ?>
-        <script src='<?php echo $this->getJsUrl('magebuzz/events/lang') . $jsFile ?>'></script>
+        <script src='<?php // echo $block->getJsUrl('magebuzz/events/lang') . $jsFile         ?>'></script>
     <?php endif; ?>
     <script type='text/javascript'>
-        var $j = jQuery.noConflict();
-        jQuery(document).ready(function() {
+        require(['jquery', 'fullcalendar', 'moment'], function($){
+        var $j = $.noConflict();
+        $(document).ready(function() {
         var date = new Date();
         var d = date.getDate();
         var m = date.getMonth();
         var y = date.getFullYear();
         var calendar_mode = '';
-        var switchMode = '<?php echo Mage::getStoreConfig('events/calendar/allow_switch_mode'); ?>';
-        var defaultMode = '<?php echo Mage::getStoreConfig('events/calendar/default_view_mode'); ?>';
+        var switchMode = '<?php echo $block->getScopeConfig('events/calendar_setting/allow_switch_mode'); ?>';
+        var defaultMode = '<?php echo $block->getScopeConfig('events/calendar_setting/default_view_mode'); ?>';
         if (switchMode == 1) {
         calendar_mode = 'month,agendaWeek,agendaDay';
         }
-        else {
-        calendar_mode = '';
-        }
-        var events = <?php echo $this->getEventJson(); ?>;
-        jQuery('#calendar').fullCalendar({
+        var events = <?php echo $eventsJson; ?>;
+        $('#calendar').fullCalendar({
     <?php if ($locale != 'en'): ?>
             lang: "<?php echo $locale; ?>",
     <?php endif; ?>
@@ -38,99 +38,99 @@ $catid = $this->getRequest()->getParams('c');
                         right: calendar_mode
                 },
                 defaultView: defaultMode,
-                //timeFormat: 'H:mm',
+                eventTextColor: 'white',
+                timeFormat: 'H:mm',
                 events: events
         });
-        });</script>
+        });
+        });
+    </script>
 <?php endif ?>
 <div class="event-index">
     <script type='text/javascript'>
-        function filterCategory(category_id) {
-        var url = '<?php echo $this->getUrl('events'); ?>';
-<?php if ($modelist != ''): ?>
-            var mode = '<? echo $modelist;?>';
-            url = url + '?mode=' + mode;
-            if (category_id != "") {
-            url = url + '&c=' + category_id;
+        function filterCategory(catId) {
+        var url = '<?php echo $block->getUrl('events/index/index'); ?>';
+<?php if (isset($viewMode) && $viewMode != ''): ?>
+            var mode = '<?php echo $viewMode; ?>';
+            url = url + 'mode/' + mode;
+            if (catId != '') {
+            url = url + '/c/' + catId;
             }
 <?php else: ?>
-            if (category_id != "") {
-            url = url + '?c=' + category_id;
+            if (catId != '') {
+            url = url + '/c/' + catId;
             }
 <?php endif ?>
         window.location.href = url;
         }
 
         function viewmode(mode) {
-        var url = '<?php echo $this->getUrl('events'); ?>';
-        url = url + '?mode=' + mode;
-<?php if (isset($catid['c']) && $catid['c'] != ''): ?>
-            var c = '<?php echo $catid['c']; ?>';
-            url = url + '&c=' + c;
+        var url = '<?php echo $block->getUrl('events/index/index'); ?>';
+        url = url + 'mode/' + mode;
+<?php if (isset($catId) && $catId != ''): ?>
+            var catId = '<?php echo $catId; ?>';
+            url = url + '/c/' + catId;
 <?php endif; ?>
         window.location.href = url;
         }
     </script>
 
-    <div class="page-title">
-        <?php $pageTitle = Mage::getStoreConfig('events/calendar/calendar_title'); ?>
-        <h1><?php echo $this->escapeHtml($pageTitle); ?></h1>
-    </div>
-
-    <?php $eventCategories = $this->getEventCategories(); ?>
+    <?php $eventCategories = $block->getEventCategories(); ?>
 
     <div class="box-filter">
-        <?php if ($this->enabledFilterByCategory() && count($eventCategories)): ?>
-            <div class="event-category-filters">    
-                <?php $current_category = $this->getCurrentCategory(); ?>
-                <label for="category-filter"><?php echo $this->__('Filter Event by Category'); ?></label>
+        <?php if ($block->getScopeConfig('events/general_setting/allow_filter_by_cat') && count($eventCategories)): ?>
+            <div class="event-category-filters">
+                <?php $currentCatId = $block->getCurrentCatId(); ?>
+                <label for="category-filter"><?php echo __('Filter Event by Category'); ?></label>
                 <select name="category-filter" id="category-filter" onchange="filterCategory(this.value)">
-                    <option value=""><?php echo $this->__('All Events'); ?></option>
+                    <option value=""><?php echo __('All Events'); ?></option>
                     <?php foreach ($eventCategories as $category): ?>            
-                        <option value="<?php echo $category['category_id']; ?>" <?php if ($current_category == $category['category_id']): ?>selected<?php endif; ?>><?php echo $category['category_title']; ?></option>
+                        <option value="<?php echo $category['category_id']; ?>" <?php if ($currentCatId == $category['category_id']): ?>selected<?php endif; ?>><?php echo $category['category_title']; ?></option>
                     <?php endforeach; ?>
                 </select>
             </div>
         <?php endif; ?>
-        <?php if ($this->getConfiguredViewMode() == 'list-calendar' || $this->getConfiguredViewMode() == 'calendar-list'): ?>
+        <?php
+        $configViewMode = $block->getScopeConfig('events/general_setting/view_mode');
+        if ($configViewMode == 'list-calendar' || $configViewMode == 'calendar-list'):
+            ?>
             <div class="view-mode">
-                <label for="category-filter"><?php echo $this->__('View Mode'); ?></label>
+                <label for="category-filter"><?php echo __('View Mode'); ?></label>
                 <select name="viewmode" id="viewmodelist" onchange="viewmode(this.value)">
-                    <option value="calendar" <?php if ($this->getCurrentMode() == 'calendar'): ?> selected <?php endif ?>><?php echo $this->__('Calendar'); ?></option>      
-                    <option value="list" <?php if ($this->getCurrentMode() == 'list'): ?> selected <?php endif ?>><?php echo $this->__('List'); ?></option>      
+                    <option value="calendar" <?php if ($block->getCurrentMode() == 'calendar'): ?> selected <?php endif ?>><?php echo __('Calendar'); ?></option>      
+                    <option value="list" <?php if ($block->getCurrentMode() == 'list'): ?> selected <?php endif ?>><?php echo __('List'); ?></option>      
                 </select>
             </div>
         <?php endif ?>
     </div>
 
-    <?php if ($this->getEventJson()): ?>
+    <?php if (count($events)): ?>
         <!--  calendar mode -->
-        <?php if ($this->getCurrentMode() == 'calendar'): ?>
+        <?php if ($block->getCurrentMode() == 'calendar'): ?>
             <div class="class-calendar" id="calendar"></div>
         <?php else: ?>
             <!-- list mode -->
-            <div class="toolbar">
-                <?php echo $this->getPagerHtml(); ?>
-            </div>
+            <div class="toolbar"><?php echo $block->getPagerHtml(); ?></div>
             <div class="events-list">
-                <?php $events = $this->getEvents(); ?>
-                <?php $_iterator = 0; ?>
+                <?php $iterator = 0; ?>
                 <ol class="events-list" id="events-list">
-                    <?php foreach ($events as $_event): ?>
-                        <li class="item<?php if (++$_iterator == sizeof($events)): ?> last<?php endif; ?>">
-                            <?php $imgUrl = $this->getImageUrl($_event); ?>
-                            <a href="<?php echo $this->getEventUrl($_event); ?>" class="event-image" title="<?php echo $_event->getTitle() ?>"><img src="<?php echo $imgUrl ?>" alt="<?php echo $_event->getTitle() ?>" width="135" height="135"/></a>
+                    <?php foreach ($events as $event): ?>
+                        <li class="item<?php
+                        if (++$iterator == count($events)): echo ' last';
+                        endif;
+                        ?>">
+                            <a href="<?php echo $event['url']; ?>" class="event-image" title="<?php echo $event['title']; ?>">
+                                <img src="<?php echo $event['avatar_url']; ?>" alt="<?php echo $event['title']; ?>" width="135" height="135"/>
+                            </a>
                             <div class="event-desc">
                                 <div class="f-fix">
-                                    <h2 class="event-title"><a href="<?php echo $this->getEventUrl($_event); ?>" title="<?php echo $_event->getTitle() ?>"><?php echo $_event->getTitle() ?></a></h2>
+                                    <h2 class="event-title"><a href="<?php echo $event['url']; ?>" title="<?php echo $event['title']; ?>"><?php echo $event['title']; ?></a></h2>
                                     <div class="desc std">
-                                        <?php
-                                        $helperCMS = Mage::helper('cms');
-                                        $processor = $helperCMS->getPageTemplateProcessor();
-                                        $htmlDes = $processor->filter($_event->getDescription());
-                                        ?>
-                                        <?php echo $htmlDes; ?>
-                                        <a href="<?php echo $this->getEventUrl($_event); ?>" title="<?php echo $_event->getTitle() ?>" class="link-learn"><?php echo $this->__('Learn More') ?></a>
+                                        <?php echo $event['description']; ?>
+                                        <a href="<?php
+                                        echo $event['url'];
+                                        ;
+                                        ?>" title="<?php echo $event['title']; ?>" class="link-learn"><?php echo __('Learn More') ?></a>
                                     </div>
                                 </div>
                             </div>
@@ -139,12 +139,12 @@ $catid = $this->getRequest()->getParams('c');
                 </ol>
             </div>
             <div class="toolbar-bottom">
-                <div class="toolbar">
-                    <?php echo $this->getPagerHtml(); ?>
-                </div>
+                <div class="toolbar"><?php echo $block->getPagerHtml(); ?></div>
             </div>
+
         <?php endif ?>	      
     <?php else: ?>
-        <p class="note-msg" style="margin:20px 0;"><?php echo $this->__('There are no events matching the selection.'); ?></p>
-    </div>  
-<?php endif; ?>
+        <p class="note-msg" style="margin:20px 0;"><?php echo __('There are no events matching the selection.'); ?></p>
+    <?php endif; ?>
+</div> 
+

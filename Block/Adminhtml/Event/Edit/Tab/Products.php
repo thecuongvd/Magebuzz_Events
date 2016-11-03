@@ -10,13 +10,11 @@ class Products extends \Magento\Backend\Block\Widget\Grid\Extended
     protected $_coreRegistry = null;
     protected $_eventFactory;
 
-    protected $_objectManager;
     protected $_linkFactory;
     protected $_productStatus;
     protected $_productVisibility;
 
     public function __construct(
-        \Magento\Framework\ObjectManagerInterface $interface,
         \Magento\Backend\Block\Template\Context $context,
         \Magento\Backend\Helper\Data $backendHelper,
         \Magebuzz\Events\Model\EventFactory $eventFactory,
@@ -29,7 +27,6 @@ class Products extends \Magento\Backend\Block\Widget\Grid\Extended
         $this->_eventFactory = $eventFactory;
         $this->_coreRegistry = $coreRegistry;
         
-        $this->_objectManager = $interface;
         $this->_linkFactory = $linkFactory;
         $this->_productStatus = $productStatus;
         $this->_productVisibility = $productVisibility;
@@ -48,7 +45,7 @@ class Products extends \Magento\Backend\Block\Widget\Grid\Extended
         $this->setDefaultSort('entity_id');
         $this->setUseAjax(true);
         if ($this->getEvent() && $this->getEvent()->getId()) {
-            $this->setDefaultFilter(['in_participants' => 1]);
+            $this->setDefaultFilter(['in_product' => 1]);
         }
     }
 
@@ -73,6 +70,7 @@ class Products extends \Magento\Backend\Block\Widget\Grid\Extended
             ->addAttributeToSelect(
                 '*'
             )
+            ->addFieldToFilter('type_id', 'event' )
             ->addAttributeToFilter('status', ['in' => $this->_productStatus->getVisibleStatusIds()]);
 
         $this->setCollection($collection);
@@ -105,6 +103,7 @@ class Products extends \Magento\Backend\Block\Widget\Grid\Extended
             [
                 'header' => __('ID'),
                 'sortable' => true,
+                'type' => 'number',
                 'index' => 'entity_id',
                 'header_css_class' => 'col-id',
                 'column_css_class' => 'col-id'
@@ -112,18 +111,17 @@ class Products extends \Magento\Backend\Block\Widget\Grid\Extended
         );
 
         $this->addColumn(
-            'thumbnail',
+            'product_thumbnail',
             [
                 'header' => __('Thumbnail'),
                 'align' => 'left',
-                'index' => 'thumbnail',
                 'width' => '97',
                 'renderer' => 'Magebuzz\Events\Block\Adminhtml\Grid\Column\Renderer\Thumbnail'
             ]
         );
 
         $this->addColumn(
-            'name',
+            'product_name',
             [
                 'header' => __('Product Name'),
                 'index' => 'name',
@@ -132,7 +130,7 @@ class Products extends \Magento\Backend\Block\Widget\Grid\Extended
             ]
         );
         $this->addColumn(
-            'sku',
+            'product_sku',
             [
                 'header' => __('SKU'),
                 'index' => 'sku',
@@ -142,7 +140,7 @@ class Products extends \Magento\Backend\Block\Widget\Grid\Extended
         );
 
         $this->addColumn(
-            'price',
+            'product_price',
             [
                 'header' => __('Price'),
                 'type' => 'currency',
@@ -176,13 +174,10 @@ class Products extends \Magento\Backend\Block\Widget\Grid\Extended
      */
     protected function _getSelectedProduct()
     {
-        $id = $this->getRequest()->getParam('event_id');
-        if(!isset($id)) {
-            $id = 0;
-        }
+        $id = $this->getRequest()->getParam('event_id', 0);
 
         $event = $this->_eventFactory->create()->load($id);
-        $product =  $event->getProduct();
+        $product =  [$event->getProduct()];
         return $product;
     }
 

@@ -1,0 +1,20 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * @copyright Copyright (c) 2016 www.magebuzz.com
+ */
+-->
+<page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd">
+    <body>
+    	<referenceBlock name="header.links">
+    		<block class="Magebuzz\Events\Block\HeaderLink" name="events-header-link" template="header_link.phtml" before="-"/>
+        </referenceBlock>
+        <referenceBlock name="top.links">
+            <block class="Magebuzz\Events\Block\TopLink" name="events-top-link" after="my-account-link"/>
+        </referenceBlock>
+        
+        <referenceContainer name="sidebar.main">
+            <block class="Magebuzz\Events\Block\Sidebar" name="events_sidebar" template="events_sidebar.phtml" after="-" />
+        </referenceContainer>
+    </body>
+</page>

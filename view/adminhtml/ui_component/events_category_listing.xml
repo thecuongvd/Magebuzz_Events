@@ -114,12 +114,21 @@
                     </item>
                 </argument>
             </action>
-            <action name="change_status">
+            <action name="enable">
                 <argument name="data" xsi:type="array">
                     <item name="config" xsi:type="array">
-                        <item name="type" xsi:type="string">change_status</item>
-                        <item name="label" xsi:type="string" translate="true">Change Status</item>
-                        <item name="url" xsi:type="url" path="events/category/massChangeStatus"/>
+                        <item name="type" xsi:type="string">enable</item>
+                        <item name="label" xsi:type="string" translate="true">Enable</item>
+                        <item name="url" xsi:type="url" path="events/category/massEnable"/>
+                    </item>
+                </argument>
+            </action>
+            <action name="disable">
+                <argument name="data" xsi:type="array">
+                    <item name="config" xsi:type="array">
+                        <item name="type" xsi:type="string">disable</item>
+                        <item name="label" xsi:type="string" translate="true">Disable</item>
+                        <item name="url" xsi:type="url" path="events/category/massDisable"/>
                     </item>
                 </argument>
             </action>

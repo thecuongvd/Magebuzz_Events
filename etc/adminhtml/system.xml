@@ -1,13 +1,13 @@
 <?xml version="1.0"?>
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Config:etc/system_file.xsd">
     <system>
-        <tab id="magebuzzaddons" translate="label" sortOrder="0">
-            <label>MAGEBUZZ ADD-ON S</label>
+        <tab id="magebuzz" translate="label" sortOrder="9000">
+            <label>Extensions</label>
         </tab>
-        <section id="events" translate="label" sortOrder="0" showInDefault="1" showInWebsite="1" showInStore="1">
+        <section id="events" translate="label" sortOrder="140" showInDefault="1" showInWebsite="1" showInStore="1">
             <class>separator-top</class>
             <label>Events Calendar</label>
-            <tab>magebuzzaddons</tab>
+            <tab>magebuzz</tab>
             <resource>Magebuzz_Events::events_config</resource>
             
             <group id="general_setting" translate="label" type="text" sortOrder="10" showInDefault="1" showInWebsite="0" showInStore="0">
@@ -20,10 +20,10 @@
                     <label>Show Calendar Url in Top Link</label>
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                 </field>
-<!--                <field id="allow_filter_by_cat" translate="label" type="select" sortOrder="3" showInDefault="1" showInWebsite="0" showInStore="0">
+                <field id="allow_filter_by_cat" translate="label" type="select" sortOrder="3" showInDefault="1" showInWebsite="0" showInStore="0">
                     <label>Allow customers to filter events by category</label>
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
-                </field>-->
+                </field>
                 <field id="show_num_participants" translate="label" type="select" sortOrder="4" showInDefault="1" showInWebsite="0" showInStore="0">
                     <label>Show Number of Participants</label>
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
@@ -34,19 +34,19 @@
                 </field>
                 <field id="show_upcoming_events" translate="label" type="select" sortOrder="6" showInDefault="1" showInWebsite="0" showInStore="0">
                     <label>Show Upcoming Events in Sidebar</label>
-                    <source_model>Magebuzz\Events\Model\Config\Source\UpcomingEventsPos</source_model>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                 </field>
-                <field id="defaut_image" translate="label comment" type="image" sortOrder="7" showInDefault="1" showInWebsite="0" showInStore="0">
+                <field id="default_image" translate="label comment" type="image" sortOrder="7" showInDefault="1" showInWebsite="0" showInStore="0">
                     <label>Default Avatar for All Events</label>
-                    <comment>Used when event image is not available (allowed jpg, jpeg, gif, png).</comment>
+                    <comment><![CDATA[Used when event image is not available (allowed jpg, jpeg, gif, png).]]></comment>
                     <backend_model>Magento\Config\Model\Config\Backend\Image</backend_model>
                     <upload_dir config="system/filesystem/media" scope_info="1">magebuzz/events</upload_dir>
                     <base_url type="media" scope_info="1">magebuzz/events</base_url>
                 </field>
-<!--                <field id="allow_send_invitation" translate="label" type="select" sortOrder="8" showInDefault="1" showInWebsite="0" showInStore="0">
+                <field id="allow_send_invitation" translate="label" type="select" sortOrder="8" showInDefault="1" showInWebsite="0" showInStore="0">
                     <label>Allow users to send invitation for event</label>
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
-                </field>-->
+                </field>
                 <field id="invitation_email" translate="label" type="select" sortOrder="9" showInDefault="1" showInWebsite="0" showInStore="0">
                     <label>Event Invitation Email</label>
                     <source_model>Magento\Config\Model\Config\Source\Email\Template</source_model>
@@ -62,10 +62,10 @@
                     <label>Default View Mode</label>
                     <source_model>Magebuzz\Events\Model\Config\Source\CalendarViewMode</source_model>
                 </field>
-<!--                <field id="allow_switch_mode" translate="label" type="select" sortOrder="3" showInDefault="1" showInWebsite="0" showInStore="0">
+                <field id="allow_switch_mode" translate="label" type="select" sortOrder="3" showInDefault="1" showInWebsite="0" showInStore="0">
                     <label>Allow Customer to Switch between Mode</label>
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
-                </field>-->
+                </field>
                 <field id="language" translate="label" type="select" sortOrder="4" showInDefault="1" showInWebsite="0" showInStore="0">
                     <label>Calendar Language</label>
                     <source_model>Magebuzz\Events\Model\Config\Source\CalendarLanguage</source_model>

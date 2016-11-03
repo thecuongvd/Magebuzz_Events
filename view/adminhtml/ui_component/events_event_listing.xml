@@ -21,6 +21,7 @@
     <dataSource name="events_event_listing_data_source">
         <argument name="dataProvider" xsi:type="configurableObject">
             <argument name="class" xsi:type="string">EventGridDataProvider</argument>
+            <!--<argument name="class" xsi:type="string">Magebuzz\Events\Ui\DataProvider\Event\EventDataProvider</argument>-->
             <argument name="name" xsi:type="string">events_event_listing_data_source</argument>
             <argument name="primaryFieldName" xsi:type="string">block_id</argument>
             <argument name="requestFieldName" xsi:type="string">id</argument>
@@ -114,12 +115,21 @@
                     </item>
                 </argument>
             </action>
-            <action name="change_status">
+            <action name="enable">
                 <argument name="data" xsi:type="array">
                     <item name="config" xsi:type="array">
-                        <item name="type" xsi:type="string">change_status</item>
-                        <item name="label" xsi:type="string" translate="true">Change Status</item>
-                        <item name="url" xsi:type="url" path="events/event/massChangeStatus"/>
+                        <item name="type" xsi:type="string">enable</item>
+                        <item name="label" xsi:type="string" translate="true">Enable</item>
+                        <item name="url" xsi:type="url" path="events/event/massEnable"/>
+                    </item>
+                </argument>
+            </action>
+            <action name="disable">
+                <argument name="data" xsi:type="array">
+                    <item name="config" xsi:type="array">
+                        <item name="type" xsi:type="string">disable</item>
+                        <item name="label" xsi:type="string" translate="true">Disable</item>
+                        <item name="url" xsi:type="url" path="events/event/massDisable"/>
                     </item>
                 </argument>
             </action>
@@ -222,6 +232,30 @@
                 </item>
             </argument>
         </column>
+        <column name="location">
+            <argument name="data" xsi:type="array">
+                <item name="config" xsi:type="array">
+                    <item name="filter" xsi:type="string">text</item>
+                    <item name="editor" xsi:type="array">
+                        <item name="editorType" xsi:type="string">text</item>
+                        <item name="validation" xsi:type="array">
+                            <item name="required-entry" xsi:type="boolean">true</item>
+                        </item>
+                    </item>
+                    <item name="label" xsi:type="string" translate="true">Location</item>
+                </item>
+            </argument>
+        </column>
+<!--        <column name="price" class="Magebuzz\Events\Ui\Component\Listing\Columns\Price">
+            <argument name="data" xsi:type="array">
+                <item name="config" xsi:type="array">
+                    <item name="filter" xsi:type="string">textRange</item>
+                    <item name="add_field" xsi:type="boolean">true</item>
+                    <item name="label" xsi:type="string" translate="true">Price</item>
+                    <item name="sortOrder" xsi:type="number">70</item>
+                </item>
+            </argument>
+        </column>-->
         <column name="number_of_participant">
             <argument name="data" xsi:type="array">
                 <item name="config" xsi:type="array">
@@ -248,6 +282,28 @@
                     <item name="component" xsi:type="string">Magento_Ui/js/grid/columns/date</item>
                     <item name="dataType" xsi:type="string">date</item>
                     <item name="label" xsi:type="string" translate="true">End Time</item>
+                </item>
+            </argument>
+        </column>
+        <column name="registration_deadline" class="Magento\Ui\Component\Listing\Columns\Date">
+            <argument name="data" xsi:type="array">
+                <item name="config" xsi:type="array">
+                    <item name="filter" xsi:type="string">dateRange</item>
+                    <item name="component" xsi:type="string">Magento_Ui/js/grid/columns/date</item>
+                    <item name="dataType" xsi:type="string">date</item>
+                    <item name="label" xsi:type="string" translate="true">Registration Deadline</item>
+                </item>
+            </argument>
+        </column>
+        <column name="allow_register">
+            <argument name="data" xsi:type="array">
+                <item name="options" xsi:type="object">Magebuzz\Events\Model\Event\Source\Status</item>
+                <item name="config" xsi:type="array">
+                    <item name="filter" xsi:type="string">select</item>
+                    <item name="component" xsi:type="string">Magento_Ui/js/grid/columns/select</item>
+                    <item name="editor" xsi:type="string">select</item>
+                    <item name="dataType" xsi:type="string">select</item>
+                    <item name="label" xsi:type="string" translate="true">Allow Register</item>
                 </item>
             </argument>
         </column>

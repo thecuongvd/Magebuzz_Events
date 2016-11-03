@@ -1,8 +1,14 @@
 <?xml version="1.0"?>
-<page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" layout="1column" xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd">
+<page layout="2columns-left" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd">
+    <head>
+        <css src="Magebuzz_Events::css/fullcalendar.css"/>
+        <css src="Magebuzz_Events::css/events.css"/>
+        <css src="Magebuzz_Events::css/bootstrap.min.css"/>
+    </head>
     <body>
         <referenceContainer name="content">
             <block class="Magebuzz\Events\Block\Events" name="events_index_index" template="events.phtml" />
         </referenceContainer>
+        <move element="page.main.title" destination="content" before="-"/>
     </body>
 </page>
