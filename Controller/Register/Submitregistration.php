@@ -1,5 +1,5 @@
 <?php
-namespace Magebuzz\Events\Controller\Index;
+namespace Magebuzz\Events\Controller\Register;
 
 use Magento\Framework\App\Action\Action;
 
@@ -42,10 +42,10 @@ class Submitregistration extends Action
                         ->save();
                 
                 $this->messageManager->addSuccess(__('Thank you for your registration. We will contact you as soon as possible to confirm about this.'));
-                return $resultRedirect->setPath('*/*/view', ['event_id' => $data['event_id']]);
+                return $resultRedirect->setPath('*/index/view', ['event_id' => $data['event_id']]);
             } catch (Exception $e) {
                 $this->messageManager->addException($e, __('There was problem when submitting your request. Please try again.'));
-                return $resultRedirect->setPath('*/*/register', ['event_id' => $data['event_id']]);
+                return $resultRedirect->setPath('*/*/index', ['event_id' => $data['event_id']]);
             }
         }
         

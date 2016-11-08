@@ -57,17 +57,8 @@ class Collection extends \Magento\Framework\Model\ResourceModel\Db\Collection\Ab
         return $this;
     }
 
-    /**
-     * Set store filter
-     *
-     * @param int $storeIds
-     * @return $this
-     */
     public function setCatFilter($catId)
     {
-        if ($this->_storeManager->isSingleStoreMode()) {
-            return $this;
-        }
         $connection = $this->getConnection();
 
         if (empty($catId)) {
@@ -83,14 +74,33 @@ class Collection extends \Magento\Framework\Model\ResourceModel\Db\Collection\Ab
                 ->group(array('main_table.event_id'));
         return $this;
     }
+    public function setEventNameFilter($eventSearch)
+    {
+        $this->getSelect()->where("title LIKE '%$eventSearch%'");
+        return $this;
+    }
+    public function setLocationFilter($locationSearch)
+    {
+        $this->getSelect()->where("location LIKE '%$locationSearch%'");
+        return $this;
+    }
 
-    /**
-     * Set closure time filter
-     * @return  $this
-     */
     public function setUpcomingFilter()
     {
-        $this->getSelect()->where("TIMESTAMPDIFF(SECOND,UTC_TIMESTAMP(),main_table.end_time) > 0");
+        $this->getSelect()->where("TIMESTAMPDIFF(SECOND,UTC_TIMESTAMP(),main_table.start_time) > 0");
+        return $this;
+    }
+    
+    public function setFavoriteFilter($customerId) {
+        $connection = $this->getConnection();
+        $this->getSelect()->distinct(true)->join(
+            ['fav_table' => $this->getTable('mb_event_favorite')],
+            'main_table.event_id = fav_table.event_id',
+            []
+        );
+        $inCondition = $connection->prepareSqlCondition('fav_table.customer_id', $customerId);
+        $this->getSelect()->where($inCondition)
+                ->group(array('main_table.event_id'));
         return $this;
     }
 

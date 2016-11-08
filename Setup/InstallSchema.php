@@ -28,7 +28,7 @@ class InstallSchema implements InstallSchemaInterface {
                 ->addColumn('images', Table::TYPE_TEXT, null, ['nullable' => false])
                 ->addColumn('video', Table::TYPE_TEXT, null, ['nullable' => false])
                 ->addColumn('location', Table::TYPE_TEXT, 255, ['nullable' => false])
-                ->addColumn('price', Table::TYPE_DECIMAL, '12,4', ['nullable' => false, 'default' => '0.0000'])
+                ->addColumn('price', Table::TYPE_DECIMAL, '10,2', ['nullable' => false, 'default' => '0.00'])
                 ->addColumn('number_of_participant', Table::TYPE_INTEGER, 11, ['nullable' => false, 'default' => '0'])
                 ->addColumn('allow_register', Table::TYPE_SMALLINT, 6, ['nullable' => false, 'default' => '1'])
                 ->addColumn('registration_deadline', Table::TYPE_DATETIME, null, [])
@@ -36,6 +36,7 @@ class InstallSchema implements InstallSchemaInterface {
                 ->addColumn('start_time', Table::TYPE_DATETIME, null, [])
                 ->addColumn('end_time', Table::TYPE_DATETIME, null, [])
                 ->addColumn('status', Table::TYPE_SMALLINT, 6, ['nullable' => false, 'default' => '1'])
+                ->addColumn('progress_status', Table::TYPE_TEXT, 10, ['nullable' => false, 'default' => ''])
                 ->addColumn('color', Table::TYPE_TEXT, 10, ['nullable' => false])
                 ->addColumn('url_key', Table::TYPE_TEXT, 255, ['nullable' => true, 'default' => null])
                 ->addColumn('is_show_contact', Table::TYPE_SMALLINT, 6, ['nullable' => false, 'default' => '1'])
@@ -176,6 +177,32 @@ class InstallSchema implements InstallSchemaInterface {
                         $installer->getFkName('mb_event_product', 'entity_id', 'catalog_product_entity', 'entity_id'), 'entity_id', $installer->getTable('catalog_product_entity'), 'entity_id', Table::ACTION_CASCADE
                 )
                 ->setComment('Event Product');
+        $installer->getConnection()->createTable($table);
+        
+        /**
+         * Create table 'mb_event_product'
+         */
+        $table = $installer->getConnection()
+                ->newTable($installer->getTable('mb_event_favorite'))
+                ->addColumn(
+                        'event_id', Table::TYPE_INTEGER, 11, ['unsigned' => true, 'nullable' => false, 'primary' => true]
+                )
+                ->addColumn(
+                        'customer_id', Table::TYPE_INTEGER, 11, ['unsigned' => true, 'nullable' => false, 'primary' => true]
+                )
+                ->addIndex(
+                        $installer->getIdxName('mb_event_favorite', ['event_id']), ['event_id']
+                )
+                ->addIndex(
+                        $installer->getIdxName('mb_event_favorite', ['customer_id']), ['customer_id']
+                )
+                ->addForeignKey(
+                        $installer->getFkName('mb_event_favorite', 'event_id', 'mb_events', 'event_id'), 'event_id', $installer->getTable('mb_events'), 'event_id', Table::ACTION_CASCADE
+                )
+                ->addForeignKey(
+                        $installer->getFkName('mb_event_favorite', 'customer_id', 'customer_entity', 'entity_id'), 'customer_id', $installer->getTable('customer_entity'), 'entity_id', Table::ACTION_CASCADE
+                )
+                ->setComment('Event Favorite');
         $installer->getConnection()->createTable($table);
         
 

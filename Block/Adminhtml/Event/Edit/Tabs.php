@@ -60,15 +60,6 @@ class Tabs extends \Magento\Backend\Block\Widget\Tabs
                 )->toHtml()
             ]
         );
-        $this->addTab(
-            'gallery',
-            [
-                'label' => __('Event Gallery'),
-                'content' => $this->getLayout()->createBlock(
-                    'Magebuzz\Events\Block\Adminhtml\Event\Edit\Tab\Gallery'
-                )->toHtml()
-            ]
-        );
         
         $this->addTab(
             'organizer',

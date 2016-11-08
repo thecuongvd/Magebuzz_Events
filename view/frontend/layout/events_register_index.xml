@@ -5,7 +5,7 @@
     </head>
     <body>
         <referenceContainer name="content">
-            <block class="Magebuzz\Events\Block\Register" name="events_index_register" template="register.phtml" />
+            <block class="Magebuzz\Events\Block\Register" name="events_register_index" template="register.phtml" />
         </referenceContainer>
     </body>
 </page>

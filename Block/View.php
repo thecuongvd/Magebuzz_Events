@@ -17,6 +17,8 @@ class View extends \Magento\Framework\View\Element\Template {
     protected $_scopeConfig;
     protected $_objectManager;
     protected $_date;
+    protected $_customerSession;
+    protected $_currentCustomer;
     
     public function __construct(
     \Magento\Framework\View\Element\Template\Context $context, 
@@ -28,17 +30,22 @@ class View extends \Magento\Framework\View\Element\Template {
             \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig, 
             \Magento\Framework\ObjectManagerInterface $objectManager, 
             \Magento\Framework\Stdlib\DateTime\DateTime $date, 
+            \Magento\Customer\Model\Session $customerSession,
+            \Magento\Customer\Helper\Session\CurrentCustomer $currentCustomer,
             array $data = []
     ) {
         parent::__construct($context, $data);
         $this->_coreRegistry = $registry;
         $this->_productFactory = $productFactory;
         $this->_eventsProductFactory = $eventsProductFactory;
+        
         $this->_formKey = $formKey;
         $this->_eventsHelper = $eventsHelper;
         $this->_scopeConfig = $scopeConfig;
         $this->_objectManager = $objectManager;
         $this->_date = $date;
+        $this->_customerSession = $customerSession;
+        $this->_currentCustomer = $currentCustomer;
 
         $this->_event = $this->getEvent();
     }
@@ -74,11 +81,39 @@ class View extends \Magento\Framework\View\Element\Template {
         return $this->_scopeConfig->getValue($path, \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
     }
     
-        public function getEventUrl() {
+    public function getEventUrl() {
 //            $url_path = 'event/' . $this->_event->getUrlKey() . '.html';
 //            return $this->getUrl($url_path);
         
         return $this->getUrl('*/*/view', array('event_id' => $this->_event->getId()));
+    }
+    
+    public function getFavoriteImageSrc() {
+        if ($this->isFavorited()) {
+            return $this->getViewFileUrl('Magebuzz_Events::images/heart-red.png');
+        } else {
+            return $this->getViewFileUrl('Magebuzz_Events::images/heart-white.png');
+        }
+    }
+    
+    public function isFavorited() {
+        $customerId = $this->getCurrentCustomerId(); 
+        if (empty($customerId)) {
+            return false;
+        }
+        
+        $favCustomerIds = $this->_event->getFavoritedCustomerIds();
+        if(count($favCustomerIds) > 0 && in_array($customerId, $favCustomerIds)) {
+            return true;
+        }
+        return false;
+    }
+    
+        
+    public function getCurrentCustomerId() {
+        return $this->_coreRegistry->registry('current_customer_id');
+//        return $this->_currentCustomer->getCustomerId(); 
+//        return $this->_customerSession->isLoggedIn(); 
     }
 
     public function getRegisteredCount() {
@@ -146,7 +181,7 @@ class View extends \Magento\Framework\View\Element\Template {
     }
     
     public function getRegisterUrl() {
-        return $this->getUrl('*/*/register', array('event_id' => $this->_event->getId()));
+        return $this->getUrl('*/register/index', array('event_id' => $this->_event->getId()));
     }
 
     public function getStartTime() {

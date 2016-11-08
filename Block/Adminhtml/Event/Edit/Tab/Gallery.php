@@ -50,7 +50,7 @@ class Gallery extends Generic implements TabInterface
 
     protected function _prepareForm()
     {
-        $model = $this->_coreRegistry->registry('events_event');
+        $eventModel = $this->_coreRegistry->registry('events_event');
 
         /** @var \Magento\Framework\Data\Form $form */
         $form = $this->_formFactory->create();
@@ -68,7 +68,7 @@ class Gallery extends Generic implements TabInterface
                 'name'  => 'avatar',
                 'label' => __('Event Avatar'),
                 'title'  => __('Event Avatar'),
-                'after_element_html' => $this->getImageHtml('avatar', $model->getAvatar(), 'magebuzz/events/event/avatar/')
+                'after_element_html' => $this->getImageHtml('avatar', $eventModel->getAvatar(), 'magebuzz/events/event/avatar/')
             ]
         );
         
@@ -82,7 +82,7 @@ class Gallery extends Generic implements TabInterface
 //            ]
 //        );
    
-        $form->setValues($model->getData());
+        $form->setValues($eventModel->getData());
         
         $this->setForm($form);
         return parent::_prepareForm();

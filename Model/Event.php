@@ -105,7 +105,16 @@ class Event extends \Magento\Framework\Model\AbstractModel {
     
     public function getEventUrl() {
         return $this->urlModel->getUrl('*/*/view', ['event_id' => $this->getId()]);
-//        $baseUrl =  $this->_storeManager->getStore()->getBaseUrl( \Magento\Framework\UrlInterface::URL_TYPE_LINK);
-//        return $baseUrl . 'events/index/view/event_id/' . $this->getId();
+    }
+    
+    public function getFavoritedCustomerIds() {
+        return $this->getResource()->getFavoritedCustomerIds($this->getId());
+    }
+    
+    public function addFavorite($customerId) {
+        $this->getResource()->addFavorite($this->getId(), $customerId);
+    }
+    public function removeFavorite($customerId) {
+        $this->getResource()->removeFavorite($this->getId(), $customerId);
     }
 }

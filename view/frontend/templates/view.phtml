@@ -2,52 +2,34 @@
 $event = $block->getEvent();
 if ($event->getId()) {
     ?>
-    <div class="event-detail">
-        <div class="event-main">
+    <div class="event-details">
+        <!--Left-->
+        <div class="product media">
+            <!--Image-->
             <div class="event-image">
                 <img src="<?php echo $block->getAvatarUrl() ?>" alt="<?php echo $event->getTitle(); ?>" />
             </div>
-            <div class="event-content">
-                <div class="event-top">
-                    <div class="event-name">
-                        <h1><?php echo $event->getTitle(); ?></h1>
-                    </div>        
-                    <!-- share Link-->
-                    <?php if ($block->getScopeConfig('events/general_setting/show_social_share')) { ?>
-                        <div class="sharing">
-                            <ul class="sharing-buttons">
-                                <li>
-                                    <a href="http://www.facebook.com/sharer.php?u=<?php echo $block->getEventUrl() ?>" target="_blank">
-                                        <img src="<?php echo $block->getViewFileUrl('Magebuzz_Events::images/facebook.png'); ?>" height="32" width="32" alt="Share on Facebook" />
-                                    </a> 
-
-                                </li>
-                                <li>
-                                    <a href="https://plus.google.com/share?url=<?php echo $block->getEventUrl() ?>" target="_blank">
-                                        <img src="<?php echo $block->getViewFileUrl('Magebuzz_Events::images/google_plus.png'); ?>" height="32" width="32" alt="Share on Google+" />
-                                    </a> 
-
-                                </li>
-
-                                <li>
-                                    <a href="http://twitter.com/intent/tweet?source=sharethiscom&url=<?php echo $block->getEventUrl() ?>" target="_blank">
-                                        <img src="<?php echo $block->getViewFileUrl('Magebuzz_Events::images/twitter.png'); ?>" height="32" width="32" alt="Share on Twitter" />
-                                    </a> 
-                                </li>
-                            </ul>
-                        </div>
-                    <?php } ?>
-                    <!-- End Share -->
+        </div>
+        
+        <!--Right-->
+        <div class="product-info-main">
+            <!--Main-->
+            <div class="event-main">
+                <div class="event-name">
+                    <h1><?php echo $event->getTitle(); ?></h1>
+                </div>        
+                <!--Content-->
+                <div class="event-content">
+                    <div class="event-time">
+                        <label><?php echo __('Time:') ?></label>
+                        <?php echo $block->getStartTime(); ?> - <?php echo $block->getEndTime(); ?>	
+                    </div>	
+                    <div class="event-location">
+                        <label><?php echo __('Location:') ?></label>
+                        <?php echo $event->getLocation(); ?>
+                    </div>
                 </div>
-
-                <div class="event-location">
-                    <label><?php echo __('Location') ?>: </label>
-                    <?php echo $event->getLocation(); ?>
-                </div>
-                <div class="event-time">
-                    <label><?php echo __('Time: ') ?></label><?php echo $block->getStartTime(); ?> - <?php echo $block->getEndTime(); ?>	
-                </div>				
-
+                
                 <div class="registration">
                     <?php if ($block->getScopeConfig('events/general_setting/show_num_participants')) {
                         ?>
@@ -70,16 +52,17 @@ if ($event->getId()) {
                             <?php echo $block->getRegistrationDeadline(); ?>
                         </div>
                     <?php } ?>
+                    <br>
                     <div class="event-price">
                         <?php if ($event->getPrice() > 0) { ?>
-                            <label><?php echo __('Price: '); ?></label>
+                            <label><?php echo __('Price:'); ?></label>
                             <?php echo $block->getPrice(); ?>
 
                         <?php } else {
                             ?>
-                            <label><?php echo __('Price: '); ?></label>FREE
+                            <label><?php echo __('Price:'); ?></label> FREE
                         <?php } ?>
-                    </div>
+                    </div> <br>
 
                     <div class="register-button">
                         <?php if ($block->getScopeConfig('events/general_setting/allow_send_invitation')) { ?>
@@ -107,13 +90,41 @@ if ($event->getId()) {
 
                     </div>
                 </div>
-                
+                <!-- share Link-->
+                <?php if ($block->getScopeConfig('events/general_setting/show_social_share')) { ?>
+                    <div class="product-social-links">
+                        <ul class="sharing-buttons">
+                            <li>
+                                <a href="http://www.facebook.com/sharer.php?u=<?php echo $block->getEventUrl() ?>" target="_blank">
+                                    <img src="<?php echo $block->getViewFileUrl('Magebuzz_Events::images/facebook.png'); ?>" height="32" width="32" alt="Share on Facebook" title="<?php echo __('Share on Facebook');?>" />
+                                </a> 
+
+                            </li>
+                            <li>
+                                <a href="https://plus.google.com/share?url=<?php echo $block->getEventUrl() ?>" target="_blank">
+                                    <img src="<?php echo $block->getViewFileUrl('Magebuzz_Events::images/google_plus.png'); ?>" height="32" width="32" alt="Share on Google+" title="<?php echo __('Share on Google+');?>" />
+                                </a> 
+                            </li>
+
+                            <li>
+                                <a href="http://twitter.com/intent/tweet?source=sharethiscom&url=<?php echo $block->getEventUrl() ?>" target="_blank">
+                                    <img src="<?php echo $block->getViewFileUrl('Magebuzz_Events::images/twitter.png'); ?>" height="32" width="32" alt="Share on Twitter" title="<?php echo __('Share on Twitter');?>" />
+                                </a> 
+                            </li>
+                            <li>
+                                <a href="<?php echo $block->getUrl('events/index/favorite', ['event_id'=>$event->getId(),'action'=>$block->isFavorited()?'remove':'add']) ?>">
+                                    <img src="<?php echo $block->getFavoriteImageSrc(); ?>" height="32" width="32" alt="Favorite" title="<?php echo $block->isFavorited()?__('Remove from Favorite'):__('Add to Favorite'); ?>" />
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                <?php } ?>
+                <!-- End Share -->
+                <!--Description-->
                 <div class="event-description">
-                    <?php echo $event->getDescription(); ?>        
+                    <?php echo $block->escapeHtml($event->getDescription()); ?>        
                 </div>
             </div>
-
-            
         </div>
     </div>
 
@@ -125,7 +136,7 @@ if ($event->getId()) {
             <form action="<?php echo $block->getUrl('events/index/sendinvitation') ?>" id="event-invite-form" method="post">		
                 <input type="hidden" name="event_id" id="event_id" value="<?php echo $event->getId(); ?>" />
                 <div class="field first">
-                    <label for="yourname" class="required"><?php echo __('Your Name') ?><span class="required">*</span></label>
+                    <label for="yourname" class="required"><?php echo __('Your Name') ?><span class="required"> *</span></label>
                     <div class="input-box">
                         <input type="text" name="yourname" value="" class="input-text required-entry" id="yourname"/>
                     </div>
@@ -157,8 +168,8 @@ if ($event->getId()) {
 <script type="text/javascript">
     require(["jquery", "mage/mage", "fancybox"], function ($) {
         $(document).ready(function () {
-            var eventForm = $('#event-invite-form');
-            eventForm.mage('validation', {});
+            var inviteForm = $('#event-invite-form');
+            inviteForm.mage('validation', {});
 
             $('#invite_friend_button').fancybox({
                 helpers: {
@@ -167,5 +178,4 @@ if ($event->getId()) {
             });
         });
     });
-
 </script>

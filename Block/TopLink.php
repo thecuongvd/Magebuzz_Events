@@ -12,11 +12,6 @@ namespace Magebuzz\Events\Block;
 class TopLink extends \Magento\Framework\View\Element\Html\Link
 {
     /**
-     * @var \Magento\Customer\Model\Session
-     */
-    protected $_customerSession;
-
-    /**
      * @var \Magento\Framework\Module\Manager
      */
     protected $_moduleManager;
@@ -35,7 +30,6 @@ class TopLink extends \Magento\Framework\View\Element\Html\Link
      */
     public function __construct(
         \Magento\Framework\View\Element\Template\Context $context,
-        \Magento\Customer\Model\Session $customerSession,
         \Magento\Framework\Module\Manager $moduleManager,
         \Magebuzz\Events\Helper\Data $eventsHelper,
         array $data = []
@@ -43,12 +37,6 @@ class TopLink extends \Magento\Framework\View\Element\Html\Link
         parent::__construct($context, $data);
         $this->_eventsHelper = $eventsHelper;
         $this->_moduleManager = $moduleManager;
-        $this->_customerSession = $customerSession;
-    }
-
-    public function isCustomerLoggedIn()
-    {
-        return (boolean)$this->_customerSession->isLoggedIn();
     }
 
     /**
@@ -57,7 +45,7 @@ class TopLink extends \Magento\Framework\View\Element\Html\Link
      */
     public function getHref()
     {
-        return $this->getUrl('events', ['_secure' => true]);
+        return $this->getUrl('events/wishlist/index');
     }
 
     /**
@@ -66,7 +54,7 @@ class TopLink extends \Magento\Framework\View\Element\Html\Link
      */
     public function getLabel()
     {
-        return __('Events Calendar');
+        return __('My Events');
     }
 
     /**

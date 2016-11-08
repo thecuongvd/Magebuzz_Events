@@ -47,16 +47,32 @@ class Save extends \Magento\Backend\App\Action {
         /** @var \Magento\Backend\Model\View\Result\Redirect $resultRedirect */
         $resultRedirect = $this->resultRedirectFactory->create();
         if ($data) {
-            $model = $this->_objectManager->create('Magebuzz\Events\Model\Event');
+            $eventModel = $this->_objectManager->create('Magebuzz\Events\Model\Event');
             $id = $this->getRequest()->getParam('event_id');
             if ($id) {
-                $model->load($id);
-                if ($id != $model->getId()) {
+                $eventModel->load($id);
+                if ($id != $eventModel->getId()) {
                     throw new \Magento\Framework\Exception\LocalizedException(__('The wrong event is specified.'));
                 }
             }
 
             //Process time
+            if ($data['start_time'] >= $data['end_time'] || $data['registration_deadline'] >= $data['end_time']) {
+                if ($data['start_time'] >= $data['end_time']) {
+                    $this->messageManager->addError( __('End Time must be larger than the Start Time.'));
+                } 
+                if ($data['registration_deadline'] >= $data['end_time']) {
+                    $this->messageManager->addError( __('Registration Deadline must be earlier than End Time'));
+                }
+                $this->_getSession()->setFormData($data);
+                if ($id) {
+                    return $resultRedirect->setPath('*/*/edit', ['event_id' => $id]);
+                }
+                else {
+                    return $resultRedirect->setPath('*/*/new');
+                }
+                return $resultRedirect->setPath('*/*/', ['_current' => true]);
+            }
             $localeDate = $this->_objectManager->get('Magento\Framework\Stdlib\DateTime\TimezoneInterface');
             if ($data['start_time']) {
                 $data['start_time'] = $localeDate->date($data['start_time'])->setTimezone(new \DateTimeZone('UTC'))->format('Y-m-d H:i:s');
@@ -116,7 +132,6 @@ class Save extends \Magento\Backend\App\Action {
             if(!$id && !isset($data['product'])) {
                 $this->messageManager->addError( __('You must associate product before save.'));
                 $this->_getSession()->setFormData($data);
-                
                 return $resultRedirect->setPath('*/*/new');
                 
             }
@@ -126,17 +141,17 @@ class Save extends \Magento\Backend\App\Action {
 //            echo '</pre>';
 //            die();
             
-            $model->setData($data);
+            $eventModel->setData($data);
             
             $this->_eventManager->dispatch(
-                    'events_event_prepare_save', ['event' => $model, 'request' => $this->getRequest()]
+                    'events_event_prepare_save', ['event' => $eventModel, 'request' => $this->getRequest()]
             );
             try {
-                $model->save(); 
+                $eventModel->save(); 
                 $this->messageManager->addSuccess(__('You saved this Event.')); 
                 $this->_objectManager->get('Magento\Backend\Model\Session')->setFormData(false); 
                 if ($this->getRequest()->getParam('back')) {
-                    return $resultRedirect->setPath('*/*/edit', ['event_id' => $model->getId(), '_current' => true]);
+                    return $resultRedirect->setPath('*/*/edit', ['event_id' => $id, '_current' => true]);
                 } 
                 return $resultRedirect->setPath('*/*/');
             } catch (\Magento\Framework\Exception\LocalizedException $e) {

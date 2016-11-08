@@ -10,8 +10,7 @@ class CalendarLanguage implements \Magento\Framework\Option\ArrayInterface
     public function toOptionArray()
     {
         $options = [];
-        $options[] = ['value' => 'ge', 'label' => __('German')];
-        $options[] = ['value' => 'gr', 'label' => __('Greek')];
+        $options[] = ['value' => 'de', 'label' => __('German')];
         $options[] = ['value' => 'en', 'label' => __('English')];
         $options[] = ['value' => 'fr', 'label' => __('French')];
         $options[] = ['value' => 'it', 'label' => __('Italian')];

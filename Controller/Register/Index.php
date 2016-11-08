@@ -1,9 +1,9 @@
 <?php
-namespace Magebuzz\Events\Controller\Index;
+namespace Magebuzz\Events\Controller\Register;
 
 use Magento\Framework\App\Action\Action;
 
-class Register extends Action
+class Index extends Action
 {
     protected $_coreRegistry = null;
     protected $resultPageFactory;
@@ -36,7 +36,7 @@ class Register extends Action
             return $resultPage;
         } else {
             $resultRedirect = $this->resultRedirectFactory->create();
-            return $resultRedirect->setPath('*/*/index');
+            return $resultRedirect->setPath('*/index/index');
         }
         
     }

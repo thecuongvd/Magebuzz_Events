@@ -10,6 +10,7 @@ class Events extends \Magento\Framework\View\Element\Template  {
     protected $_eventsHelper;
     protected $_scopeConfig;
     protected $_storeManager;
+    protected $_date;
 
     public function __construct(
     \Magento\Framework\View\Element\Template\Context $context, 
@@ -19,6 +20,7 @@ class Events extends \Magento\Framework\View\Element\Template  {
             \Magebuzz\Events\Helper\Data $eventsHelper,
             \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig,
             \Magento\Store\Model\StoreManagerInterface $storeManager,
+            \Magento\Framework\Stdlib\DateTime\DateTime $date, 
             array $data = []
     ) {
         parent::__construct($context, $data);
@@ -28,6 +30,7 @@ class Events extends \Magento\Framework\View\Element\Template  {
         $this->_eventsHelper = $eventsHelper;
         $this->_scopeConfig = $scopeConfig;
         $this->_storeManager = $storeManager;
+        $this->_date = $date;
     }
 
     public function getIdentities() {
@@ -57,10 +60,19 @@ class Events extends \Magento\Framework\View\Element\Template  {
                 ->setOrder('start_time', 'ASC')
                 ->setStoreFilter($storeIds);
 
-        $catId = $this->getCurrentCatId();
+        $catId = $this->getFilterCatId();
+        $eventSearch = $this->getEventSearch();
+        $locationSearch = $this->getLocationSearch();
         if ($catId) {
             $collection->setCatFilter($catId);
         }
+        if ($eventSearch) {
+            $collection->setEventNameFilter($eventSearch);
+        }
+        if ($locationSearch) {
+            $collection->setLocationFilter($locationSearch);
+        }
+        
         return $collection;
     }
     
@@ -80,11 +92,12 @@ class Events extends \Magento\Framework\View\Element\Template  {
                     'url' => $this->getEventUrl($event),
                     'avatar_url' => $this->getAvatarUrl($event),
                     'reg_deadline' => $event->getRegistrationDeadline(),
+                    'location' => $event->getLocation(),
                     'description' => $event->getDescription(),
                 ); 
 
-                $item['start'] = $event->getStartTime();
-                $item['end'] = $event->getEndTime();
+                $item['start'] = date('Y-m-d H:i:s', $this->_date->timestamp($event->getStartTime()) + $this->_date->getGmtOffset());
+                $item['end'] = date('Y-m-d H:i:s', $this->_date->timestamp($event->getEndTime()) + $this->_date->getGmtOffset());
                 $item['allDay'] = false;
                 if ($event->getColor() != '') {
                     $item['color'] = '#' . $event->getColor();
@@ -123,13 +136,24 @@ class Events extends \Magento\Framework\View\Element\Template  {
         return $this->_scopeConfig->getValue($path,\Magento\Store\Model\ScopeInterface::SCOPE_STORE);
     }
     
+    public function getFormattedTime($time) {
+        $timestamp = $this->_date->timestamp($time);
+        return date('Y, M d g:i A', $timestamp);
+    }
+    
     public function getCurrentStoreId() {
         return $this->_storeManager->getStore(true)->getId();
         
     }
     
-    public function getCurrentCatId() {
-        return $this->_coreRegistry->registry('current_event_cat_id');
+    public function getFilterCatId() {
+        return $this->_coreRegistry->registry('filter_cat_id');
+    }
+    public function getEventSearch() {
+        return $this->_coreRegistry->registry('event_search');
+    }
+    public function getLocationSearch() {
+        return $this->_coreRegistry->registry('location_search');
     }
     
     public function getCurrentMode() {
@@ -147,7 +171,8 @@ class Events extends \Magento\Framework\View\Element\Template  {
     
     public function getEventCategories() {
         $storeIds = [0, $this->getCurrentStoreId()];
-        $collection = $this->_categoryFactory->create()->getCollection()->addFieldToFilter('status', 1)
+        $collection = $this->_categoryFactory->create()->getCollection()
+                ->addFieldToFilter('status', 1)
                 ->setStoreFilter($storeIds);
         return $collection;
     }

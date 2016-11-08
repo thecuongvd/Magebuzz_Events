@@ -14,6 +14,8 @@ class Event extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb {
     protected $_participantTable;
     protected $_productEventTable;
     protected $_productFactory;
+    protected $_favoriteTable;
+    protected $_customerTable;
     protected $_date;
 
     public function __construct(
@@ -33,6 +35,8 @@ class Event extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb {
         $this->_categoryEventTable = $this->getTable('mb_event_category');
         $this->_participantTable = $this->getTable('mb_participants');
         $this->_productEventTable = $this->getTable('mb_event_product');
+        $this->_favoriteTable = $this->getTable('mb_event_favorite');
+        $this->_customerTable = $this->getTable('customer_entity');
     }
 
     protected function _afterLoad(AbstractModel $object) {
@@ -136,38 +140,50 @@ class Event extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb {
 
     public function getStoreIds($eventId) {
         $select = $this->getConnection()->select()->from(
-                        $this->getTable($this->_eventStoreTable), 'store_id'
-                )->where(
-                'event_id = ?', $eventId
-        );
+                        $this->getTable($this->_eventStoreTable), 'store_id')
+                ->where('event_id = ?', $eventId);
         return $this->getConnection()->fetchCol($select);
     }
 
     public function getCategoryIds($eventId) {
         $select = $this->getConnection()->select()->from(
-                        $this->getTable($this->_categoryEventTable), 'category_id'
-                )->where(
-                'event_id = ?', $eventId
-        );
+                        $this->getTable($this->_categoryEventTable), 'category_id')
+                ->where('event_id = ?', $eventId);
         return $this->getConnection()->fetchCol($select);
     }
 
     public function getParticipantIds($eventId) {
         $select = $this->getConnection()->select()->from(
-                        $this->getTable($this->_participantTable), 'participant_id'
-                )->where(
-                'event_id = ?', $eventId
-        );
+                        $this->getTable($this->_participantTable), 'participant_id')
+                ->where('event_id = ?', $eventId);
         return $this->getConnection()->fetchCol($select);
     }
     
     public function getProductId($eventId) {
         $select = $this->getConnection()->select()->from(
-                        $this->getTable($this->_productEventTable), 'entity_id'
-                )->where(
-                'event_id = ?', $eventId
-        );
+                        $this->getTable($this->_productEventTable), 'entity_id')
+                ->where('event_id = ?', $eventId);
         return $this->getConnection()->fetchOne($select);
+    }
+    
+    public function getFavoritedCustomerIds($eventId) {
+        $select = $this->getConnection()->select()->from(
+                        $this->getTable($this->_favoriteTable), 'customer_id')
+                ->where('event_id = ?', $eventId);
+        return $this->getConnection()->fetchCol($select);
+    }
+    
+        
+    public function addFavorite($eventId, $customerId) {
+        $connection = $this->getConnection();
+        $favInsert = ['event_id' => $eventId, 'customer_id' => $customerId];
+        $connection->insert($this->_favoriteTable, $favInsert);
+    }
+    
+    public function removeFavorite($eventId, $customerId) {
+        $connection = $this->getConnection();
+        $favCondition = ['event_id=?' => $eventId, 'customer_id=?' => $customerId];
+        $connection->delete($this->_favoriteTable, $favCondition);
     }
 
 }

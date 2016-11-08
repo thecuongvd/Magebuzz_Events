@@ -22,13 +22,22 @@ class Index extends Action
     
     public function execute()
     {  
-        $catId = (int) $this->getRequest()->getParam('c', false);
         $viewMode = $this->getRequest()->getParam('mode');
-        if ($catId) {
-            $this->_coreRegistry->register('current_event_cat_id', $catId);
-        }
         if ($viewMode) {
             $this->_coreRegistry->register('current_view_mode', $viewMode);
+        }
+        
+        $catId = (int) $this->getRequest()->getPost('category', false);
+        if ($catId) {
+            $this->_coreRegistry->register('filter_cat_id', $catId);
+        }
+        $eventSearch = $this->getRequest()->getPost('event', false);
+        if ($eventSearch) {
+            $this->_coreRegistry->register('event_search', $eventSearch);
+        }
+        $locationSearch = $this->getRequest()->getPost('location', false);
+        if ($locationSearch) {
+            $this->_coreRegistry->register('location_search', $locationSearch);
         }
         
         $resultPage = $this->resultPageFactory->create();

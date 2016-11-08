@@ -13,6 +13,7 @@ use Magento\Backend\Block\Widget\Tab\TabInterface;
 class Main extends Generic implements TabInterface {
 
     protected $_systemStore;
+    protected $_eventsHelper;
     protected $defaultColor = '3366CC';
 
     public function __construct(
@@ -20,9 +21,11 @@ class Main extends Generic implements TabInterface {
             \Magento\Framework\Registry $registry, 
             \Magento\Framework\Data\FormFactory $formFactory, 
             \Magento\Store\Model\System\Store $systemStore, 
+            \Magebuzz\Events\Helper\Data $eventsHelper,
             array $data = []
     ) {
         $this->_systemStore = $systemStore;
+        $this->_eventsHelper = $eventsHelper;
         parent::__construct($context, $registry, $formFactory, $data);
     }
 
@@ -43,7 +46,7 @@ class Main extends Generic implements TabInterface {
     }
 
     protected function _prepareForm() {
-        $model = $this->_coreRegistry->registry('events_event');
+        $eventModel = $this->_coreRegistry->registry('events_event');
         
         /** @var \Magento\Framework\Data\Form $form */
         $form = $this->_formFactory->create();
@@ -53,7 +56,7 @@ class Main extends Generic implements TabInterface {
                 'base_fieldset', ['legend' => __('General Information'), 'class' => 'fieldset-wide']
         );
 
-        if ($model->getId()) {
+        if ($eventModel->getId()) {
             $fieldset->addField('event_id', 'hidden', ['name' => 'event_id']);
         }
 
@@ -79,6 +82,16 @@ class Main extends Generic implements TabInterface {
             'title' => __('Number of Participant'),
             'required' => true,
             'class' => __('validate-zero-or-greater')]
+        );
+        $fieldset->addField(
+            'avatar',
+            'file',
+            [
+                'name'  => 'avatar',
+                'label' => __('Event Avatar'),
+                'title'  => __('Event Avatar'),
+                'after_element_html' => $this->getImageHtml('avatar', $eventModel->getAvatar(), 'magebuzz/events/event/avatar/')
+            ]
         );
 
         $dateFormat = $this->_localeDate->getDateFormat(\IntlDateFormatter::SHORT);
@@ -142,7 +155,7 @@ class Main extends Generic implements TabInterface {
                     'Magento\Backend\Block\Store\Switcher\Form\Renderer\Fieldset\Element'
             );
             $field->setRenderer($renderer);
-            $model->setSelectStores($model->getStores());
+            $eventModel->setSelectStores($eventModel->getStores());
         } else {
             $fieldset->addField(
                     'select_stores', 'hidden', [
@@ -150,7 +163,7 @@ class Main extends Generic implements TabInterface {
                         'value' => $this->_storeManager->getStore(true)->getId()
                     ]
             );
-            $model->setSelectStores($this->_storeManager->getStore(true)->getId());
+            $eventModel->setSelectStores($this->_storeManager->getStore(true)->getId());
         }
         
         $fieldset->addField(
@@ -176,16 +189,28 @@ class Main extends Generic implements TabInterface {
             'class' => __('color')]
         );
 
-        if (!$model->getId()) {                         //Add new
-            $model->setData('status', '1');
-            $model->setData('allow_register', '1');
+        if (!$eventModel->getId()) {                         //Add new
+            $eventModel->setData('status', '1');
+            $eventModel->setData('allow_register', '1');
         }
-        if (empty($model->getData('color'))) {
-            $model->setData('color', $this->defaultColor);
+        if (empty($eventModel->getData('color'))) {
+            $eventModel->setData('color', $this->defaultColor);
         }
-        $form->setValues($model->getData());
+        $form->setValues($eventModel->getData());
         $this->setForm($form);
         return parent::_prepareForm();
+    }
+    
+    protected function getImageHtml($field, $imageName, $dir)
+    {
+        $html = '';
+        if ($imageName) {
+            $html .= '<p style="margin-top: 5px">';
+            $html .= '<image style="min-width:100px;max-width:50%;" src="' . $this->_eventsHelper->getImageUrl($imageName, $dir) . '" />';
+            $html .= '<input type="hidden" value="' . $imageName . '" name="old_' . $field . '"/>';
+            $html .= '</p>';
+        }
+        return $html;
     }
 
 }

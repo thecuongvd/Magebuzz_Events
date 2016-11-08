@@ -1,0 +1,52 @@
+<div id="wishlist">
+    <?php
+    $events = $block->getFavoriteEventCollection();
+    if ($events) {
+        ?>
+        <table class="event-wishlist-table table table-striped table-hover">
+            <thead>
+            <th>No.</th>
+            <th>Event</th>
+            <th>Description</th>
+            <th>Status</th>
+            <th colspan="3">Action</th>
+        </thead>
+        <tbody>
+            <?php
+            $no = 0;
+
+            foreach ($events as $event) {
+                $no++;
+                $eventId = $event->getId();
+                $description = substr($event->getDescription(), 0, 100);
+                if (strlen($event->getDescription()) > 100) {
+                    $description .= '.....';
+                }
+                $status = ($event->getStatus() == 1) ? 'Enable' : 'Disable';
+                ?>
+                <tr>
+                    <td><?php echo $no; ?></td>
+                    <td>
+                        <img src="<?php echo $block->getAvatarUrl($event); ?>" width="100px" height="100px" />
+                        <p><strong><?php echo $event->getTitle(); ?></strong></p>
+                    </td>
+                    <td><?php echo $description; ?></td>
+                    <td><?php echo $status; ?></td>
+                    <td><a href="<?php echo $block->getUrl('events/index/view', ['event_id' => $eventId]); ?>">View</a></td>
+                    <td><a href="<?php echo $block->getUrl('events/register/index', ['event_id' => $eventId]); ?>">Register</a></td>
+                    <td><a href="<?php echo $block->getUrl('events/wishlist/delete', ['event_id' => $eventId]); ?>">Delete</a></td>
+                </tr>
+                <?php
+            }
+            ?>
+        </tbody>
+        </table>
+        <?php
+    }
+    else {
+        ?>
+    <h3>You must log in first</h3>
+    <?php
+    }
+    ?>
+</div>
