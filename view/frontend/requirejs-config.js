@@ -3,11 +3,14 @@
  */
 
 var config = {
-    map: {
-        '*': {
-            fullcalendar: 'Magebuzz_Events/js/fullcalendar',
-            moment: 'Magebuzz_Events/js/moment.min',
-            fancybox: 'Magebuzz_Events/js/jquery.fancybox',
+    paths: {
+        fullcalendar: 'Magebuzz_Events/js/fullcalendar',
+        moment: 'Magebuzz_Events/js/moment.min',
+        fancybox: 'Magebuzz_Events/js/jquery.fancybox',
+    },
+    shim: {
+        'fancybox': {
+            deps: ['jquery']
         }
     }
 };

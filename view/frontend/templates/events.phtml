@@ -1,9 +1,8 @@
 <?php
 $eventsJson = $block->getEventJson();
-$events = json_decode($eventsJson, true);
+$events = $block->getEventCollection();
 ?>
-
-<div class="event-index">
+<div class="event-index page-products page-events">
     <script type='text/javascript'>
         function viewmode(mode) {
             var url = '<?php echo $block->getUrl('events/index/index'); ?>';
@@ -36,7 +35,7 @@ $events = json_decode($eventsJson, true);
                     <?php } ?>
                 </select>
             <?php } ?>
-            <button class="button search-button" type="submit" title="Search"><?php echo __('Search'); ?></button>
+            <button class="search-button action primary" type="submit" title="Search"><?php echo __('Search'); ?></button>
         </form>
     </div>
     
@@ -55,37 +54,37 @@ $events = json_decode($eventsJson, true);
     <?php } ?>
 
     <?php if (count($events)) { ?>
-        <!--  calendar mode -->
         <?php if ($block->getCurrentMode() == 'calendar') { ?>
+        <!--  calendar mode -->
         <div class="class-calendar" id="calendar">
             <!--Quickview-->
             <?php foreach ($events as $event) { ?>
-                <div class="event-quickview hidden" data-event_id="<?php echo $event['id'] ?>">
+                <div class="event-quickview" data-event_id="<?php echo $event->getId() ?>">
                     <div class="event-image">
-                        <a href="<?php echo $event['url']; ?>" title="<?php echo $event['title']; ?>">
-                            <img src="<?php echo $event['avatar_url']; ?>" alt="<?php echo $event['title']; ?>" />
+                        <a href="<?php echo $block->getEventUrl($event); ?>" title="<?php echo $event->getTitle(); ?>">
+                            <img src="<?php echo $block->getAvatarUrl($event); ?>" alt="<?php echo $event->getTitle(); ?>" />
                         </a>
                     </div>
                     <div class="event-info">
-                        <h4 class="event-title">
-                            <a href="<?php echo $event['url']; ?>" title="<?php echo $event['title']; ?>"><?php echo $event['title']; ?></a>
-                        </h4>
+                        <p class="event-title">
+                            <a href="<?php echo $block->getEventUrl($event); ?>" title="<?php echo $event->getTitle(); ?>"><?php echo $event->getTitle(); ?></a>
+                        </p>
                         <div class="desc">
                             <div class="event-time">
                                 <label><?php echo __('Time: ') ?></label>
-                                <?php echo $block->getFormattedTime($event['start']) . ' - ' . $block->getFormattedTime($event['end']); ?>
+                                <?php echo $block->getFormattedTime($block->convertTimeToLocal($event->getStartTime())) . ' - ' . $block->getFormattedTime($block->convertTimeToLocal($event->getStartTime())); ?>
                             </div>
                             <div class="event-location">
                                 <label><?php echo __('Location: ') ?></label>
-                                <?php echo $event['location']; ?>
+                                <?php echo $event->getLocation(); ?>
                             </div>
                             <div class="event-desc std">
                                 <label><?php echo __('Description: ') ?></label>
-                                <?php echo $event['description']; ?>
+                                <?php echo $block->getShortDescription($event); ?>
                             </div>
                         </div>
                         <div class="link-see-more">
-                            <a href="<?php echo $event['url']; ?>" title="<?php echo $event['title']; ?>" class="link-learn"><?php echo __('See More') ?></a>
+                            <a href="<?php echo $block->getAvatarUrl($event); ?>" title="<?php echo $event->getTitle(); ?>" class="link-learn"><?php echo __('See More') ?></a>
                         </div>
                     </div>
                 </div>
@@ -134,62 +133,59 @@ $events = json_decode($eventsJson, true);
                         });
                         
                         function eventMouseoverFunc(event, jsEvent, view ) {
-                            $('.event-quickview[data-event_id="'+event.id+'"]').css({left:jsEvent.clientX,top:jsEvent.clientY}).removeClass('hidden');
+                            $('.event-quickview[data-event_id="'+event.id+'"]').css({left:jsEvent.clientX,top:jsEvent.clientY}).show();
                         }
                         function eventMouseoutFunc(event, jsEvent, view ) {
-                            $('.event-quickview[data-event_id="'+event.id+'"]').addClass('hidden');
+                            $('.event-quickview[data-event_id="'+event.id+'"]').hide();
                         }
-                        $('.event-quickview').hover(function() {$(this).removeClass('hidden')}, function() {$(this).addClass('hidden')});
+                        $('.event-quickview').hover(function() {$(this).show()}, function() {$(this).hide()});
                     });
                 });
             </script>
             
         <?php } else { ?>
             <!-- list mode -->
-            <div class="toolbar events"><?php echo $block->getPagerHtml(); ?></div>
-            <div class="events-list">
-                <?php $iterator = 0; ?>
-                <div class="events-list" id="events-list">
+            <div class="toolbar toolbar-products"><?php echo $block->getPagerHtml(); ?></div>
+            <div class="products wrapper grid products-grid events-list">
+                <ol class="products list items product-items" id="events-list">
                     <?php foreach ($events as $event) { ?>
-                        <div class="col-xs-12 col-sm-6 col-md-4 item<?php
-                        if (++$iterator == count($events)) {
-                            echo ' last';
-                        }
-                        ?>">
-                            <div class="event-image">
-                                <a href="<?php echo $event['url']; ?>" title="<?php echo $event['title']; ?>">
-                                    <img src="<?php echo $event['avatar_url']; ?>" alt="<?php echo $event['title']; ?>" />
+                        <li class="item product product-item" style="margin-left:0;">
+                            <div class="product-item-info" data-container="product-grid">
+                                <a href="<?php echo $block->getEventUrl($event); ?>" class="product photo product-item-photo" title="<?php echo $event->getTitle(); ?>">
+                                    <span class="product-image-container" style="width:240px;">
+                                        <span class="product-image-wrapper" style="padding-bottom: 75%;">
+                                            <img src="<?php echo $block->getAvatarUrl($event); ?>" class="product-image-photo" alt="<?php echo $event->getTitle(); ?>" />
+                                        </span>
+                                    </span>
                                 </a>
-                            </div>
-                            <div class="event-info">
-                                <h3 class="event-title">
-                                    <a href="<?php echo $event['url']; ?>" title="<?php echo $event['title']; ?>"><?php echo $event['title']; ?></a>
-                                </h3>
-                                <div class="desc">
-                                    <div class="event-time">
-                                        <label><?php echo __('Time: ') ?></label>
-                                        <?php echo $block->getFormattedTime($event['start']) . ' - ' . $block->getFormattedTime($event['end']); ?>
+                                <div class="product details product-item-details">
+                                    <h3 class="event-title">
+                                        <a href="<?php echo $block->getEventUrl($event); ?>" title="<?php echo $event->getTitle(); ?>"><?php echo $event->getTitle(); ?></a>
+                                    </h3>
+                                    <div class="desc">
+                                        <div class="event-time">
+                                            <label><?php echo __('Time: ') ?></label>
+                                            <?php echo $block->getFormattedTime($block->convertTimeToLocal($event->getStartTime())) . ' - ' . $block->getFormattedTime($block->convertTimeToLocal($event->getStartTime())); ?>
+                                        </div>
+                                        <div class="event-location">
+                                            <label><?php echo __('Location: ') ?></label>
+                                            <?php echo $event->getLocation(); ?>
+                                        </div>
+                                        <div class="event-desc std">
+                                            <label><?php echo __('Description: ') ?></label>
+                                            <?php echo $block->getShortDescription($event); ?>
+                                        </div>
                                     </div>
-                                    <div class="event-location">
-                                        <label><?php echo __('Location: ') ?></label>
-                                        <?php echo $event['location']; ?>
-                                    </div>
-                                    <div class="event-desc std">
-                                        <label><?php echo __('Description: ') ?></label>
-                                        <?php echo $event['description']; ?>
+                                    <div class="link-see-more">
+                                        <a href="<?php echo $block->getEventUrl($event); ?>" title="<?php echo $event->getTitle(); ?>" class="link-learn"><?php echo __('See More') ?></a>
                                     </div>
                                 </div>
-                                <div class="link-see-more">
-                                    <a href="<?php echo $event['url']; ?>" title="<?php echo $event['title']; ?>" class="link-learn"><?php echo __('See More') ?></a>
-                                </div>
                             </div>
-                        </div>
+                        </li>
                     <?php } ?>
-                </div>
+                </ol>
             </div>
-            <div class="toolbar-bottom">
-                <div class="toolbar events"><?php echo $block->getPagerHtml(); ?></div>
-            </div>
+            <div class="toolbar toolbar-products"><?php echo $block->getPagerHtml(); ?></div>
 
         <?php } ?>	      
     <?php } else { ?>

@@ -11,6 +11,7 @@ class Events extends \Magento\Framework\View\Element\Template  {
     protected $_scopeConfig;
     protected $_storeManager;
     protected $_date;
+    protected $_events;
 
     public function __construct(
     \Magento\Framework\View\Element\Template\Context $context, 
@@ -31,28 +32,39 @@ class Events extends \Magento\Framework\View\Element\Template  {
         $this->_scopeConfig = $scopeConfig;
         $this->_storeManager = $storeManager;
         $this->_date = $date;
+        
+        $this->_events = $this->getEventCollection();
     }
 
     public function getIdentities() {
         return [\Magebuzz\Events\Model\Event::CACHE_TAG . '_' . 'list'];
     }
+
+
     
     protected function _prepareLayout()
     {
         parent::_prepareLayout();
-        $pager = $this->getLayout()->createBlock('Magento\Theme\Block\Html\Pager','events.pager');
-//        $pager->setLimit(10);
-        $pager->setAvailableLimit(array(10 => 10, 20 => 20, 50 => 50, 100 => 100));
-        $pager->setCollection($this->_getEventCollection());
-        $this->setChild('pager', $pager);// set pager block in layout
+        if ($this->_events) {
+            $pager = $this->getLayout()->createBlock('Magento\Theme\Block\Html\Pager','events.event.index.pager')
+                ->setAvailableLimit([5 => 5, 10 => 10, 20 => 20, 50 => 50, 100 => 100])
+                ->setCollection($this->_events);
+            $this->setChild('pager', $pager);
+            $this->_events->load();
+        }
         return $this;
+        
     }
 
     public function getPagerHtml() {
         return $this->getChildHtml('pager');
     }
 
-    protected function _getEventCollection() {
+    public function getEventCollection() {
+        $page=($this->getRequest()->getParam('p'))? $this->getRequest()->getParam('p') : 1;
+        $pageSize=($this->getRequest()->getParam('limit'))? $this->getRequest()->getParam('limit') : 5;
+
+
         $storeIds = [0, $this->getCurrentStoreId()];
         
         $collection = $this->_eventFactory->create()->getCollection()
@@ -73,6 +85,9 @@ class Events extends \Magento\Framework\View\Element\Template  {
             $collection->setLocationFilter($locationSearch);
         }
         
+        $collection->setPageSize($pageSize);
+        $collection->setCurPage($page);
+        
         return $collection;
     }
     
@@ -81,7 +96,7 @@ class Events extends \Magento\Framework\View\Element\Template  {
      */
     public function getEventJson() {
         $defaultColor = '#3366CC';
-        $collection = $this->_getEventCollection();
+        $collection = $this->_events;
         $results = array();
 
         if (count($collection)) {
@@ -93,11 +108,11 @@ class Events extends \Magento\Framework\View\Element\Template  {
                     'avatar_url' => $this->getAvatarUrl($event),
                     'reg_deadline' => $event->getRegistrationDeadline(),
                     'location' => $event->getLocation(),
-                    'description' => $event->getDescription(),
+                    'description' => $this->getShortDescription($event),
                 ); 
 
-                $item['start'] = date('Y-m-d H:i:s', $this->_date->timestamp($event->getStartTime()) + $this->_date->getGmtOffset());
-                $item['end'] = date('Y-m-d H:i:s', $this->_date->timestamp($event->getEndTime()) + $this->_date->getGmtOffset());
+                $item['start'] = date('Y-m-d H:i:s', $this->convertTimeToLocal($event->getStartTime()));
+                $item['end'] = date('Y-m-d H:i:s', $this->convertTimeToLocal($event->getEndTime()));
                 $item['allDay'] = false;
                 if ($event->getColor() != '') {
                     $item['color'] = '#' . $event->getColor();
@@ -132,8 +147,20 @@ class Events extends \Magento\Framework\View\Element\Template  {
         return $avatarUrl;
     }
     
+    public function getShortDescription($event) {
+        $description = substr($event->getDescription(), 0, 100);
+        if (strlen($event->getDescription()) > 100) {
+            $description .= '.....';
+        }
+        return $description;
+    }
+    
     public function getScopeConfig($path) {
         return $this->_scopeConfig->getValue($path,\Magento\Store\Model\ScopeInterface::SCOPE_STORE);
+    }
+    
+    public function convertTimeToLocal($time) {
+        return $this->_date->timestamp($time) + $this->_date->getGmtOffset();
     }
     
     public function getFormattedTime($time) {

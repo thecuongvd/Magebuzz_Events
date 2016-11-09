@@ -15,19 +15,22 @@ class Save extends \Magento\Backend\App\Action {
     protected $_logger;
     
     protected $jsHelper;
+    protected $_date;
 
     public function __construct(
         Action\Context $context,
         \Magento\Framework\Filesystem $fileSystem,
         \Magento\MediaStorage\Model\File\UploaderFactory $fileUploaderFactory,
         \Psr\Log\LoggerInterface $logger,
-        \Magento\Backend\Helper\Js $jsHelper
+        \Magento\Backend\Helper\Js $jsHelper,
+            \Magento\Framework\Stdlib\DateTime\DateTime $date
     ) {
         parent::__construct($context);
         $this->_fileSystem = $fileSystem;
         $this->_fileUploaderFactory = $fileUploaderFactory;
         $this->_logger = $logger;
         $this->jsHelper = $jsHelper;
+        $this->_date = $date;
     }
 
     /**
@@ -57,22 +60,22 @@ class Save extends \Magento\Backend\App\Action {
             }
 
             //Process time
-            if ($data['start_time'] >= $data['end_time'] || $data['registration_deadline'] >= $data['end_time']) {
-                if ($data['start_time'] >= $data['end_time']) {
-                    $this->messageManager->addError( __('End Time must be larger than the Start Time.'));
-                } 
-                if ($data['registration_deadline'] >= $data['end_time']) {
-                    $this->messageManager->addError( __('Registration Deadline must be earlier than End Time'));
-                }
-                $this->_getSession()->setFormData($data);
-                if ($id) {
-                    return $resultRedirect->setPath('*/*/edit', ['event_id' => $id]);
-                }
-                else {
-                    return $resultRedirect->setPath('*/*/new');
-                }
-                return $resultRedirect->setPath('*/*/', ['_current' => true]);
-            }
+//            if ($startTime >= $endTime || $registrationDeadline >= $endTime) {
+//                if ($startTime >= $endTime) {
+//                    $this->messageManager->addError( __('End Time must be later than Start Time.'));
+//                } 
+//                if ($data['registration_deadline'] && $data['registration_deadline'] >= $data['end_time']) {
+//                    $this->messageManager->addError( __('Registration Deadline must be earlier than End Time'));
+//                }
+//                $this->_getSession()->setFormData($data);
+//                if ($id) {
+//                    return $resultRedirect->setPath('*/*/edit', ['event_id' => $id]);
+//                }
+//                else {
+//                    return $resultRedirect->setPath('*/*/new');
+//                }
+//                return $resultRedirect->setPath('*/*/', ['_current' => true]);
+//            }
             $localeDate = $this->_objectManager->get('Magento\Framework\Stdlib\DateTime\TimezoneInterface');
             if ($data['start_time']) {
                 $data['start_time'] = $localeDate->date($data['start_time'])->setTimezone(new \DateTimeZone('UTC'))->format('Y-m-d H:i:s');

@@ -7,7 +7,7 @@
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Cron:etc/crontab.xsd">
     <group id="default">
         <job name="events_auto_change_status" instance="Magebuzz\Events\Cron\AutoChangeStatus" method="execute">
-            <schedule>20 7 * * *</schedule>
+            <schedule>* 7 * * *</schedule>
         </job>
     </group>
 </config>
