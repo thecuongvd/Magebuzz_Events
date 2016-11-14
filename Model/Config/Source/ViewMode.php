@@ -9,6 +9,6 @@ class ViewMode implements \Magento\Framework\Option\ArrayInterface
 
     public function toOptionArray()
     {
-        return [['value' => 'list', 'label' => __('List')], ['value' => 'calendar', 'label' => __('Calendar')], ['value' => 'list-calendar', 'label' => __('List(default)/Calendar')], ['value' => 'calendar-list', 'label' => __('Calendar(default)/List')]];
+        return [['value' => 'grid', 'label' => __('Grid')], ['value' => 'calendar', 'label' => __('Calendar')], ['value' => 'grid-calendar', 'label' => __('Grid(default)/Calendar')], ['value' => 'calendar-grid', 'label' => __('Calendar(default)/Grid')]];
     }
 }

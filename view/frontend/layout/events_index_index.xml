@@ -1,4 +1,5 @@
 <?xml version="1.0"?>
+ <!--@copyright Copyright (c) 2016 www.magebuzz.com-->
 <page layout="2columns-left" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd">
     <head>
         <css src="Magebuzz_Events::css/fullcalendar.css"/>
@@ -6,7 +7,7 @@
     </head>
     <body>
         <referenceContainer name="content">
-            <block class="Magebuzz\Events\Block\Events" name="events_index_index" template="events.phtml" />
+            <block class="Magebuzz\Events\Block\Events" name="events_index_index" template="events.phtml" cacheable="false" />
         </referenceContainer>
         <move element="page.main.title" destination="content" before="-"/>
     </body>

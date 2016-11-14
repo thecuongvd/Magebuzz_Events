@@ -16,7 +16,7 @@ class CalendarLanguage implements \Magento\Framework\Option\ArrayInterface
         $options[] = ['value' => 'it', 'label' => __('Italian')];
         $options[] = ['value' => 'ru', 'label' => __('Russian')];
         $options[] = ['value' => 'vi', 'label' => __('Vietnam')];
-        
+
         return $options;
     }
 }

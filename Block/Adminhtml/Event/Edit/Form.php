@@ -2,9 +2,9 @@
 /**
  * @copyright Copyright (c) 2016 www.magebuzz.com
  */
- 
+
 namespace Magebuzz\Events\Block\Adminhtml\Event\Edit;
- 
+
 use Magento\Backend\Block\Widget\Form as WidgetForm;
 
 /**
@@ -23,7 +23,7 @@ class Form extends \Magento\Backend\Block\Widget\Form\Generic
         $this->setId('event_form');
         $this->setTitle(__('Event Information'));
     }
- 
+
     /**
      * Prepare form
      *

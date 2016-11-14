@@ -5,8 +5,8 @@
  */
 namespace Magebuzz\Events\Ui\Component\Listing\Columns;
 
-use Magento\Framework\View\Element\UiComponentFactory;
 use Magento\Framework\View\Element\UiComponent\ContextInterface;
+use Magento\Framework\View\Element\UiComponentFactory;
 
 class Price extends \Magento\Ui\Component\Listing\Columns\Column
 {
@@ -27,10 +27,11 @@ class Price extends \Magento\Ui\Component\Listing\Columns\Column
         \Magento\Store\Model\StoreManagerInterface $storeManager,
         array $components = [],
         array $data = []
-    ) {
-        parent::__construct($context, $uiComponentFactory, $components, $data); 
+    )
+    {
+        parent::__construct($context, $uiComponentFactory, $components, $data);
         $this->localeCurrency = $localeCurrency;
-        $this->storeManager = $storeManager;  
+        $this->storeManager = $storeManager;
     }
 
     /**

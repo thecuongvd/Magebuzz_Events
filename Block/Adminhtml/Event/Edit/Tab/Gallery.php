@@ -22,7 +22,8 @@ class Gallery extends Generic implements TabInterface
         \Magento\Store\Model\System\Store $systemStore,
         \Magebuzz\Events\Helper\Data $eventsHelper,
         array $data = []
-    ) {
+    )
+    {
         $this->_systemStore = $systemStore;
         $this->_eventsHelper = $eventsHelper;
         parent::__construct($context, $registry, $formFactory, $data);
@@ -65,13 +66,13 @@ class Gallery extends Generic implements TabInterface
             'avatar',
             'file',
             [
-                'name'  => 'avatar',
+                'name' => 'avatar',
                 'label' => __('Event Avatar'),
-                'title'  => __('Event Avatar'),
+                'title' => __('Event Avatar'),
                 'after_element_html' => $this->getImageHtml('avatar', $eventModel->getAvatar(), 'magebuzz/events/event/avatar/')
             ]
         );
-        
+
 //        $fieldset->addField(
 //            'gallery',
 //            'file',
@@ -81,9 +82,9 @@ class Gallery extends Generic implements TabInterface
 //                'title'  => __('Images and Videos')
 //            ]
 //        );
-   
+
         $form->setValues($eventModel->getData());
-        
+
         $this->setForm($form);
         return parent::_prepareForm();
     }

@@ -39,7 +39,8 @@ class HeaderLink extends \Magento\Framework\View\Element\Html\Link
         \Magento\Framework\Module\Manager $moduleManager,
         \Magebuzz\Events\Helper\Data $eventsHelper,
         array $data = []
-    ) { 
+    )
+    {
         parent::__construct($context, $data);
         $this->_eventsHelper = $eventsHelper;
         $this->_moduleManager = $moduleManager;
@@ -77,8 +78,8 @@ class HeaderLink extends \Magento\Framework\View\Element\Html\Link
     protected function _toHtml()
     {
         if (!$this->_eventsHelper->isHeaderlinkEnabled() || !$this->_moduleManager->isOutputEnabled(
-            'Magebuzz_Events'
-        )
+                'Magebuzz_Events'
+            )
         ) {
             return '';
         }

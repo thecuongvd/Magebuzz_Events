@@ -21,7 +21,7 @@ class Thumbnail extends \Magento\Backend\Block\Widget\Grid\Column\Renderer\Abstr
         $imageHelper = $this->imageHelper->init($row, 'product_listing_thumbnail');
         $src = $imageHelper->getUrl();
         $alt = $this->getAlt($row) ?: $imageHelper->getLabel();
-        
+
         $imageHtml = "<img alt='$alt' src='$src' class='admin__control-thumbnail' />";
         return $imageHtml;
     }

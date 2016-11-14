@@ -1,4 +1,7 @@
 <?php
+/**
+ * @copyright Copyright (c) 2016 www.magebuzz.com
+ */
 namespace Magebuzz\Events\Controller\Index;
 
 use Magento\Framework\App\Action\Action;
@@ -8,32 +11,28 @@ class View extends Action
     protected $_coreRegistry = null;
     protected $resultPageFactory;
     protected $_eventFactory;
-    protected $_customerSession;
 
-    public function __construct(\Magento\Framework\App\Action\Context $context, 
-            \Magento\Framework\View\Result\PageFactory $resultPageFactory, 
-            \Magento\Framework\Registry $registry,
-            \Magebuzz\Events\Model\EventFactory $eventFactory,
-            \Magento\Customer\Model\Session $customerSession
-    ) { 
+    public function __construct(\Magento\Framework\App\Action\Context $context,
+                                \Magento\Framework\View\Result\PageFactory $resultPageFactory,
+                                \Magento\Framework\Registry $registry,
+                                \Magebuzz\Events\Model\EventFactory $eventFactory
+    )
+    {
         $this->resultPageFactory = $resultPageFactory;
         $this->_coreRegistry = $registry;
         $this->_eventFactory = $eventFactory;
-        $this->_customerSession = $customerSession;
-        parent::__construct($context); 
+        parent::__construct($context);
     }
-    
+
     public function execute()
-    {  
-        $eventId = (int) $this->getRequest()->getParam('event_id', false);
+    {
+        $eventId = (int)$this->getRequest()->getParam('event_id', false);
         if (!$eventId) {
             return false;
         }
         $event = $this->_eventFactory->create()->load($eventId);
-        
+
         if ($event->getId()) {
-            $currentCustomerId = $this->_customerSession->getCustomerId();
-            $this->_coreRegistry->register('current_customer_id', $currentCustomerId);
             $this->_coreRegistry->register('current_event', $event);
             $resultPage = $this->resultPageFactory->create();
             $resultPage->getConfig()->getTitle()->set($event->getTitle() . ' - ' . __('Events Calendar'));
@@ -42,7 +41,7 @@ class View extends Action
             $resultRedirect = $this->resultRedirectFactory->create();
             return $resultRedirect->setPath('*/*/index');
         }
-        
+
     }
 
 }

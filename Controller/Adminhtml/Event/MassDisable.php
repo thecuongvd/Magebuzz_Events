@@ -1,18 +1,22 @@
 <?php
-
+/**
+ * @copyright Copyright (c) 2016 www.magebuzz.com
+ */
 namespace Magebuzz\Events\Controller\Adminhtml\Event;
 
-use Magento\Backend\App\Action\Context;
-use Magento\Ui\Component\MassAction\Filter;
 use Magebuzz\Events\Model\ResourceModel\Event\CollectionFactory;
+use Magento\Backend\App\Action\Context;
 use Magento\Framework\Controller\ResultFactory;
+use Magento\Ui\Component\MassAction\Filter;
 
-class MassDisable extends \Magento\Backend\App\Action {
+class MassDisable extends \Magento\Backend\App\Action
+{
 
     protected $filter;
     protected $collectionFactory;
 
-    public function __construct(Context $context, Filter $filter, CollectionFactory $collectionFactory) {
+    public function __construct(Context $context, Filter $filter, CollectionFactory $collectionFactory)
+    {
         $this->filter = $filter;
         $this->collectionFactory = $collectionFactory;
         parent::__construct($context);
@@ -24,7 +28,8 @@ class MassDisable extends \Magento\Backend\App\Action {
      * @return \Magento\Backend\Model\View\Result\Redirect
      * @throws \Magento\Framework\Exception\LocalizedException|\Exception
      */
-    public function execute() {
+    public function execute()
+    {
         $collection = $this->filter->getCollection($this->collectionFactory->create());
 
         foreach ($collection as $item) {

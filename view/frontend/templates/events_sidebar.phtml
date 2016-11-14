@@ -1,4 +1,5 @@
-<?php if ($block->isShowUpcomingEvents()) { 
+ <!--@copyright Copyright (c) 2016 www.magebuzz.com-->
+<?php if ($block->isShowUpcomingEvents()) {
     $upcomingEventCollection = $block->getUpcomingEventCollection();
     ?>
     <div class="block block-events">
@@ -7,13 +8,14 @@
         </div>
         <div class="block-content">
             <?php if (count($upcomingEventCollection) > 0) { ?>
-            <ul class="upcoming-events">
-                <?php foreach ($upcomingEventCollection as $event) { ?>
-                <li class="item">
-                    <a href="<?php echo $block->getEventUrl($event) ?>" title="<?php echo $event->getTitle() ?>"><?php echo $event->getTitle() ?></a>
-                </li>
-                <?php } ?>
-            </ul>  
+                <ul class="upcoming-events">
+                    <?php foreach ($upcomingEventCollection as $event) { ?>
+                        <li class="item">
+                            <a href="<?php echo $block->getEventUrl($event) ?>"
+                               title="<?php echo $event->getTitle() ?>"><?php echo $event->getTitle() ?></a>
+                        </li>
+                    <?php } ?>
+                </ul>
             <?php } ?>
         </div>
     </div>

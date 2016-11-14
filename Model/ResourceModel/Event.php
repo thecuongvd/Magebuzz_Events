@@ -1,5 +1,7 @@
 <?php
-
+/**
+ * @copyright Copyright (c) 2016 www.magebuzz.com
+ */
 namespace Magebuzz\Events\Model\ResourceModel;
 
 use Magento\Framework\Model\AbstractModel;
@@ -7,7 +9,8 @@ use Magento\Framework\Model\AbstractModel;
 /**
  * Mysql resource
  */
-class Event extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb {
+class Event extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
+{
 
     protected $_eventStoreTable;
     protected $_categoryEventTable;
@@ -19,17 +22,49 @@ class Event extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb {
     protected $_date;
 
     public function __construct(
-    \Magento\Framework\Model\ResourceModel\Db\Context $context, 
-            \Magento\Framework\Stdlib\DateTime\DateTime $date, 
-            \Magento\Catalog\Model\ProductFactory $productFactory, 
-            $resourcePrefix = null
-    ) {
+        \Magento\Framework\Model\ResourceModel\Db\Context $context,
+        \Magento\Framework\Stdlib\DateTime\DateTime $date,
+        \Magento\Catalog\Model\ProductFactory $productFactory,
+        $resourcePrefix = null
+    )
+    {
         parent::__construct($context, $resourcePrefix);
         $this->_date = $date;
         $this->_productFactory = $productFactory;
     }
 
-    protected function _construct() {
+    public function getParticipantIds($eventId)
+    {
+        $select = $this->getConnection()->select()->from(
+            $this->getTable($this->_participantTable), 'participant_id')
+            ->where('event_id = ?', $eventId);
+        return $this->getConnection()->fetchCol($select);
+    }
+
+    public function getFavoritedCustomerIds($eventId)
+    {
+        $select = $this->getConnection()->select()->from(
+            $this->getTable($this->_favoriteTable), 'customer_id')
+            ->where('event_id = ?', $eventId);
+        return $this->getConnection()->fetchCol($select);
+    }
+
+    public function addFavorite($eventId, $customerId)
+    {
+        $connection = $this->getConnection();
+        $favInsert = ['event_id' => $eventId, 'customer_id' => $customerId];
+        $connection->insert($this->_favoriteTable, $favInsert);
+    }
+
+    public function removeFavorite($eventId, $customerId)
+    {
+        $connection = $this->getConnection();
+        $favCondition = ['event_id=?' => $eventId, 'customer_id=?' => $customerId];
+        $connection->delete($this->_favoriteTable, $favCondition);
+    }
+
+    protected function _construct()
+    {
         $this->_init('mb_events', 'event_id');
         $this->_eventStoreTable = $this->getTable('mb_event_store');
         $this->_categoryEventTable = $this->getTable('mb_event_category');
@@ -39,7 +74,8 @@ class Event extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb {
         $this->_customerTable = $this->getTable('customer_entity');
     }
 
-    protected function _afterLoad(AbstractModel $object) {
+    protected function _afterLoad(AbstractModel $object)
+    {
         parent::_afterLoad($object);
         if (!$object->getId()) {   //if create new
             return $this;
@@ -60,18 +96,43 @@ class Event extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb {
         }
 
         // load event available in stores
-        $object->setStores($this->getStoreIds((int) $object->getId()));
+        $object->setStores($this->getStoreIds((int)$object->getId()));
 
         // load categories associate to this event
-        $object->setCategories($this->getCategoryIds((int) $object->getId()));
+        $object->setCategories($this->getCategoryIds((int)$object->getId()));
 
         // load product associate to this event
-        $object->setProduct($this->getProductId((int) $object->getId()));
+        $object->setProduct($this->getProductId((int)$object->getId()));
 
         return $this;
     }
 
-    protected function _beforeSave(AbstractModel $object) {
+    public function getStoreIds($eventId)
+    {
+        $select = $this->getConnection()->select()->from(
+            $this->getTable($this->_eventStoreTable), 'store_id')
+            ->where('event_id = ?', $eventId);
+        return $this->getConnection()->fetchCol($select);
+    }
+
+    public function getCategoryIds($eventId)
+    {
+        $select = $this->getConnection()->select()->from(
+            $this->getTable($this->_categoryEventTable), 'category_id')
+            ->where('event_id = ?', $eventId);
+        return $this->getConnection()->fetchCol($select);
+    }
+
+    public function getProductId($eventId)
+    {
+        $select = $this->getConnection()->select()->from(
+            $this->getTable($this->_productEventTable), 'entity_id')
+            ->where('event_id = ?', $eventId);
+        return $this->getConnection()->fetchOne($select);
+    }
+
+    protected function _beforeSave(AbstractModel $object)
+    {
         if ($object->isObjectNew() && !$object->hasCreatedTime()) {
             $object->setCreatedTime($this->_date->gmtDate());
         }
@@ -83,7 +144,8 @@ class Event extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb {
         return parent::_beforeSave($object);
     }
 
-    protected function _afterSave(AbstractModel $object) {
+    protected function _afterSave(AbstractModel $object)
+    {
         $connection = $this->getConnection();
 
         //Save event_stores
@@ -131,59 +193,11 @@ class Event extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb {
             $productInsert = ['entity_id' => $productId, 'event_id' => $object->getId()];
             $connection->insert($this->_productEventTable, $productInsert);
         }
-        
+
         //save quantity of associated product equal number of participants
 //        $this->_productFactory->create()->load($this->getProductId($object->getId()))->setQty($object->getNumberOfParticipant());
 
         return $this;
-    }
-
-    public function getStoreIds($eventId) {
-        $select = $this->getConnection()->select()->from(
-                        $this->getTable($this->_eventStoreTable), 'store_id')
-                ->where('event_id = ?', $eventId);
-        return $this->getConnection()->fetchCol($select);
-    }
-
-    public function getCategoryIds($eventId) {
-        $select = $this->getConnection()->select()->from(
-                        $this->getTable($this->_categoryEventTable), 'category_id')
-                ->where('event_id = ?', $eventId);
-        return $this->getConnection()->fetchCol($select);
-    }
-
-    public function getParticipantIds($eventId) {
-        $select = $this->getConnection()->select()->from(
-                        $this->getTable($this->_participantTable), 'participant_id')
-                ->where('event_id = ?', $eventId);
-        return $this->getConnection()->fetchCol($select);
-    }
-    
-    public function getProductId($eventId) {
-        $select = $this->getConnection()->select()->from(
-                        $this->getTable($this->_productEventTable), 'entity_id')
-                ->where('event_id = ?', $eventId);
-        return $this->getConnection()->fetchOne($select);
-    }
-    
-    public function getFavoritedCustomerIds($eventId) {
-        $select = $this->getConnection()->select()->from(
-                        $this->getTable($this->_favoriteTable), 'customer_id')
-                ->where('event_id = ?', $eventId);
-        return $this->getConnection()->fetchCol($select);
-    }
-    
-        
-    public function addFavorite($eventId, $customerId) {
-        $connection = $this->getConnection();
-        $favInsert = ['event_id' => $eventId, 'customer_id' => $customerId];
-        $connection->insert($this->_favoriteTable, $favInsert);
-    }
-    
-    public function removeFavorite($eventId, $customerId) {
-        $connection = $this->getConnection();
-        $favCondition = ['event_id=?' => $eventId, 'customer_id=?' => $customerId];
-        $connection->delete($this->_favoriteTable, $favCondition);
     }
 
 }

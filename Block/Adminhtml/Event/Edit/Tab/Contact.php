@@ -1,5 +1,4 @@
 <?php
-
 /**
  * @copyright Copyright (c) 2016 www.magebuzz.com
  */
@@ -10,7 +9,8 @@ use Magento\Backend\Block\Widget\Form;
 use Magento\Backend\Block\Widget\Form\Generic;
 use Magento\Backend\Block\Widget\Tab\TabInterface;
 
-class Contact extends Generic implements TabInterface {
+class Contact extends Generic implements TabInterface
+{
 
     protected $_systemStore;
     protected $_groupRepository;
@@ -19,8 +19,9 @@ class Contact extends Generic implements TabInterface {
     protected $_eventsHelper;
 
     public function __construct(
-    \Magento\Backend\Block\Template\Context $context, \Magento\Framework\Registry $registry, \Magento\Framework\Data\FormFactory $formFactory, \Magento\Customer\Api\GroupRepositoryInterface $groupRepository, \Magento\Framework\Api\SearchCriteriaBuilder $searchCriteriaBuilder, \Magento\Framework\Convert\DataObject $objectConverter, \Magento\Store\Model\System\Store $systemStore, \Magebuzz\Events\Helper\Data $eventsHelper, array $data = []
-    ) {
+        \Magento\Backend\Block\Template\Context $context, \Magento\Framework\Registry $registry, \Magento\Framework\Data\FormFactory $formFactory, \Magento\Customer\Api\GroupRepositoryInterface $groupRepository, \Magento\Framework\Api\SearchCriteriaBuilder $searchCriteriaBuilder, \Magento\Framework\Convert\DataObject $objectConverter, \Magento\Store\Model\System\Store $systemStore, \Magebuzz\Events\Helper\Data $eventsHelper, array $data = []
+    )
+    {
         $this->_systemStore = $systemStore;
         $this->_groupRepository = $groupRepository;
         $this->_searchCriteriaBuilder = $searchCriteriaBuilder;
@@ -29,85 +30,91 @@ class Contact extends Generic implements TabInterface {
         parent::__construct($context, $registry, $formFactory, $data);
     }
 
-    public function getTabLabel() {
+    public function getTabLabel()
+    {
         return __('Contact');
     }
 
-    public function getTabTitle() {
+    public function getTabTitle()
+    {
         return __('Contact');
     }
 
-    public function canShowTab() {
+    public function canShowTab()
+    {
         return true;
     }
 
-    public function isHidden() {
+    public function isHidden()
+    {
         return false;
     }
 
-    protected function _prepareForm() {
-        $model = $this->_coreRegistry->registry('events_event');
+    protected function _prepareForm()
+    {
+        $event = $this->_coreRegistry->registry('events_event');
 
         /** @var \Magento\Framework\Data\Form $form */
         $form = $this->_formFactory->create();
         $form->setHtmlIdPrefix('event_');
 
         $fieldset = $form->addFieldset(
-                'base_fieldset', ['legend' => __('Contact'), 'class' => 'fieldset-wide']
+            'base_fieldset', ['legend' => __('Contact'), 'class' => 'fieldset-wide']
         );
 
         $fieldset->addField(
-                'is_show_contact', 'select', [
-            'name' => 'is_show_contact',
-            'label' => __('Show Contact Information'),
-            'title' => __('Show Contact Information'),
-            'options' => ['1' => __('Enabled'), '0' => __('Disabled')],
-            'onchange' => 'toggleContact(this.value)',
-            'after_element_html' => $this->_isShowContactJs(),
-                ]
+            'is_show_contact', 'select', [
+                'name' => 'is_show_contact',
+                'label' => __('Show Contact Information'),
+                'title' => __('Show Contact Information'),
+                'options' => ['1' => __('Enabled'), '0' => __('Disabled')],
+                'onchange' => 'toggleContact(this.value)',
+                'after_element_html' => $this->_isShowContactJs(),
+            ]
         );
         $fieldset->addField(
-                'contact_person', 'text', [
-            'name' => 'contact_person',
-            'label' => __('Contact Person'),
-            'title' => __('Contact Person')
-                ]
+            'contact_person', 'text', [
+                'name' => 'contact_person',
+                'label' => __('Contact Person'),
+                'title' => __('Contact Person')
+            ]
         );
         $fieldset->addField(
-                'contact_phone', 'text', [
-            'name' => 'contact_phone',
-            'label' => __('Mobile Phone'),
-            'title' => __('Mobile Phone')
-                ]
+            'contact_phone', 'text', [
+                'name' => 'contact_phone',
+                'label' => __('Mobile Phone'),
+                'title' => __('Mobile Phone')
+            ]
         );
         $fieldset->addField(
-                'contact_email', 'text', [
-            'name' => 'contact_email',
-            'label' => __('Email'),
-            'title' => __('Email'),
-            'class' => __('validate-email'),
-                ]
+            'contact_email', 'text', [
+                'name' => 'contact_email',
+                'label' => __('Email'),
+                'title' => __('Email'),
+                'class' => __('validate-email'),
+            ]
         );
         $fieldset->addField(
-                'contact_address', 'text', [
-            'name' => 'contact_address',
-            'label' => __('Address'),
-            'title' => __('Address'),
-            'after_element_html' => $model->getId() ? $this->_isShowContactAfterLoadJs() : '',
-                ]
+            'contact_address', 'text', [
+                'name' => 'contact_address',
+                'label' => __('Address'),
+                'title' => __('Address'),
+                'after_element_html' => $event->getId() ? $this->_isShowContactAfterLoadJs() : '',
+            ]
         );
 
-        if (!$model->getId()) {
-            $model->setData('is_show_contact', '1');
+        if (!$event->getId()) {
+            $event->setData('is_show_contact', '1');
             $this->_isShowContactAfterLoadJs();
         }
-        $form->setValues($model->getData());
+        $form->setValues($event->getData());
 
         $this->setForm($form);
         return parent::_prepareForm();
     }
 
-    protected function _isShowContactJs() {
+    protected function _isShowContactJs()
+    {
         return <<<HTML
     <script>
         function toggleContact(isShow) {
@@ -127,10 +134,11 @@ class Contact extends Generic implements TabInterface {
     </script>
 HTML;
     }
-    
-    protected function _isShowContactAfterLoadJs() {
-        $model = $this->_coreRegistry->registry('events_event');
-        $isShow = $model->getData('is_show_contact');
+
+    protected function _isShowContactAfterLoadJs()
+    {
+        $event = $this->_coreRegistry->registry('events_event');
+        $isShow = $event->getData('is_show_contact');
         return <<<HTML
     <script>
         toggleContact($isShow);

@@ -2,7 +2,6 @@
 /**
  * @copyright Copyright (c) 2016 www.magebuzz.com
  */
-
 namespace Magebuzz\Events\Controller\Adminhtml\Event;
 
 class CategoryGrid extends \Magento\Backend\App\Action
@@ -12,7 +11,8 @@ class CategoryGrid extends \Magento\Backend\App\Action
     public function __construct(
         \Magento\Backend\App\Action\Context $context,
         \Magento\Framework\View\Result\LayoutFactory $resultLayoutFactory
-    ) {
+    )
+    {
         parent::__construct($context);
         $this->resultLayoutFactory = $resultLayoutFactory;
     }

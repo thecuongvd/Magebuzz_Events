@@ -1,40 +1,42 @@
+ <!--@copyright Copyright (c) 2016 www.magebuzz.com-->
 <?php
 $event = $block->getEvent();
 if ($event->getId()) {
     ?>
     <div class="event-details">
         <!--Left-->
-        <div class="product media">
+        <div class="event media">
             <!--Image-->
             <div class="event-image">
-                <img src="<?php echo $block->getAvatarUrl() ?>" alt="<?php echo $event->getTitle(); ?>" />
+                <img src="<?php echo $block->getAvatarUrl() ?>" alt="<?php echo $event->getTitle(); ?>"/>
                 <?php if (!($event->getPrice() > 0)) { ?>
                     <div class="free-tag">
-                        <img src="<?php echo $block->getViewFileUrl('Magebuzz_Events::images/free-tag.png'); ?>" height="100" width="100" />
+                        <img src="<?php echo $block->getViewFileUrl('Magebuzz_Events::images/free-tag.png'); ?>"
+                             height="100" width="100"/>
                     </div>
                 <?php } ?>
             </div>
         </div>
-        
+
         <!--Right-->
-        <div class="product-info-main">
+        <div class="event-info-main">
             <!--Main-->
             <div class="event-name">
-                <h1><?php echo $event->getTitle(); ?></h1>
-            </div>     
+                <h2><?php echo $event->getTitle(); ?></h2>
+            </div>
             <div class="event-content">
                 <!--Content-->
                 <div class="event-info">
                     <div class="event-time">
                         <label><strong><?php echo __('Time:') ?></strong></label>
-                        <?php echo $block->getStartTime(); ?> - <?php echo $block->getEndTime(); ?>	
-                    </div>	
+                        <?php echo $block->getStartTime(); ?> - <?php echo $block->getEndTime(); ?>
+                    </div>
                     <div class="event-location">
                         <label><strong><?php echo __('Location:') ?></strong></label>
                         <?php echo $event->getLocation(); ?>
                     </div>
                 </div>
-                
+
                 <!--Registration-->
                 <div class="registration">
                     <?php if ($block->getScopeConfig('events/general_setting/show_num_participants')) {
@@ -68,55 +70,76 @@ if ($event->getId()) {
                             ?>
                             <label><strong><?php echo __('Price:'); ?></strong></label> FREE
                         <?php } ?>
-                    </div> <br>
+                    </div>
+                    <br>
 
                     <div class="register-button">
                         <?php if ($block->getScopeConfig('events/general_setting/allow_send_invitation')) { ?>
-                            <a href="#inviteformcontent" class="invite_friend_button" id="invite_friend_button" title="<?php echo __('Invite Friends'); ?>">
+<!--                            <a href="#inviteformcontent" class="invite_friend_button" id="invite_friend_button"
+                               title="<?php // echo __('Invite Friends'); ?>">
+                                <?php // echo __('Invite Friends'); ?>
+                            </a>-->
+                            <button href="#inviteformcontent" class="action primary" id="invite_friend_button"
+                               title="<?php echo __('Invite Friends'); ?>">
                                 <?php echo __('Invite Friends'); ?>
-                            </a>
-                        <?php } ?> 
+                            </button>
+                        <?php } ?>
 
                         <!--register event-->
                         <?php
                         if ($block->isAllowRegisterEvent()) {
                             if ($event->getPrice() > 0) {
-                                ?>              
-                                | <a href="<?php echo $block->getAddToCartUrl(); ?>" title="<?php echo __('Buy Ticket'); ?>">
-                                    <span><?php echo __('Buy Ticket') ?></span>
-                                </a>
+                                ?>
+                                <button onclick="location.href='<?php echo $block->getAddToCartUrl(); ?>'" class="action primary"
+                                    title="<?php echo __('Buy Ticket'); ?>">
+                                    <?php echo __('Buy Ticket'); ?>
+                                </button>
                             <?php } else { ?>
-                                | <a href="<?php echo $block->getRegisterUrl() ?>" title="<?php echo __('Register'); ?>">
+                                <button onclick="location.href='<?php echo $block->getRegisterUrl(); ?>'" class="action primary"
+                                    title="<?php echo __('Register'); ?>">
                                     <?php echo __('Register'); ?>
-                                </a>
+                                </button>
                                 <?php
                             }
                         }
                         ?>
-                    </div><br>
+                    </div>
+                    <br>
                 </div>
                 <!-- share Link-->
                 <?php if ($block->getScopeConfig('events/general_setting/show_social_share')) { ?>
-                    <div class="product-social-links">
-                        <div class="product-addto-links">
-                            <a href="http://www.facebook.com/sharer.php?u=<?php echo $block->getEventUrl() ?>" target="_blank">
-                                <img src="<?php echo $block->getViewFileUrl('Magebuzz_Events::images/facebook.png'); ?>" height="32" width="32" alt="Share on Facebook" title="<?php echo __('Share on Facebook');?>" />
-                            </a> 
+                    <div class="event-social-links">
+                        <div class="event-addto-links">
+                            <a href="http://www.facebook.com/sharer.php?u=<?php echo $block->getEventUrl() ?>"
+                               target="_blank">
+                                <img src="<?php echo $block->getViewFileUrl('Magebuzz_Events::images/facebook.png'); ?>"
+                                     height="32" width="32" alt="Share on Facebook"
+                                     title="<?php echo __('Share on Facebook'); ?>"/>
+                            </a>
                         </div>
-                        <div class="product-addto-links">
-                            <a href="https://plus.google.com/share?url=<?php echo $block->getEventUrl() ?>" target="_blank">
-                                <img src="<?php echo $block->getViewFileUrl('Magebuzz_Events::images/google_plus.png'); ?>" height="32" width="32" alt="Share on Google+" title="<?php echo __('Share on Google+');?>" />
-                            </a> 
+                        <div class="event-addto-links">
+                            <a href="https://plus.google.com/share?url=<?php echo $block->getEventUrl() ?>"
+                               target="_blank">
+                                <img
+                                    src="<?php echo $block->getViewFileUrl('Magebuzz_Events::images/google_plus.png'); ?>"
+                                    height="32" width="32" alt="Share on Google+"
+                                    title="<?php echo __('Share on Google+'); ?>"/>
+                            </a>
                         </div>
 
-                        <div class="product-addto-links">
-                            <a href="http://twitter.com/intent/tweet?source=sharethiscom&url=<?php echo $block->getEventUrl() ?>" target="_blank">
-                                <img src="<?php echo $block->getViewFileUrl('Magebuzz_Events::images/twitter.png'); ?>" height="32" width="32" alt="Share on Twitter" title="<?php echo __('Share on Twitter');?>" />
-                            </a> 
+                        <div class="event-addto-links">
+                            <a href="http://twitter.com/intent/tweet?source=sharethiscom&url=<?php echo $block->getEventUrl() ?>"
+                               target="_blank">
+                                <img src="<?php echo $block->getViewFileUrl('Magebuzz_Events::images/twitter.png'); ?>"
+                                     height="32" width="32" alt="Share on Twitter"
+                                     title="<?php echo __('Share on Twitter'); ?>"/>
+                            </a>
                         </div>
-                        <div class="product-addto-links">
-                            <a href="<?php echo $block->getUrl('events/index/favorite', ['event_id'=>$event->getId(),'action'=>$block->isFavorited()?'remove':'add']) ?>">
-                                <img src="<?php echo $block->getFavoriteImageSrc(); ?>" height="32" width="32" alt="Favorite" title="<?php echo $block->isFavorited()?__('Remove from Favorite'):__('Add to Favorite'); ?>" />
+                        <div class="event-addto-links">
+                            <a href="<?php echo $block->getUrl('events/index/favorite', ['event_id' => $event->getId(), 'action' => $block->isFavorited() ? 'remove' : 'add']) ?>">
+                                <img src="<?php echo $block->getFavoriteImageSrc(); ?>" height="32" width="32"
+                                     alt="Favorite"
+                                     title="<?php echo $block->isFavorited() ? __('Remove from Favorite') : __('Add to Favorite'); ?>"/>
                             </a>
                         </div>
                     </div>
@@ -124,21 +147,23 @@ if ($event->getId()) {
                 <!-- End Share -->
                 <!--Description-->
                 <div class="event-description">
-                    <?php echo $block->escapeHtml($event->getDescription()); ?>        
+                    <?php echo $block->escapeHtml($event->getDescription()); ?>
                 </div>
             </div>
         </div>
     </div>
 
     <?php if ($block->getScopeConfig('events/general_setting/allow_send_invitation')) { ?>
-        <div id="inviteformcontent" style="display:none;">            
+        <div id="inviteformcontent" style="display:none;">
             <div id="invite_form_header" class="page-title">
                 <h2><strong><?php echo __('Invite Friends'); ?></strong></h2>
             </div>
-            <form action="<?php echo $block->getUrl('events/index/sendinvitation') ?>" id="event-invite-form" method="post">		
-                <input type="hidden" name="event_id" id="event_id" value="<?php echo $event->getId(); ?>" />
+            <form action="<?php echo $block->getUrl('events/index/sendinvitation') ?>" id="event-invite-form"
+                  method="post">
+                <input type="hidden" name="event_id" id="event_id" value="<?php echo $event->getId(); ?>"/>
                 <div class="field first">
-                    <label for="yourname" class="required"><?php echo __('Your Name') ?><span class="required"> * </span></label>
+                    <label for="yourname" class="required"><?php echo __('Your Name') ?><span
+                            class="required"> * </span></label>
                     <div class="input-box">
                         <input type="text" name="yourname" value="" class="input-text required-entry" id="yourname"/>
                     </div>
@@ -146,19 +171,21 @@ if ($event->getId()) {
                 <div class="field">
                     <label for="friendemail"><?php echo __('Send to') ?> <span class="required"> * </span></label>
                     <div class="input-box">
-                        <input type="text" name="friendemail" value="" class="input-text required-entry validate-email" id="friendemail"/>
+                        <input type="text" name="friendemail" value="" class="input-text required-entry validate-email"
+                               id="friendemail"/>
                     </div>
                 </div>
                 <div class="field last">
                     <label for="invitemessage"><?php echo __('Message: ') ?></label>
-                    <div class="input-box">			
+                    <div class="input-box">
                         <textarea name="invitemessage" rows="5" cols="44"></textarea>
                     </div>
                 </div>
 
                 <div class="buttons-set" style="margin-top:0px">
                     <p class="required"><?php echo __('* Required Fields') ?></p>
-                    <button class="action primary" type="submit" id="invite-form-button" title="submit"><span><?php echo __('Send'); ?></span></button>
+                    <button class="action primary" type="submit" id="invite-form-button" title="submit">
+                        <span><?php echo __('Send'); ?></span></button>
                 </div>
             </form>
         </div>
@@ -180,4 +207,5 @@ if ($event->getId()) {
             });
         });
     });
+
 </script>

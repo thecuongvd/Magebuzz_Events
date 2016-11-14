@@ -1,17 +1,21 @@
 <?php
-
+/**
+ * @copyright Copyright (c) 2016 www.magebuzz.com
+ */
 namespace Magebuzz\Events\Controller\Adminhtml\Event;
 
 use Magento\Backend\App\Action\Context;
 use Magento\Framework\View\Result\PageFactory;
 
-class Index extends \Magento\Backend\App\Action {
+class Index extends \Magento\Backend\App\Action
+{
 
     protected $resultPageFactory;
 
     public function __construct(
-    Context $context, PageFactory $resultPageFactory
-    ) {
+        Context $context, PageFactory $resultPageFactory
+    )
+    {
         parent::__construct($context);
         $this->resultPageFactory = $resultPageFactory;
     }
@@ -21,7 +25,8 @@ class Index extends \Magento\Backend\App\Action {
      *
      * @return \Magento\Backend\Model\View\Result\Page
      */
-    public function execute() {
+    public function execute()
+    {
         /** @var \Magento\Backend\Model\View\Result\Page $resultPage */
         $resultPage = $this->resultPageFactory->create();
         $resultPage->setActiveMenu('Magebuzz_Events::manage_events');
@@ -37,7 +42,8 @@ class Index extends \Magento\Backend\App\Action {
      *
      * @return bool
      */
-    protected function _isAllowed() {
+    protected function _isAllowed()
+    {
         return $this->_authorization->isAllowed('Magebuzz_Events::manage_events');
     }
 

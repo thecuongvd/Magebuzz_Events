@@ -1,8 +1,11 @@
 <?php
-
+/**
+ * @copyright Copyright (c) 2016 www.magebuzz.com
+ */
 namespace Magebuzz\Events\Model;
 
-class Event extends \Magento\Framework\Model\AbstractModel {
+class Event extends \Magento\Framework\Model\AbstractModel
+{
 
     const STATUS_ENABLED = 1;
     const STATUS_DISABLED = 0;
@@ -20,24 +23,24 @@ class Event extends \Magento\Framework\Model\AbstractModel {
      * @var string
      */
     protected $_eventPrefix = 'events_event';
-    
+
     protected $_storeManager;
     protected $scopeConfig;
     protected $_transportBuilder;
     protected $inlineTranslation;
-     protected $urlModel;
+    protected $urlModel;
 
     function __construct(
-    \Magento\Framework\Model\Context $context, 
-            \Magento\Framework\Registry $registry, 
-            \Magento\Store\Model\StoreManagerInterface $storeManager,
-            \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig,
-            \Magento\Framework\Mail\Template\TransportBuilder $transportBuilder,
-            \Magento\Framework\Translate\Inline\StateInterface $inlineTranslation,
-            \Magento\Framework\UrlFactory $urlFactory,
-            \Magento\Framework\Model\ResourceModel\AbstractResource $resource = null, 
-            \Magento\Framework\Data\Collection\AbstractDb $resourceCollection = null, 
-            array $data = []) 
+        \Magento\Framework\Model\Context $context,
+        \Magento\Framework\Registry $registry,
+        \Magento\Store\Model\StoreManagerInterface $storeManager,
+        \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig,
+        \Magento\Framework\Mail\Template\TransportBuilder $transportBuilder,
+        \Magento\Framework\Translate\Inline\StateInterface $inlineTranslation,
+        \Magento\Framework\UrlFactory $urlFactory,
+        \Magento\Framework\Model\ResourceModel\AbstractResource $resource = null,
+        \Magento\Framework\Data\Collection\AbstractDb $resourceCollection = null,
+        array $data = [])
     {
         $this->_storeManager = $storeManager;
         $this->scopeConfig = $scopeConfig;
@@ -47,36 +50,37 @@ class Event extends \Magento\Framework\Model\AbstractModel {
         parent::__construct($context, $registry, $resource, $resourceCollection, $data);
     }
 
-    protected function _construct() {
-        $this->_init('Magebuzz\Events\Model\ResourceModel\Event');
-    }
-
     /**
      * Prepare statuses.
      * Available event events_event_get_available_statuses to customize statuses.
      *
      * @return array
      */
-    public function getAvailableStatuses() {
+    public function getAvailableStatuses()
+    {
         return [self::STATUS_ENABLED => __('Enabled'), self::STATUS_DISABLED => __('Disabled')];
     }
 
-    public function getStoreIds() {
+    public function getStoreIds()
+    {
         return $this->getResource()->getStoreIds($this->getId());
     }
-    
-    public function getCategoryIds() {
+
+    public function getCategoryIds()
+    {
         return $this->getResource()->getCategoryIds($this->getId());
     }
-    
-    public function getParticipantIds() {
+
+    public function getParticipantIds()
+    {
         return $this->getResource()->getParticipantIds($this->getId());
     }
-    
-    public function getProductId() {
+
+    public function getProductId()
+    {
         return $this->getResource()->getProductId($this->getId());
     }
-    
+
     public function sendInvitationEmail($senderName, $recipient, $message)
     {
         $storeId = $this->_storeManager->getStore()->getId();
@@ -89,7 +93,7 @@ class Event extends \Magento\Framework\Model\AbstractModel {
                     \Magento\Store\Model\ScopeInterface::SCOPE_STORE,
                     $storeId))
                 ->setTemplateOptions(['area' => \Magento\Framework\App\Area::AREA_FRONTEND, 'store' => $storeId])
-                ->setTemplateVars(['event' => $this, 'message' => $message, 'recipient' => $recipient, 'senderName'=>$senderName])
+                ->setTemplateVars(['event' => $this, 'message' => $message, 'recipient' => $recipient, 'senderName' => $senderName])
                 ->setFrom(['email' => '', 'name' => $senderName])
                 ->addTo($recipient)
 //                ->setReplyTo('', $senderName)
@@ -97,24 +101,33 @@ class Event extends \Magento\Framework\Model\AbstractModel {
 
             $transport->sendMessage();
             $this->inlineTranslation->resume();
-        }
-        catch (Exception $e) {
+        } catch (Exception $e) {
             //silence is gold
         }
     }
-    
-    public function getEventUrl() {
+
+    public function getEventUrl()
+    {
         return $this->urlModel->getUrl('*/*/view', ['event_id' => $this->getId()]);
     }
-    
-    public function getFavoritedCustomerIds() {
+
+    public function getFavoritedCustomerIds()
+    {
         return $this->getResource()->getFavoritedCustomerIds($this->getId());
     }
-    
-    public function addFavorite($customerId) {
+
+    public function addFavorite($customerId)
+    {
         $this->getResource()->addFavorite($this->getId(), $customerId);
     }
-    public function removeFavorite($customerId) {
+
+    public function removeFavorite($customerId)
+    {
         $this->getResource()->removeFavorite($this->getId(), $customerId);
+    }
+
+    protected function _construct()
+    {
+        $this->_init('Magebuzz\Events\Model\ResourceModel\Event');
     }
 }

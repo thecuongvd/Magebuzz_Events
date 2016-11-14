@@ -9,6 +9,6 @@ class CalendarViewMode implements \Magento\Framework\Option\ArrayInterface
 
     public function toOptionArray()
     {
-        return [['value' => 'day', 'label' => __('Day')], ['value' => 'week', 'label' => __('Week')], ['value' => 'month', 'label' => __('Month')]];
+        return [['value' => 'agendaDay', 'label' => __('Day')], ['value' => 'agendaWeek', 'label' => __('Week')], ['value' => 'month', 'label' => __('Month')]];
     }
 }

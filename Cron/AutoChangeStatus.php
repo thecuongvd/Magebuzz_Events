@@ -27,7 +27,8 @@ class AutoChangeStatus
     public function __construct(
         \Magento\Framework\Stdlib\DateTime\DateTime $date,
         \Magebuzz\Events\Model\ResourceModel\Event\CollectionFactory $eventFactory
-    ) {
+    )
+    {
         $this->_date = $date;
         $this->_eventFactory = $eventFactory;
     }
@@ -53,13 +54,12 @@ class AutoChangeStatus
                     } else {
                         $status = 'upcoming';
                     }
-                    
+
                     $data = ['event_id' => $event->getId(), 'progress_status' => $status];
                     $event->setData($data);
                     $event->save();
                 }
-            }
-            catch (Exception $ex) {
+            } catch (Exception $ex) {
                 //do nothing
             }
         }

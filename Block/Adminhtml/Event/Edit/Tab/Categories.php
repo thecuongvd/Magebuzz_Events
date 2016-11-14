@@ -5,7 +5,7 @@
 
 namespace Magebuzz\Events\Block\Adminhtml\Event\Edit\Tab;
 
-class Categories extends \Magento\Backend\Block\Widget\Grid\Extended 
+class Categories extends \Magento\Backend\Block\Widget\Grid\Extended
 {
     protected $_coreRegistry = null;
 
@@ -20,11 +20,22 @@ class Categories extends \Magento\Backend\Block\Widget\Grid\Extended
         \Magebuzz\Events\Model\CategoryFactory $categoryFactory,
         \Magento\Framework\Registry $coreRegistry,
         array $data = []
-    ) {
+    )
+    {
         $this->_eventFactory = $eventFactory;
         $this->_categoryFactory = $categoryFactory;
         $this->_coreRegistry = $coreRegistry;
         parent::__construct($context, $backendHelper, $data);
+    }
+
+    /**
+     * Rerieve grid URL
+     *
+     * @return string
+     */
+    public function getGridUrl()
+    {
+        return $this->_getData('grid_url') ? $this->_getData('grid_url') : $this->getUrl('*/*/categorygrid', ['_current' => true]);
     }
 
     /**
@@ -37,11 +48,11 @@ class Categories extends \Magento\Backend\Block\Widget\Grid\Extended
         parent::_construct();
         $this->setId('events_category_grid');
         $this->setDefaultSort('category_id');
-        $this->setUseAjax(true); 
+        $this->setUseAjax(true);
         if ($this->getEvent() && $this->getEvent()->getId()) {
             $this->setDefaultFilter(['in_categories' => 1]);
         }
-        
+
     }
 
     /**
@@ -80,7 +91,42 @@ class Categories extends \Magento\Backend\Block\Widget\Grid\Extended
         }
         return $this;
     }
-    
+
+    /**
+     * Retrieve selected items key
+     *
+     * @return array
+     */
+    protected function _getSelectedCategories()
+    {
+        $categories = array_keys($this->getSelectedCategories());
+        return $categories;
+    }
+
+    /**
+     * Retrieve selected items key
+     *
+     * @return array
+     */
+    public function getSelectedCategories()
+    {
+        $eventId = $this->getRequest()->getParam('event_id', 0);
+        $event = $this->_eventFactory->create()->load($eventId);
+        $categories = $event->getCategories();
+
+        if (!$categories) {
+            return [];
+        }
+
+        $categoryIds = [];
+
+        foreach ($categories as $categoryId) {
+            $categoryIds[$categoryId] = ['id' => $categoryId];
+        }
+
+        return $categoryIds;
+    }
+
     /**
      * Prepare collection
      *
@@ -89,7 +135,7 @@ class Categories extends \Magento\Backend\Block\Widget\Grid\Extended
     protected function _prepareCollection()
     {
         $collection = $this->_categoryFactory->create()->getCollection()
-                ->addFieldToFilter('status', 1);
+            ->addFieldToFilter('status', 1);
         $this->setCollection($collection);
         return parent::_prepareCollection();
     }
@@ -137,7 +183,7 @@ class Categories extends \Magento\Backend\Block\Widget\Grid\Extended
                 'column_css_class' => 'col-title'
             ]
         );
-        
+
         $this->addColumn(
             'position',
             [
@@ -154,50 +200,5 @@ class Categories extends \Magento\Backend\Block\Widget\Grid\Extended
         );
 
         return parent::_prepareColumns();
-    }
-
-    /**
-     * Rerieve grid URL
-     *
-     * @return string
-     */
-    public function getGridUrl()
-    {
-        return $this->_getData('grid_url') ? $this->_getData('grid_url') : $this->getUrl('*/*/categorygrid',['_current' => true]);
-    }
-
-    /**
-     * Retrieve selected items key
-     *
-     * @return array
-     */
-    protected function _getSelectedCategories()
-    {
-        $categories = array_keys($this->getSelectedCategories());
-        return $categories;
-    }
-
-    /**
-     * Retrieve selected items key
-     *
-     * @return array
-     */
-    public function getSelectedCategories()
-    {
-        $eventId = $this->getRequest()->getParam('event_id', 0);
-        $event = $this->_eventFactory->create()->load($eventId);
-        $categories =  $event->getCategories();
-
-        if (!$categories) {
-            return [];
-        }
-
-        $categoryIds = [];
-
-        foreach($categories as $categoryId) {
-            $categoryIds[$categoryId] = ['id' => $categoryId];
-        }
-
-        return $categoryIds;
     }
 }

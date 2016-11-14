@@ -12,7 +12,8 @@ class ParticipantGrid extends \Magento\Backend\App\Action
     public function __construct(
         \Magento\Backend\App\Action\Context $context,
         \Magento\Framework\View\Result\LayoutFactory $resultLayoutFactory
-    ) {
+    )
+    {
         parent::__construct($context);
         $this->resultLayoutFactory = $resultLayoutFactory;
     }

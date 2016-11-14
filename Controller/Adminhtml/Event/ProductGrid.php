@@ -12,7 +12,8 @@ class ProductGrid extends \Magento\Backend\App\Action
     public function __construct(
         \Magento\Backend\App\Action\Context $context,
         \Magento\Framework\View\Result\LayoutFactory $resultLayoutFactory
-    ) {
+    )
+    {
         parent::__construct($context);
         $this->resultLayoutFactory = $resultLayoutFactory;
     }
@@ -23,7 +24,7 @@ class ProductGrid extends \Magento\Backend\App\Action
      * @return \Magento\Framework\View\Result\Layout
      */
     public function execute()
-    { 
+    {
         $resultLayout = $this->resultLayoutFactory->create();
 //        $resultLayout->getLayout()->getBlock('events.edit.tab.productgrid')
 //            ->setProducts($this->getRequest()->getPost('products', null));

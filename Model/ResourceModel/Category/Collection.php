@@ -1,34 +1,28 @@
 <?php
-
+/**
+ * @copyright Copyright (c) 2016 www.magebuzz.com
+ */
 namespace Magebuzz\Events\Model\ResourceModel\Category;
 
-class Collection extends \Magento\Framework\Model\ResourceModel\Db\Collection\AbstractCollection {
+class Collection extends \Magento\Framework\Model\ResourceModel\Db\Collection\AbstractCollection
+{
 
     protected $_storeManager;
-    
+
     public function __construct(
-    \Magento\Framework\Data\Collection\EntityFactory $entityFactory, 
-            \Psr\Log\LoggerInterface $logger, 
-            \Magento\Framework\Data\Collection\Db\FetchStrategyInterface $fetchStrategy, 
-            \Magento\Framework\Event\ManagerInterface $eventManager, 
-            \Magento\Store\Model\StoreManagerInterface $storeManager,
-            \Magento\Framework\DB\Adapter\AdapterInterface $connection = null, 
-            \Magento\Framework\Model\ResourceModel\Db\AbstractDb $resource = null
-    ) {
+        \Magento\Framework\Data\Collection\EntityFactory $entityFactory,
+        \Psr\Log\LoggerInterface $logger,
+        \Magento\Framework\Data\Collection\Db\FetchStrategyInterface $fetchStrategy,
+        \Magento\Framework\Event\ManagerInterface $eventManager,
+        \Magento\Store\Model\StoreManagerInterface $storeManager,
+        \Magento\Framework\DB\Adapter\AdapterInterface $connection = null,
+        \Magento\Framework\Model\ResourceModel\Db\AbstractDb $resource = null
+    )
+    {
         $this->_storeManager = $storeManager;
         parent::__construct($entityFactory, $logger, $fetchStrategy, $eventManager, $connection, $resource);
     }
 
-    /**
-     * Define resource model
-     *
-     * @return void
-     */
-    protected function _construct() {
-        $this->_init('Magebuzz\Events\Model\Category', 'Magebuzz\Events\Model\ResourceModel\Category');
-        $this->_idFieldName = 'category_id';
-    }
-    
     /**
      * Set store filter
      *
@@ -54,8 +48,19 @@ class Collection extends \Magento\Framework\Model\ResourceModel\Db\Collection\Ab
         );
         $inCondition = $connection->prepareSqlCondition('store_table.store_id', ['in' => $storeIds]);
         $this->getSelect()->where($inCondition)
-                ->group(array('main_table.category_id'));
+            ->group(array('main_table.category_id'));
         return $this;
+    }
+
+    /**
+     * Define resource model
+     *
+     * @return void
+     */
+    protected function _construct()
+    {
+        $this->_init('Magebuzz\Events\Model\Category', 'Magebuzz\Events\Model\ResourceModel\Category');
+        $this->_idFieldName = 'category_id';
     }
 
 }

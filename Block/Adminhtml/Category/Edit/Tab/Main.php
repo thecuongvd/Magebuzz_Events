@@ -28,7 +28,8 @@ class Main extends Generic implements TabInterface
         \Magento\Framework\Convert\DataObject $objectConverter,
         \Magento\Store\Model\System\Store $systemStore,
         array $data = []
-    ) {
+    )
+    {
         $this->_systemStore = $systemStore;
         $this->_groupRepository = $groupRepository;
         $this->_searchCriteriaBuilder = $searchCriteriaBuilder;
@@ -52,7 +53,7 @@ class Main extends Generic implements TabInterface
     }
 
     public function isHidden()
-    { 
+    {
         return false;
     }
 
@@ -108,7 +109,7 @@ class Main extends Generic implements TabInterface
                     'label' => __('Store View'),
                     'required' => true,
                     'name' => 'stores[]',
-                    'values' => $this->_systemStore->getStoreValuesForForm(false,true)
+                    'values' => $this->_systemStore->getStoreValuesForForm(false, true)
                 ]
             );
             $renderer = $this->getLayout()->createBlock(
@@ -129,7 +130,7 @@ class Main extends Generic implements TabInterface
             $model->setData('status', '1');
         }
         $form->setValues($model->getData());
-        
+
         $this->setForm($form);
         return parent::_prepareForm();
     }

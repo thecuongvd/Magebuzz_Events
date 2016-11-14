@@ -1,5 +1,7 @@
 <?php
-
+/**
+ * @copyright Copyright (c) 2016 www.magebuzz.com
+ */
 namespace Magebuzz\Events\Model\ResourceModel;
 
 use Magento\Framework\Model\AbstractModel;
@@ -7,14 +9,16 @@ use Magento\Framework\Model\AbstractModel;
 /**
  * Mysql resource
  */
-class Category extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb {
+class Category extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
+{
 
     protected $_categoryStoreTable;
     protected $_date;
 
     public function __construct(
-    \Magento\Framework\Model\ResourceModel\Db\Context $context, \Magento\Framework\Stdlib\DateTime\DateTime $date, $resourcePrefix = null
-    ) {
+        \Magento\Framework\Model\ResourceModel\Db\Context $context, \Magento\Framework\Stdlib\DateTime\DateTime $date, $resourcePrefix = null
+    )
+    {
         parent::__construct($context, $resourcePrefix);
         $this->_date = $date;
     }
@@ -24,7 +28,8 @@ class Category extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb {
      *
      * @return void
      */
-    protected function _construct() {
+    protected function _construct()
+    {
         $this->_init('mb_categories', 'category_id');
         $this->_categoryStoreTable = $this->getTable('mb_event_category_store');
     }
@@ -42,7 +47,7 @@ class Category extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb {
 
         return $this;
     }
-    
+
     /**
      * Retrieve store IDs related to given rating
      *
@@ -60,19 +65,20 @@ class Category extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb {
         );
         return $this->getConnection()->fetchCol($select);
     }
-    
-    protected function _beforeSave(AbstractModel $object) {
+
+    protected function _beforeSave(AbstractModel $object)
+    {
         if ($object->isObjectNew() && !$object->hasCreatedTime()) {
             $object->setCreatedTime($this->_date->gmtDate());
         }
-        
+
         if ($object->hasData('stores') && !is_array($object->getStores())) {
             $object->setStores([$object->getStores()]);
         }
 
         return parent::_beforeSave($object);
     }
-    
+
     protected function _afterSave(AbstractModel $object)
     {
         $connection = $this->getConnection();

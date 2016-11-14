@@ -6,12 +6,29 @@
 
 namespace Magebuzz\Events\Block\Adminhtml\Event;
 
-class Edit extends \Magento\Backend\Block\Widget\Form\Container {
+class Edit extends \Magento\Backend\Block\Widget\Form\Container
+{
 
     public function __construct(
-    \Magento\Backend\Block\Widget\Context $context, array $data = []
-    ) {
+        \Magento\Backend\Block\Widget\Context $context, array $data = []
+    )
+    {
         parent::__construct($context, $data);
+    }
+
+    /**
+     * Retrieve text for header element depending on loaded blocklist
+     *
+     * @return \Magento\Framework\Phrase
+     */
+    public function getHeaderText()
+    {
+        $model = $this->_coreRegistry->registry('events_event');
+        if ($model->getId()) {
+            return __("Edit Events '%1'", $this->escapeHtml($model->getTitle()));
+        } else {
+            return __('New Event');
+        }
     }
 
     /**
@@ -19,7 +36,8 @@ class Edit extends \Magento\Backend\Block\Widget\Form\Container {
      *
      * @return void
      */
-    protected function _construct() {
+    protected function _construct()
+    {
         $this->_objectId = 'event_id';
         $this->_blockGroup = 'Magebuzz_Events';
         $this->_controller = 'adminhtml_event';
@@ -29,7 +47,7 @@ class Edit extends \Magento\Backend\Block\Widget\Form\Container {
         if ($this->_isAllowedAction('Magebuzz_Events::save')) {
             $this->buttonList->update('save', 'label', __('Save Event'));
             $this->buttonList->add(
-                    'saveandcontinue', [
+                'saveandcontinue', [
                 'label' => __('Save and Continue Edit'),
                 'class' => 'save',
                 'data_attribute' => [
@@ -37,7 +55,7 @@ class Edit extends \Magento\Backend\Block\Widget\Form\Container {
                         'button' => ['event' => 'saveAndContinueEdit', 'target' => '#edit_form'],
                     ],
                 ]
-                    ], -100
+            ], -100
             );
         } else {
             $this->buttonList->remove('save');
@@ -51,26 +69,13 @@ class Edit extends \Magento\Backend\Block\Widget\Form\Container {
     }
 
     /**
-     * Retrieve text for header element depending on loaded blocklist
-     *
-     * @return \Magento\Framework\Phrase
-     */
-    public function getHeaderText() {
-        $model = $this->_coreRegistry->registry('events_event');
-        if ($model->getId()) {
-            return __("Edit Events '%1'", $this->escapeHtml($model->getTitle()));
-        } else {
-            return __('New Event');
-        }
-    }
-
-    /**
      * Check permission for passed action
      *
      * @param string $resourceId
      * @return bool
      */
-    protected function _isAllowedAction($resourceId) {
+    protected function _isAllowedAction($resourceId)
+    {
         return $this->_authorization->isAllowed($resourceId);
     }
 
@@ -80,7 +85,8 @@ class Edit extends \Magento\Backend\Block\Widget\Form\Container {
      *
      * @return string
      */
-    protected function _getSaveAndContinueUrl() {
+    protected function _getSaveAndContinueUrl()
+    {
         return $this->getUrl('events/*/save', ['_current' => true, 'back' => 'edit', 'active_tab' => '']);
     }
 

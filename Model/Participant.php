@@ -1,8 +1,11 @@
 <?php
-
+/**
+ * @copyright Copyright (c) 2016 www.magebuzz.com
+ */
 namespace Magebuzz\Events\Model;
 
-class Participant extends \Magento\Framework\Model\AbstractModel {
+class Participant extends \Magento\Framework\Model\AbstractModel
+{
 
     const STATUS_ENABLED = 1;
     const STATUS_DISABLED = 0;
@@ -23,20 +26,23 @@ class Participant extends \Magento\Framework\Model\AbstractModel {
     protected $_eventPrefix = 'events_participant';
 
     function __construct(
-    \Magento\Framework\Model\Context $context, 
-            \Magento\Framework\Registry $registry, 
-            \Magento\Framework\Model\ResourceModel\AbstractResource $resource = null, 
-            \Magento\Framework\Data\Collection\AbstractDb $resourceCollection = null, 
-            array $data = []) {
+        \Magento\Framework\Model\Context $context,
+        \Magento\Framework\Registry $registry,
+        \Magento\Framework\Model\ResourceModel\AbstractResource $resource = null,
+        \Magento\Framework\Data\Collection\AbstractDb $resourceCollection = null,
+        array $data = [])
+    {
         parent::__construct($context, $registry, $resource, $resourceCollection, $data);
     }
 
-    protected function _construct() {
-        $this->_init('Magebuzz\Events\Model\ResourceModel\Participant');
+    public function getAvailableStatuses()
+    {
+        return [self::STATUS_ENABLED => __('Enabled'), self::STATUS_DISABLED => __('Disabled')];
     }
 
-    public function getAvailableStatuses() {
-        return [self::STATUS_ENABLED => __('Enabled'), self::STATUS_DISABLED => __('Disabled')];
+    protected function _construct()
+    {
+        $this->_init('Magebuzz\Events\Model\ResourceModel\Participant');
     }
 
 }

@@ -1,10 +1,14 @@
 <?php
-
+/**
+ * @copyright Copyright (c) 2016 www.magebuzz.com
+ */
 namespace Magebuzz\Events\Block\Adminhtml;
 
-class Grid extends \Magento\Backend\Block\Widget\Grid\Container {
+class Grid extends \Magento\Backend\Block\Widget\Grid\Container
+{
 
-    protected function _construct() {
+    protected function _construct()
+    {
         $this->_controller = 'adminhtml_category';
         $this->_blockGroup = 'Magebuzz_Events';
         $this->_headerText = __('Manage Events Categories');
@@ -18,7 +22,8 @@ class Grid extends \Magento\Backend\Block\Widget\Grid\Container {
         }
     }
 
-    protected function _isAllowedAction($resourceId) {
+    protected function _isAllowedAction($resourceId)
+    {
         return $this->_authorization->isAllowed($resourceId);
     }
 

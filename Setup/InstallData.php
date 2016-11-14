@@ -1,22 +1,26 @@
 <?php
-
+/**
+ * @copyright Copyright (c) 2016 www.magebuzz.com
+ */
 namespace Magebuzz\Events\Setup;
 
-use Magento\Eav\Setup\EavSetup;
 use Magento\Eav\Setup\EavSetupFactory;
 use Magento\Framework\Setup\InstallDataInterface;
 use Magento\Framework\Setup\ModuleContextInterface;
 use Magento\Framework\Setup\ModuleDataSetupInterface;
 
-class InstallData implements InstallDataInterface {
+class InstallData implements InstallDataInterface
+{
 
     private $eavSetupFactory;
 
-    public function __construct(EavSetupFactory $eavSetupFactory) {
+    public function __construct(EavSetupFactory $eavSetupFactory)
+    {
         $this->eavSetupFactory = $eavSetupFactory;
     }
 
-    public function install(ModuleDataSetupInterface $setup, ModuleContextInterface $context) {
+    public function install(ModuleDataSetupInterface $setup, ModuleContextInterface $context)
+    {
         $eavSetup = $this->eavSetupFactory->create(['setup' => $setup]);
         $fieldList = [
             'price',
@@ -31,12 +35,12 @@ class InstallData implements InstallDataInterface {
         ];
         foreach ($fieldList as $field) {
             $applyTo = explode(
-                    ',', $eavSetup->getAttribute(\Magento\Catalog\Model\Product::ENTITY, $field, 'apply_to')
+                ',', $eavSetup->getAttribute(\Magento\Catalog\Model\Product::ENTITY, $field, 'apply_to')
             );
             if (!in_array('event', $applyTo)) {
                 $applyTo[] = 'event';
                 $eavSetup->updateAttribute(
-                        \Magento\Catalog\Model\Product::ENTITY, $field, 'apply_to', implode(',', $applyTo)
+                    \Magento\Catalog\Model\Product::ENTITY, $field, 'apply_to', implode(',', $applyTo)
                 );
             }
         }

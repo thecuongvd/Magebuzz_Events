@@ -6,9 +6,9 @@
 namespace Magebuzz\Events\Block\Adminhtml\Event\Edit;
 
 use Magento\Backend\Block\Template\Context;
-use Magento\Framework\Registry;
-use Magento\Framework\Json\EncoderInterface;
 use Magento\Backend\Model\Auth\Session;
+use Magento\Framework\Json\EncoderInterface;
+use Magento\Framework\Registry;
 use Magento\Framework\Translate\InlineInterface;
 
 class Tabs extends \Magento\Backend\Block\Widget\Tabs
@@ -32,7 +32,8 @@ class Tabs extends \Magento\Backend\Block\Widget\Tabs
         Registry $registry,
         InlineInterface $translateInline,
         array $data = []
-    ) {
+    )
+    {
         $this->_coreRegistry = $registry;
         $this->_translateInline = $translateInline;
         parent::__construct($context, $jsonEncoder, $authSession, $data);
@@ -60,7 +61,7 @@ class Tabs extends \Magento\Backend\Block\Widget\Tabs
                 )->toHtml()
             ]
         );
-        
+
         $this->addTab(
             'organizer',
             [

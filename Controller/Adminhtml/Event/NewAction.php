@@ -1,23 +1,20 @@
 <?php
-
+/**
+ * @copyright Copyright (c) 2016 www.magebuzz.com
+ */
 namespace Magebuzz\Events\Controller\Adminhtml\Event;
 
-class NewAction extends \Magento\Backend\App\Action {
+class NewAction extends \Magento\Backend\App\Action
+{
 
     protected $resultForwardFactory;
 
     public function __construct(
-    \Magento\Backend\App\Action\Context $context, \Magento\Backend\Model\View\Result\ForwardFactory $resultForwardFactory
-    ) {
+        \Magento\Backend\App\Action\Context $context, \Magento\Backend\Model\View\Result\ForwardFactory $resultForwardFactory
+    )
+    {
         $this->resultForwardFactory = $resultForwardFactory;
         parent::__construct($context);
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    protected function _isAllowed() {
-        return $this->_authorization->isAllowed('Magebuzz_Events::save');
     }
 
     /**
@@ -25,10 +22,19 @@ class NewAction extends \Magento\Backend\App\Action {
      *
      * @return \Magento\Backend\Model\View\Result\Forward
      */
-    public function execute() {
+    public function execute()
+    {
         /** @var \Magento\Backend\Model\View\Result\Forward $resultForward */
         $resultForward = $this->resultForwardFactory->create();
         return $resultForward->forward('edit');
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    protected function _isAllowed()
+    {
+        return $this->_authorization->isAllowed('Magebuzz_Events::save');
     }
 
 }

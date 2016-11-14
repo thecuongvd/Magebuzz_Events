@@ -1,18 +1,20 @@
+ <!--@copyright Copyright (c) 2016 www.magebuzz.com-->
 <?php
 $eventsJson = $block->getEventJson();
-$events = $block->getEventCollection();
+$events = $block->getPagedEvents();
 ?>
-<div class="event-index page-products page-events">
+<div class="event-index page-events">
     <script type='text/javascript'>
         function viewmode(mode) {
             var url = '<?php echo $block->getUrl('events/index/index'); ?>';
             url = url + 'mode/' + mode;
             window.location.href = url;
         }
+
     </script>
 
-    <?php 
-    $eventCategories = $block->getEventCategories(); 
+    <?php
+    $eventCategories = $block->getEventCategories();
     $viewMode = $block->getRequest()->getParam('mode', false);
     $currentModeArr = [];
     if ($viewMode) {
@@ -21,34 +23,40 @@ $events = $block->getEventCollection();
     ?>
     <!--Filter-->
     <div class="box-filter">
-        <form id="top-filter" action="<?php $block->getUrl('events/index/index', $currentModeArr); ?>" method="post" >
-            <input type="text" name="event" placeholder="Enter Event Name" class="event-search control" value="<?php echo $block->getEventSearch(); ?>" />
-            <input type="text" name="location" placeholder="Enter Location (Street or City)" class="location-search control" value="<?php echo $block->getLocationSearch(); ?>" />
+        <form id="top-filter" action="<?php $block->getUrl('events/index/index', $currentModeArr); ?>" method="post">
+            <input type="text" name="event" placeholder="Enter Event Name" class="event-search control"
+                   value="<?php echo $block->getEventSearch(); ?>"/>
+            <input type="text" name="location" placeholder="Enter Location (Street or City)"
+                   class="location-search control" value="<?php echo $block->getLocationSearch(); ?>"/>
             <?php if ($block->getScopeConfig('events/general_setting/allow_filter_by_cat') && count($eventCategories)) { ?>
                 <?php $filterCatId = $block->getFilterCatId(); ?>
                 <select name="category" class="category-filter control">
                     <option value=""><?php echo __('All Events'); ?></option>
                     <?php foreach ($eventCategories as $category) {
                         $catId = $category->getId();
-                        ?>            
-                        <option value="<?php echo $catId; ?>" <?php if ($filterCatId == $catId): ?>selected<?php endif; ?>><?php echo $category->getCategoryTitle(); ?></option>
+                        ?>
+                        <option value="<?php echo $catId; ?>"
+                                <?php if ($filterCatId == $catId): ?>selected<?php endif; ?>><?php echo $category->getCategoryTitle(); ?></option>
                     <?php } ?>
                 </select>
             <?php } ?>
-            <button class="search-button action primary" type="submit" title="Search"><?php echo __('Search'); ?></button>
+            <button class="search-button action primary" type="submit"
+                    title="Search"><?php echo __('Search'); ?></button>
         </form>
     </div>
-    
+
     <!--View Mode Select-->
     <?php
     $configViewMode = $block->getScopeConfig('events/general_setting/view_mode');
-    if ($configViewMode == 'list-calendar' || $configViewMode == 'calendar-list') {
+    if ($configViewMode == 'grid-calendar' || $configViewMode == 'calendar-grid') {
         ?>
         <div class="view-mode">
             <label for="category-filter"><?php echo __('View Mode'); ?></label>
-            <select name="viewmode" class="viewmode-list control" onchange="viewmode(this.value)">
-                <option value="calendar" <?php if ($block->getCurrentMode() == 'calendar') { ?> selected <?php } ?>><?php echo __('Calendar'); ?></option>      
-                <option value="list" <?php if ($block->getCurrentMode() == 'list') { ?> selected <?php } ?>><?php echo __('List'); ?></option>      
+            <select name="viewmode" class="viewmode-grid control" onchange="viewmode(this.value)">
+                <option
+                    value="calendar" <?php if ($block->getCurrentMode() == 'calendar') { ?> selected <?php } ?>><?php echo __('Calendar'); ?></option>
+                <option
+                    value="grid" <?php if ($block->getCurrentMode() == 'grid') { ?> selected <?php } ?>><?php echo __('Grid'); ?></option>
             </select>
         </div>
     <?php } ?>
@@ -62,12 +70,14 @@ $events = $block->getEventCollection();
                 <div class="event-quickview" data-event_id="<?php echo $event->getId() ?>">
                     <div class="event-image">
                         <a href="<?php echo $block->getEventUrl($event); ?>" title="<?php echo $event->getTitle(); ?>">
-                            <img src="<?php echo $block->getAvatarUrl($event); ?>" alt="<?php echo $event->getTitle(); ?>" />
+                            <img src="<?php echo $block->getAvatarUrl($event); ?>"
+                                 alt="<?php echo $event->getTitle(); ?>"/>
                         </a>
                     </div>
                     <div class="event-info">
                         <p class="event-title">
-                            <a href="<?php echo $block->getEventUrl($event); ?>" title="<?php echo $event->getTitle(); ?>"><?php echo $event->getTitle(); ?></a>
+                            <a href="<?php echo $block->getEventUrl($event); ?>"
+                               title="<?php echo $event->getTitle(); ?>"><?php echo $event->getTitle(); ?></a>
                         </p>
                         <div class="desc">
                             <div class="event-time">
@@ -84,21 +94,19 @@ $events = $block->getEventCollection();
                             </div>
                         </div>
                         <div class="link-see-more">
-                            <a href="<?php echo $block->getAvatarUrl($event); ?>" title="<?php echo $event->getTitle(); ?>" class="link-learn"><?php echo __('See More') ?></a>
+                            <a href="<?php echo $block->getAvatarUrl($event); ?>"
+                               title="<?php echo $event->getTitle(); ?>"
+                               class="link-learn"><?php echo __('See More') ?></a>
                         </div>
                     </div>
                 </div>
             <?php } ?>
         </div>
-            
-            <!--JS for calendar-->
-            <?php $locale = $block->getScopeConfig('events/calendar_setting/language'); ?>
-            <?php if ($locale != 'en') { ?>
-                <?php $jsFile = $locale . '.js'; ?>
-                <script src='<?php echo $block->getViewFileUrl('Magebuzz_Events::js/lang/') . $jsFile; ?>'></script>
-            <?php } ?>
-            <script type='text/javascript'>
-                require(['jquery', 'fullcalendar', 'moment'], function($){
+
+        <!--JS for calendar-->
+    <?php $locale = $block->getScopeConfig('events/calendar_setting/language'); ?>
+        <script type='text/javascript'>
+                require(['jquery', 'fullcalendar', 'moment', 'locale_all'], function($){
                     var $j = $.noConflict();
                     $(document).ready(function() {
                         var date = new Date();
@@ -108,13 +116,13 @@ $events = $block->getEventCollection();
                         var calendar_mode = '';
                         var switchMode = '<?php echo $block->getScopeConfig('events/calendar_setting/allow_switch_mode'); ?>';
                         var defaultMode = '<?php echo $block->getScopeConfig('events/calendar_setting/default_view_mode'); ?>';
-                        if (switchMode == 1) {
+                        if (switchMode == '1') {
                             calendar_mode = 'month,agendaWeek,agendaDay';
                         }
                         var events = <?php echo $eventsJson; ?>;
                         $('#calendar').fullCalendar({
                             <?php if ($locale != 'en') { ?>
-                                lang: "<?php echo $locale; ?>",
+                                locale: "<?php echo $locale; ?>",
                             <?php } ?>
                             editable: true,
                             displayEventEnd:true,
@@ -131,7 +139,7 @@ $events = $block->getEventCollection();
                             eventMouseover: eventMouseoverFunc,
                             eventMouseout: eventMouseoutFunc
                         });
-                        
+
                         function eventMouseoverFunc(event, jsEvent, view ) {
                             $('.event-quickview[data-event_id="'+event.id+'"]').css({left:jsEvent.clientX,top:jsEvent.clientY}).show();
                         }
@@ -141,55 +149,61 @@ $events = $block->getEventCollection();
                         $('.event-quickview').hover(function() {$(this).show()}, function() {$(this).hide()});
                     });
                 });
-            </script>
-            
-        <?php } else { ?>
-            <!-- list mode -->
-            <div class="toolbar toolbar-products"><?php echo $block->getPagerHtml(); ?></div>
-            <div class="products wrapper grid products-grid events-list">
-                <ol class="products list items product-items" id="events-list">
-                    <?php foreach ($events as $event) { ?>
-                        <li class="item product product-item" style="margin-left:0;">
-                            <div class="product-item-info" data-container="product-grid">
-                                <a href="<?php echo $block->getEventUrl($event); ?>" class="product photo product-item-photo" title="<?php echo $event->getTitle(); ?>">
-                                    <span class="product-image-container" style="width:240px;">
-                                        <span class="product-image-wrapper" style="padding-bottom: 75%;">
-                                            <img src="<?php echo $block->getAvatarUrl($event); ?>" class="product-image-photo" alt="<?php echo $event->getTitle(); ?>" />
+
+        </script>
+
+    <?php } else { ?>
+        <!-- grid mode -->
+        <div class="toolbar"><?php echo $block->getPagerHtml(); ?></div>
+        <div class="events wrapper grid events-grid events-list">
+            <ol class="events list items event-items" id="events-list">
+                <?php foreach ($events as $event) { ?>
+                    <li class="item event event-item">
+                        <div class="event-item-info" data-container="event-grid">
+                            <a href="<?php echo $block->getEventUrl($event); ?>"
+                               class="event photo event-item-photo" title="<?php echo $event->getTitle(); ?>">
+                                    <span class="event-image-container" style="width:240px;">
+                                        <span class="event-image-wrapper" style="padding-bottom: 75%;">
+                                            <img src="<?php echo $block->getAvatarUrl($event); ?>"
+                                                 class="event-image-photo" alt="<?php echo $event->getTitle(); ?>"/>
                                         </span>
                                     </span>
-                                </a>
-                                <div class="product details product-item-details">
-                                    <h3 class="event-title">
-                                        <a href="<?php echo $block->getEventUrl($event); ?>" title="<?php echo $event->getTitle(); ?>"><?php echo $event->getTitle(); ?></a>
-                                    </h3>
-                                    <div class="desc">
-                                        <div class="event-time">
-                                            <label><?php echo __('Time: ') ?></label>
-                                            <?php echo $block->getFormattedTime($block->convertTimeToLocal($event->getStartTime())) . ' - ' . $block->getFormattedTime($block->convertTimeToLocal($event->getStartTime())); ?>
-                                        </div>
-                                        <div class="event-location">
-                                            <label><?php echo __('Location: ') ?></label>
-                                            <?php echo $event->getLocation(); ?>
-                                        </div>
-                                        <div class="event-desc std">
-                                            <label><?php echo __('Description: ') ?></label>
-                                            <?php echo $block->getShortDescription($event); ?>
-                                        </div>
+                            </a>
+                            <div class="event details event-item-details">
+                                <h3 class="event-title">
+                                    <a href="<?php echo $block->getEventUrl($event); ?>"
+                                       title="<?php echo $event->getTitle(); ?>"><?php echo $event->getTitle(); ?></a>
+                                </h3>
+                                <div class="desc">
+                                    <div class="event-time">
+                                        <label><?php echo __('Time: ') ?></label>
+                                        <?php echo $block->getFormattedTime($block->convertTimeToLocal($event->getStartTime())) . ' - ' . $block->getFormattedTime($block->convertTimeToLocal($event->getStartTime())); ?>
                                     </div>
-                                    <div class="link-see-more">
-                                        <a href="<?php echo $block->getEventUrl($event); ?>" title="<?php echo $event->getTitle(); ?>" class="link-learn"><?php echo __('See More') ?></a>
+                                    <div class="event-location">
+                                        <label><?php echo __('Location: ') ?></label>
+                                        <?php echo $event->getLocation(); ?>
+                                    </div>
+                                    <div class="event-desc std">
+                                        <label><?php echo __('Description: ') ?></label>
+                                        <?php echo $block->getShortDescription($event); ?>
                                     </div>
                                 </div>
+                                <div class="link-see-more">
+                                    <a href="<?php echo $block->getEventUrl($event); ?>"
+                                       title="<?php echo $event->getTitle(); ?>"
+                                       class="link-learn"><?php echo __('See More') ?></a>
+                                </div>
                             </div>
-                        </li>
-                    <?php } ?>
-                </ol>
-            </div>
-            <div class="toolbar toolbar-products"><?php echo $block->getPagerHtml(); ?></div>
+                        </div>
+                    </li>
+                <?php } ?>
+            </ol>
+        </div>
+        <div class="toolbar"><?php echo $block->getPagerHtml(); ?></div>
 
-        <?php } ?>	      
+    <?php } ?>
     <?php } else { ?>
         <p class="note-msg" style="margin:20px 0;"><?php echo __('There are no events matching the selection.'); ?></p>
     <?php } ?>
-</div> 
+</div>
 

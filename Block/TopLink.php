@@ -33,7 +33,8 @@ class TopLink extends \Magento\Framework\View\Element\Html\Link
         \Magento\Framework\Module\Manager $moduleManager,
         \Magebuzz\Events\Helper\Data $eventsHelper,
         array $data = []
-    ) {
+    )
+    {
         parent::__construct($context, $data);
         $this->_eventsHelper = $eventsHelper;
         $this->_moduleManager = $moduleManager;
@@ -64,9 +65,9 @@ class TopLink extends \Magento\Framework\View\Element\Html\Link
      */
     protected function _toHtml()
     {
-        if (!$this->_eventsHelper->isToplinkEnabled() || !$this->_moduleManager->isOutputEnabled(
-            'Magebuzz_Events'
-        )
+        if (!$this->_moduleManager->isOutputEnabled(
+                'Magebuzz_Events'
+            )
         ) {
             return '';
         }

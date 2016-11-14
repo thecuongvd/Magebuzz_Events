@@ -1,24 +1,21 @@
 <?php
-
+/**
+ * @copyright Copyright (c) 2016 www.magebuzz.com
+ */
 namespace Magebuzz\Events\Controller\Adminhtml\Category;
 
 use Magento\Backend\App\Action;
 use Magento\TestFramework\ErrorLog\Logger;
 
-class Save extends \Magento\Backend\App\Action {
+class Save extends \Magento\Backend\App\Action
+{
 
     /**
      * @param Action\Context $context
      */
-    public function __construct(Action\Context $context) {
+    public function __construct(Action\Context $context)
+    {
         parent::__construct($context);
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    protected function _isAllowed() {
-        return $this->_authorization->isAllowed('Magebuzz_Events::save');
     }
 
     /**
@@ -26,7 +23,8 @@ class Save extends \Magento\Backend\App\Action {
      *
      * @return \Magento\Framework\Controller\ResultInterface
      */
-    public function execute() {
+    public function execute()
+    {
         $data = $this->getRequest()->getPostValue();
         /** @var \Magento\Backend\Model\View\Result\Redirect $resultRedirect */
         $resultRedirect = $this->resultRedirectFactory->create();
@@ -43,7 +41,7 @@ class Save extends \Magento\Backend\App\Action {
             $model->setData($data);
 
             $this->_eventManager->dispatch(
-                    'events_category_prepare_save', ['category' => $model, 'request' => $this->getRequest()]
+                'events_category_prepare_save', ['category' => $model, 'request' => $this->getRequest()]
             );
 
             try {
@@ -51,7 +49,7 @@ class Save extends \Magento\Backend\App\Action {
                 $this->messageManager->addSuccess(__('You saved this Category.'));
                 $this->_objectManager->get('Magento\Backend\Model\Session')->setFormData(false);
                 if ($this->getRequest()->getParam('back')) {
-                    return $resultRedirect->setPath('*/*/edit', ['category_id' => $model->getId(), '_current' => true]);
+                    return $resultRedirect->setPath('*/*/edit', ['category_id' => $id, '_current' => true]);
                 }
                 return $resultRedirect->setPath('*/*/');
             } catch (\Magento\Framework\Exception\LocalizedException $e) {
@@ -65,12 +63,19 @@ class Save extends \Magento\Backend\App\Action {
             $this->_getSession()->setFormData($data);
             if ($id) {
                 return $resultRedirect->setPath('*/*/edit', ['category_id' => $this->getRequest()->getParam('category_id')]);
-            }
-            else {
+            } else {
                 return $resultRedirect->setPath('*/*/new');
             }
         }
         return $resultRedirect->setPath('*/*/');
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    protected function _isAllowed()
+    {
+        return $this->_authorization->isAllowed('Magebuzz_Events::save');
     }
 
 }

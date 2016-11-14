@@ -2,9 +2,9 @@
 /**
  * @copyright Copyright (c) 2016 www.magebuzz.com
  */
- 
+
 namespace Magebuzz\Events\Block\Adminhtml\Category\Edit;
- 
+
 use Magento\Backend\Block\Widget\Form as WidgetForm;
 
 /**
@@ -23,7 +23,7 @@ class Form extends \Magento\Backend\Block\Widget\Form\Generic
         $this->setId('category_form');
         $this->setTitle(__('Category Information'));
     }
- 
+
     /**
      * Prepare form
      *

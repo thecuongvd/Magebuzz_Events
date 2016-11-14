@@ -1,4 +1,5 @@
 <?xml version="1.0"?>
+ <!--@copyright Copyright (c) 2016 www.magebuzz.com-->
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Config:etc/system_file.xsd">
     <system>
         <tab id="magebuzz" translate="label" sortOrder="9000">
@@ -16,8 +17,8 @@
                     <label>View Mode</label>
                     <source_model>Magebuzz\Events\Model\Config\Source\ViewMode</source_model>
                 </field>
-                <field id="show_url_in_top_link" translate="label" type="select" sortOrder="2" showInDefault="1" showInWebsite="0" showInStore="0">
-                    <label>Show Calendar Url in Top Link</label>
+                <field id="show_url_in_header_link" translate="label" type="select" sortOrder="2" showInDefault="1" showInWebsite="0" showInStore="0">
+                    <label>Show Calendar Url in Header Link</label>
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                 </field>
                 <field id="allow_filter_by_cat" translate="label" type="select" sortOrder="3" showInDefault="1" showInWebsite="0" showInStore="0">

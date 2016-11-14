@@ -1,9 +1,5 @@
 <?xml version="1.0"?>
-<!--
-/**
- * @copyright Copyright (c) 2016 www.magebuzz.com
- */
--->
+ <!--@copyright Copyright (c) 2016 www.magebuzz.com-->
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Email:etc/email_templates.xsd">
     <template id="events_general_setting_invitation_email" label="Event Invitation Email Template" file="event_invitation.html" type="html" module="Magebuzz_Events" area="frontend"/>
 </config>
