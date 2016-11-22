@@ -11,32 +11,15 @@ namespace Magebuzz\Events\Block;
  */
 class TopLink extends \Magento\Framework\View\Element\Html\Link
 {
-    /**
-     * @var \Magento\Framework\Module\Manager
-     */
     protected $_moduleManager;
 
-    /**
-     * @var \Magebuzz\Events\Helper\Data
-     */
-    protected $_eventsHelper;
-
-    /**
-     * @param \Magento\Framework\View\Element\Template\Context $context
-     * @param \Magento\Framework\Module\Manager $moduleManager
-     * @param \Magebuzz\Events\Helper\Data $eventsHelper
-     * @param array $data
-     * @codeCoverageIgnore
-     */
     public function __construct(
         \Magento\Framework\View\Element\Template\Context $context,
         \Magento\Framework\Module\Manager $moduleManager,
-        \Magebuzz\Events\Helper\Data $eventsHelper,
         array $data = []
     )
     {
         parent::__construct($context, $data);
-        $this->_eventsHelper = $eventsHelper;
         $this->_moduleManager = $moduleManager;
     }
 
@@ -66,8 +49,8 @@ class TopLink extends \Magento\Framework\View\Element\Html\Link
     protected function _toHtml()
     {
         if (!$this->_moduleManager->isOutputEnabled(
-                'Magebuzz_Events'
-            )
+            'Magebuzz_Events'
+        )
         ) {
             return '';
         }

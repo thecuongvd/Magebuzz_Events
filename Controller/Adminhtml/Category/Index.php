@@ -30,9 +30,9 @@ class Index extends \Magento\Backend\App\Action
         /** @var \Magento\Backend\Model\View\Result\Page $resultPage */
         $resultPage = $this->resultPageFactory->create();
         $resultPage->setActiveMenu('Magebuzz_Events::manage_categories');
-        $resultPage->addBreadcrumb(__('Events Categories'), __('Events Categories'));
-        $resultPage->addBreadcrumb(__('Manage Events Categories'), __('Manage Events Categories'));
-        $resultPage->getConfig()->getTitle()->prepend(__('Events Categories'));
+        $resultPage->addBreadcrumb(__('Event Categories'), __('Event Categories'));
+        $resultPage->addBreadcrumb(__('Manage Event Categories'), __('Manage Event Categories'));
+        $resultPage->getConfig()->getTitle()->prepend(__('Event Categories'));
 
         return $resultPage;
     }

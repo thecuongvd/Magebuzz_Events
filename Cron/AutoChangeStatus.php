@@ -21,16 +21,23 @@ class AutoChangeStatus
     private $_eventFactory;
 
     /**
+     * @var LoggerInterface
+     */
+    protected $logger;
+
+    /**
      * @param \Magento\Framework\Stdlib\DateTime\DateTime
      * @param \Magebuzz\Events\Model\EventFactory $eventFactory
      */
     public function __construct(
         \Magento\Framework\Stdlib\DateTime\DateTime $date,
-        \Magebuzz\Events\Model\ResourceModel\Event\CollectionFactory $eventFactory
+        \Magebuzz\Events\Model\ResourceModel\Event\CollectionFactory $eventFactory,
+        \Psr\Log\LoggerInterface $logger
     )
     {
         $this->_date = $date;
         $this->_eventFactory = $eventFactory;
+        $this->logger = $logger;
     }
 
     /**
@@ -51,7 +58,7 @@ class AutoChangeStatus
                         $status = 'expired';
                     } else if ($startTime < $now && $now < $endTime) {
                         $status = 'happening';
-                    } else {
+                    } else if ($now < $startTime) {
                         $status = 'upcoming';
                     }
 
@@ -59,8 +66,8 @@ class AutoChangeStatus
                     $event->setData($data);
                     $event->save();
                 }
-            } catch (Exception $ex) {
-                //do nothing
+            } catch (\Exception $e) {
+                $this->logger->critical($e);
             }
         }
     }

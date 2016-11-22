@@ -113,7 +113,7 @@ class Participants extends \Magento\Backend\Block\Widget\Grid\Extended
             'participant_fullname',
             [
                 'header' => __('Full Name'),
-                'index' => $price > 0 ? '' : 'fullname',
+                'index' => $price > 0 ? 'fullname' : 'fullname',
                 'header_css_class' => 'col-fullname',
                 'column_css_class' => 'col-fullname',
                 'renderer' => $fullnameRenderer
@@ -142,7 +142,7 @@ class Participants extends \Magento\Backend\Block\Widget\Grid\Extended
             'participant_address',
             [
                 'header' => __('Address'),
-                'index' => $price > 0 ? '' : 'address',
+                'index' => $price > 0 ? 'location' : 'address',
                 'header_css_class' => 'col-address',
                 'column_css_class' => 'col-address',
                 'renderer' => $locationRenderer

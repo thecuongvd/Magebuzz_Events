@@ -24,17 +24,6 @@ class Collection extends \Magento\Framework\Model\ResourceModel\Db\Collection\Ab
     }
 
     /**
-     * Define resource model
-     *
-     * @return void
-     */
-    protected function _construct()
-    {
-        $this->_init('Magebuzz\Events\Model\Event', 'Magebuzz\Events\Model\ResourceModel\Event');
-        $this->_idFieldName = 'event_id';
-    }
-    
-    /**
      * Set store filter
      *
      * @param int $storeIds
@@ -110,6 +99,17 @@ class Collection extends \Magento\Framework\Model\ResourceModel\Db\Collection\Ab
         $this->getSelect()->where($inCondition)
             ->group(array('main_table.event_id'));
         return $this;
+    }
+
+    /**
+     * Define resource model
+     *
+     * @return void
+     */
+    protected function _construct()
+    {
+        $this->_init('Magebuzz\Events\Model\Event', 'Magebuzz\Events\Model\ResourceModel\Event');
+        $this->_idFieldName = 'event_id';
     }
 
 }

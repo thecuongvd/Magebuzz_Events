@@ -9,51 +9,75 @@
             <div class="events-list table-wrapper">
                 <table class="event-wishlist-table table table-striped table-hover">
                     <thead>
-                        <tr>
-                            <th scope="col" class="col no"><?php echo __('No.') ?></th>
-                            <th scope="col" class="col event"><?php echo __('Event') ?></th>
-                            <th scope="col" class="col description"><?php echo __('Description') ?></th>
-                            <th scope="col" class="col status"><?php echo __('Status') ?></th>
-                            <th scope="col" class="col action" colspan="3"><?php echo __('Action') ?></th>
-                        </tr>
+                    <tr>
+                        <th scope="col" class="col no"><?php echo __('No.') ?></th>
+                        <th scope="col" class="col event"><?php echo __('Event') ?></th>
+                        <th scope="col" class="col description"><?php echo __('Description') ?></th>
+                        <th scope="col" class="col status"><?php echo __('Status') ?></th>
+                        <th scope="col" class="col action" colspan="3"><?php echo __('Action') ?></th>
+                    </tr>
                     </thead>
                     <tbody>
-                        <?php
-                        $no = 0;
+                    <?php
+                    $no = 0;
 
-                        foreach ($events as $event) {
-                            $no++;
-                            $eventId = $event->getId();
-                            $description = $block->getShortDescription($event);
-                            $status = ($event->getStatus() == 1) ? 'Enable' : 'Disable';
-                            ?>
-                            <tr>
-                                <td data-th="<?php echo $block->escapeHtml(__('No.')) ?>" class="col no">
-                                    <?php echo $no; ?>
-                                </td>
-                                <td data-th="<?php echo $block->escapeHtml(__('Event')) ?>" class="col event">
-                                    <img src="<?php echo $block->getAvatarUrl($event); ?>" width="100px" height="100px"/>
-                                    <span><strong><?php echo $event->getTitle(); ?></strong></span>
-                                </td>
-                                <td data-th="<?php echo $block->escapeHtml(__('Description')) ?>" class="col description">
-                                    <?php echo $description; ?>
-                                </td>
-                                <td data-th="<?php echo $block->escapeHtml(__('Status')) ?>" class="col status">
-                                    <?php echo $status; ?>
-                                </td>
-                                <td data-th="<?php echo $block->escapeHtml(__('Action')) ?>" class="col action">
-                                    <a href="<?php echo $block->getUrl('events/index/view', ['event_id' => $eventId]); ?>">View</a>
-                                </td>
-                                <td data-th="<?php echo $block->escapeHtml(__('Action')) ?>" class="col action">
-                                    <a href="<?php echo $block->getUrl('events/register/index', ['event_id' => $eventId]); ?>">Register</a>
-                                </td>
-                                <td data-th="<?php echo $block->escapeHtml(__('Action')) ?>" class="col action">
-                                    <a href="<?php echo $block->getUrl('events/wishlist/delete', ['event_id' => $eventId]); ?>">Delete</a>
-                                </td>
-                            </tr>
-                            <?php
-                        }
+                    foreach ($events as $event) {
+                        $event->load($event->getId());
+                        $no++;
+                        $eventId = $event->getId();
+                        $description = $block->getShortDescription($event);
+                        $status = ucfirst($event->getProgressStatus());
                         ?>
+                        <tr>
+                            <td data-th="<?php echo $block->escapeHtml(__('No.')) ?>" class="col no">
+                                <?php echo $no; ?>
+                            </td>
+                            <td data-th="<?php echo $block->escapeHtml(__('Event')) ?>" class="col event">
+                                <img src="<?php echo $block->getAvatarUrl($event); ?>" width="100px" height="100px"/>
+                                <span><strong><?php echo $event->getTitle(); ?></strong></span>
+                            </td>
+                            <td data-th="<?php echo $block->escapeHtml(__('Description')) ?>" class="col description">
+                                <?php echo $description; ?>
+                            </td>
+                            <td data-th="<?php echo $block->escapeHtml(__('Status')) ?>" class="col status">
+                                <?php echo $status; ?>
+                            </td>
+                            <td data-th="<?php echo $block->escapeHtml(__('Action')) ?>" class="col action">
+                                <a href="<?php echo $block->getUrl('events/index/view', ['event_id' => $eventId]); ?>"
+                                   title="<?php echo __('View'); ?>">
+                                    <?php echo __('View'); ?>
+                                </a>
+                            </td>
+                            <td data-th="<?php echo $block->escapeHtml(__('Action')) ?>" class="col action">
+                                <?php
+                                if ($event->isAllowRegisterEvent()) {
+                                    if ($event->getPrice() > 0) {
+                                        ?>
+                                        <a href="<?php echo $event->getAddToCartUrl(); ?>"
+                                           title="<?php echo __('Buy Ticket'); ?>">
+                                            <?php echo __('Buy Ticket') ?>
+                                        </a>
+                                    <?php } else { ?>
+                                        <a href="<?php echo $event->getRegisterUrl() ?>"
+                                           title="<?php echo __('Register'); ?>">
+                                            <?php echo __('Register'); ?>
+                                        </a>
+                                        <?php
+                                    }
+                                }
+                                ?>
+                            </td>
+                            <td data-th="<?php echo $block->escapeHtml(__('Action')) ?>" class="col action">
+                                <a class="delete"
+                                   href="<?php echo $block->getUrl('events/wishlist/delete', ['event_id' => $eventId]); ?>"
+                                   title="<?php echo __('Delete'); ?>">
+                                    <?php echo __('Delete'); ?>
+                                </a>
+                            </td>
+                        </tr>
+                        <?php
+                    }
+                    ?>
                     </tbody>
                 </table>
             </div>
@@ -71,3 +95,21 @@
     }
     ?>
 </div>
+
+<script type="text/javascript">
+    require(['jquery', 'Magento_Ui/js/modal/confirm'], function ($, confirm) {
+        $(document).ready(function () {
+            $('.delete').click(function() {
+                var href = $(this).attr('href');
+                confirm({
+                    title: 'Are you sure to delete this event from wishlist?',
+                    actions: {
+                        confirm: function () {location.href = href;}
+                    }
+                });
+                return false;
+            });
+        });
+    });
+
+</script>

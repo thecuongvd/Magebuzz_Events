@@ -110,7 +110,7 @@ class Categories extends \Magento\Backend\Block\Widget\Grid\Extended
      */
     public function getSelectedCategories()
     {
-        $eventId = $this->getRequest()->getParam('event_id', 0);
+        $eventId = $this->getRequest()->getParam('event_id');
         $event = $this->_eventFactory->create()->load($eventId);
         $categories = $event->getCategories();
 

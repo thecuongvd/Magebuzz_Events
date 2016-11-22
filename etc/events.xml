@@ -1,5 +1,5 @@
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:Event/etc/events.xsd">
-    <event name="sales_order_place_before">
-        <observer name="magebuzz_events_order_before" instance="Magebuzz\Events\Observer\Orderbefore" />
+    <event name="catalog_product_delete_after_done">
+        <observer name="magebuzz_events_product_delete_after" instance="Magebuzz\Events\Observer\ProductDeleteAfter" />
     </event>
 </config>

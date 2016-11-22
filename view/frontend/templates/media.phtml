@@ -1,0 +1,15 @@
+<!--@copyright Copyright (c) 2016 www.magebuzz.com-->
+<?php
+$event = $block->getEvent();
+?>
+<?php if ($event->getId()): ?>
+    <div class="event-image">
+        <img src="<?php echo $block->getAvatarUrl() ?>" alt="<?php echo $event->getTitle(); ?>"/>
+        <?php if (!($event->getPrice() > 0)) { ?>
+            <div class="free-tag">
+                <img src="<?php echo $block->getViewFileUrl('Magebuzz_Events::images/free-tag.png'); ?>"
+                     height="100" width="100"/>
+            </div>
+        <?php } ?>
+    </div>
+<?php endif; ?>

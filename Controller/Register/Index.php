@@ -12,10 +12,11 @@ class Index extends Action
     protected $resultPageFactory;
     protected $_eventFactory;
 
-    public function __construct(\Magento\Framework\App\Action\Context $context,
-                                \Magento\Framework\View\Result\PageFactory $resultPageFactory,
-                                \Magento\Framework\Registry $registry,
-                                \Magebuzz\Events\Model\EventFactory $eventFactory
+    public function __construct(
+        \Magento\Framework\App\Action\Context $context,
+        \Magento\Framework\View\Result\PageFactory $resultPageFactory,
+        \Magento\Framework\Registry $registry,
+        \Magebuzz\Events\Model\EventFactory $eventFactory
     )
     {
         $this->resultPageFactory = $resultPageFactory;
@@ -33,7 +34,7 @@ class Index extends Action
         $event = $this->_eventFactory->create()->load($eventId);
 
         if ($event->getId()) {
-            $this->_coreRegistry->register('current_event', $event);
+            $this->_coreRegistry->register('events_event', $event);
             $resultPage = $this->resultPageFactory->create();
             $resultPage->getConfig()->getTitle()->set(__('Event Registration'));
 

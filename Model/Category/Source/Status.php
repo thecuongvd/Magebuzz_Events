@@ -9,7 +9,9 @@ class Status implements \Magento\Framework\Data\OptionSourceInterface
 
     protected $_model;
 
-    public function __construct(\Magebuzz\Events\Model\Category $model)
+    public function __construct(
+        \Magebuzz\Events\Model\Category $model
+    )
     {
         $this->_model = $model;
     }

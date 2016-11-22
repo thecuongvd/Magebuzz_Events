@@ -8,17 +8,15 @@ use Magento\Framework\App\Action\Action;
 
 class Addtocart extends Action
 {
-    protected $resultPageFactory;
     protected $_productFactory;
     protected $_cart;
 
-    public function __construct(\Magento\Framework\App\Action\Context $context,
-                                \Magento\Framework\View\Result\PageFactory $resultPageFactory,
-                                \Magento\Catalog\Model\ProductFactory $productFactory,
-                                \Magento\Checkout\Model\Cart $cart
+    public function __construct(
+        \Magento\Framework\App\Action\Context $context,
+        \Magento\Catalog\Model\ProductFactory $productFactory,
+        \Magento\Checkout\Model\Cart $cart
     )
     {
-        $this->resultPageFactory = $resultPageFactory;
         $this->_productFactory = $productFactory;
         $this->_cart = $cart;
         parent::__construct($context);

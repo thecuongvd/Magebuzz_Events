@@ -4,7 +4,6 @@
  */
 namespace Magebuzz\Events\Helper;
 
-use Magento\Customer\Model\Session as CustomerSession;
 use Magento\Framework\App\Filesystem\DirectoryList;
 
 /**
@@ -58,11 +57,12 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
             \Magento\Store\Model\ScopeInterface::SCOPE_STORE
         );
     }
-    
-    public function getCustomerId() {
-        if($this->_customerSession->isLoggedIn()) {
+
+    public function getCustomerId()
+    {
+        if ($this->_customerSession->isLoggedIn()) {
             return $this->_customerSession->getCustomerId();
-        }  
+        }
         return null;
     }
 

@@ -6,11 +6,9 @@
 
 namespace Magebuzz\Events\Block\Adminhtml\Event\Edit\Tab;
 
-use Magento\Backend\Block\Widget\Form;
 use Magento\Backend\Block\Widget\Form\Generic;
-use Magento\Backend\Block\Widget\Tab\TabInterface;
 
-class Main extends Generic implements TabInterface
+class Main extends Generic
 {
 
     protected $_systemStore;
@@ -18,12 +16,7 @@ class Main extends Generic implements TabInterface
     protected $defaultColor = '3366CC';
 
     public function __construct(
-        \Magento\Backend\Block\Template\Context $context,
-        \Magento\Framework\Registry $registry,
-        \Magento\Framework\Data\FormFactory $formFactory,
-        \Magento\Store\Model\System\Store $systemStore,
-        \Magebuzz\Events\Helper\Data $eventsHelper,
-        array $data = []
+        \Magento\Backend\Block\Template\Context $context, \Magento\Framework\Registry $registry, \Magento\Framework\Data\FormFactory $formFactory, \Magento\Store\Model\System\Store $systemStore, \Magebuzz\Events\Helper\Data $eventsHelper, array $data = []
     )
     {
         $this->_systemStore = $systemStore;
@@ -31,29 +24,10 @@ class Main extends Generic implements TabInterface
         parent::__construct($context, $registry, $formFactory, $data);
     }
 
-    public function getTabLabel()
-    {
-        return __('Event Information');
-    }
-
-    public function getTabTitle()
-    {
-        return __('Event Information');
-    }
-
-    public function canShowTab()
-    {
-        return true;
-    }
-
-    public function isHidden()
-    {
-        return false;
-    }
-
     protected function _prepareForm()
     {
         $event = $this->_coreRegistry->registry('events_event');
+        $eventId = $event->getId();
 
         /** @var \Magento\Framework\Data\Form $form */
         $form = $this->_formFactory->create();
@@ -63,41 +37,70 @@ class Main extends Generic implements TabInterface
             'base_fieldset', ['legend' => __('General Information'), 'class' => 'fieldset-wide']
         );
 
-        if ($event->getId()) {
+        if ($eventId) {
             $fieldset->addField('event_id', 'hidden', ['name' => 'event_id']);
         }
 
         $fieldset->addField(
-            'title', 'text', ['name' => 'title', 'label' => __('Event Name'), 'title' => __('Event Name'), 'required' => true]
+            'title', 'text', [
+                'name' => 'title',
+                'label' => __('Event Name'),
+                'title' => __('Event Name'),
+                'required' => true
+            ]
         );
+
         $fieldset->addField(
-            'location', 'text', ['name' => 'location', 'label' => __('Location'), 'title' => __('Location')]
+            'location', 'text', [
+                'name' => 'location',
+                'label' => __('Location'),
+                'title' => __('Location')
+            ]
         );
+
+        if ($eventId && $event->getProductId()) {
+            $event->setData('prd_price', $event->getPrice());
+            $fieldset->addField(
+                'prd_price', 'text', [
+                    'label' => __('Price'),
+                    'title' => __('Price'),
+                    'readonly' => 'readonly',
+                    'style' => 'border-width: 1px !important'
+                ]
+            );
+        }
+        if ($eventId && $event->getProductId()) {
+            $event->setData('no_of_participant', $event->getNoOfParticipant());
+            $fieldset->addField(
+                'no_of_participant', 'text', [
+                    'label' => __('Number of Participant'),
+                    'title' => __('Number of Participant'),
+                    'readonly' => 'readonly'
+                ]
+            );
+        } else {
+            $fieldset->addField(
+                'number_of_participant', 'text', [
+                    'name' => 'number_of_participant',
+                    'label' => __('Number of Participant'),
+                    'title' => __('Number of Participant'),
+                    'required' => true,
+                    'class' => __('validate-zero-or-greater')
+                ]
+            );
+        }
+
+        $avatarDisplay = '';
+        if ($event->getAvatar()) {
+            $avatarDisplay .= $this->getImageHtml('avatar', $event->getAvatar(), 'magebuzz/events/event/avatar/');
+            $avatarDisplay .= $this->getDeleteCheckboxHtml();
+        }
         $fieldset->addField(
-            'price', 'text', ['name' => 'price',
-                'label' => __('Price'),
-                'title' => __('Price'),
-                'currency_code' => (string)$this->_scopeConfig->getValue(
-                    \Magento\Directory\Model\Currency::XML_PATH_CURRENCY_BASE,
-                    \Magento\Store\Model\ScopeInterface::SCOPE_STORE
-                ),
-                'class' => __('validate-zero-or-greater')]
-        );
-        $fieldset->addField(
-            'number_of_participant', 'text', ['name' => 'number_of_participant',
-                'label' => __('Number of Participant'),
-                'title' => __('Number of Participant'),
-                'required' => true,
-                'class' => __('validate-zero-or-greater')]
-        );
-        $fieldset->addField(
-            'avatar',
-            'file',
-            [
+            'avatar', 'file', [
                 'name' => 'avatar',
                 'label' => __('Event Avatar'),
                 'title' => __('Event Avatar'),
-                'after_element_html' => $this->getImageHtml('avatar', $event->getAvatar(), 'magebuzz/events/event/avatar/')
+                'after_element_html' => $avatarDisplay
             ]
         );
 
@@ -115,9 +118,10 @@ class Main extends Generic implements TabInterface
                 'class' => __('validate-date'),
                 'date_format' => $dateFormat,
                 'time_format' => $timeFormat,
-                'note' => $this->_localeDate->getDateTimeFormat(\IntlDateFormatter::SHORT),
+                'note' => $this->_localeDate->getDateTimeFormat(\IntlDateFormatter::SHORT)
             ]
         );
+
         $fieldset->addField(
             'end_time', 'date', [
                 'name' => 'end_time',
@@ -131,6 +135,7 @@ class Main extends Generic implements TabInterface
                 'note' => $this->_localeDate->getDateTimeFormat(\IntlDateFormatter::SHORT),
             ]
         );
+
         $fieldset->addField(
             'registration_deadline', 'date', [
                 'name' => 'registration_deadline',
@@ -143,13 +148,15 @@ class Main extends Generic implements TabInterface
                 'note' => $this->_localeDate->getDateTimeFormat(\IntlDateFormatter::SHORT),
             ]
         );
+
         $fieldset->addField(
-            'description', 'textarea', ['name' => 'description',
+            'description', 'textarea', [
+                'name' => 'description',
                 'label' => __('Description'),
                 'title' => __('Description')]
         );
 
-        if (!$this->_storeManager->hasSingleStore()) { //Check is single store mode
+        if (!$this->_storeManager->hasSingleStore()) { //Check if store has only one store view
             $field = $fieldset->addField(
                 'select_stores', 'multiselect', [
                     'label' => __('Store View'),
@@ -176,21 +183,25 @@ class Main extends Generic implements TabInterface
         $fieldset->addField(
             'allow_register', 'select', [
                 'name' => 'allow_register',
-                'label' => __('Allow Register'),
-                'title' => __('Allow Register'),
+                'label' => __('Allow Registration for Event'),
+                'title' => __('Allow Registration for Event'),
                 'options' => ['1' => __('Enabled'), '0' => __('Disabled')]
             ]
         );
+
         $fieldset->addField(
-            'status', 'select', ['name' => 'status',
+            'status', 'select', [
+                'name' => 'status',
                 'label' => __('Status'),
                 'title' => __('Status'),
                 'required' => true,
                 'options' => ['1' => __('Enabled'), '0' => __('Disabled')]
             ]
         );
+
         $fieldset->addField(
-            'color', 'text', ['name' => 'color',
+            'color', 'text', [
+                'name' => 'color',
                 'label' => __('Color'),
                 'title' => __('Color'),
                 'class' => __('color')]
@@ -203,8 +214,10 @@ class Main extends Generic implements TabInterface
         if (empty($event->getData('color'))) {
             $event->setData('color', $this->defaultColor);
         }
+
         $form->setValues($event->getData());
         $this->setForm($form);
+
         return parent::_prepareForm();
     }
 
@@ -217,6 +230,16 @@ class Main extends Generic implements TabInterface
             $html .= '<input type="hidden" value="' . $imageName . '" name="old_' . $field . '"/>';
             $html .= '</p>';
         }
+        return $html;
+    }
+
+    protected function getDeleteCheckboxHtml()
+    {
+        $html = '';
+        $html .= '<span class="delete-image">'
+            . '<input type="checkbox" name="is_delete_avatar" class="checkbox" id="is_delete_avatar">'
+            . '<label for="is_delete_avatar"> Delete Image</label>'
+            . '</span>';
         return $html;
     }
 

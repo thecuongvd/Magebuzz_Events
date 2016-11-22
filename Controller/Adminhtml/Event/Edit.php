@@ -4,17 +4,16 @@
  */
 namespace Magebuzz\Events\Controller\Adminhtml\Event;
 
-use Magento\Backend\App\Action;
-
 class Edit extends \Magento\Backend\App\Action
 {
 
     protected $_coreRegistry = null;
     protected $resultPageFactory;
 
-    public function __construct(Action\Context $context,
-                                \Magento\Framework\View\Result\PageFactory $resultPageFactory,
-                                \Magento\Framework\Registry $registry
+    public function __construct(
+        \Magento\Backend\App\Action\Context $context,
+        \Magento\Framework\View\Result\PageFactory $resultPageFactory,
+        \Magento\Framework\Registry $registry
     )
     {
         $this->resultPageFactory = $resultPageFactory;
@@ -31,11 +30,11 @@ class Edit extends \Magento\Backend\App\Action
     public function execute()
     {
         $id = $this->getRequest()->getParam('event_id');
-        $model = $this->_objectManager->create('Magebuzz\Events\Model\Event');
+        $event = $this->_objectManager->create('Magebuzz\Events\Model\Event');
 
         if ($id) {
-            $model->load($id);
-            if (!$model->getId()) {
+            $event->load($id);
+            if (!$event->getId()) {
                 $this->messageManager->addError(__('This event no longer exists.'));
                 /** \Magento\Backend\Model\View\Result\Redirect $resultRedirect */
                 $resultRedirect = $this->resultRedirectFactory->create();
@@ -45,10 +44,10 @@ class Edit extends \Magento\Backend\App\Action
 
         $data = $this->_objectManager->get('Magento\Backend\Model\Session')->getFormData(true);
         if (!empty($data)) {
-            $model->setData($data);
+            $event->setData($data);
         }
 
-        $this->_coreRegistry->register('events_event', $model);
+        $this->_coreRegistry->register('events_event', $event);
 
         /** @var \Magento\Backend\Model\View\Result\Page $resultPage */
         $resultPage = $this->_initAction();
@@ -57,7 +56,7 @@ class Edit extends \Magento\Backend\App\Action
         );
         $resultPage->getConfig()->getTitle()->prepend(__('Events'));
         $resultPage->getConfig()->getTitle()
-            ->prepend($model->getId() ? __('Edit Event ') . $model->getTitle() : __('New Event'));
+            ->prepend($event->getId() ? __('Edit Event ') . $event->getTitle() : __('New Event'));
 
         return $resultPage;
     }

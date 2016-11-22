@@ -28,7 +28,7 @@ class Register extends \Magento\Framework\View\Element\Template
 
     public function getEvent()
     {
-        return $this->_coreRegistry->registry('current_event');
+        return $this->_coreRegistry->registry('events_event');
     }
 
     public function getPostActionUrl()

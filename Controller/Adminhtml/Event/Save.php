@@ -6,7 +6,6 @@ namespace Magebuzz\Events\Controller\Adminhtml\Event;
 
 use Magento\Backend\App\Action;
 use Magento\Framework\App\Filesystem\DirectoryList;
-use Magento\TestFramework\ErrorLog\Logger;
 
 class Save extends \Magento\Backend\App\Action
 {
@@ -17,7 +16,6 @@ class Save extends \Magento\Backend\App\Action
     protected $_date;
     protected $_eventFactory;
     protected $_productFactory;
-    protected $_stockItem;
 
     public function __construct(
         Action\Context $context,
@@ -27,8 +25,7 @@ class Save extends \Magento\Backend\App\Action
         \Magento\Backend\Helper\Js $jsHelper,
         \Magento\Framework\Stdlib\DateTime\DateTime $date,
         \Magebuzz\Events\Model\EventFactory $eventFactory,
-        \Magento\Catalog\Model\ProductFactory $productFactory,
-        \Magento\CatalogInventory\Api\StockStateInterface $stockItem
+        \Magento\Catalog\Model\ProductFactory $productFactory
     )
     {
         parent::__construct($context);
@@ -39,15 +36,6 @@ class Save extends \Magento\Backend\App\Action
         $this->_date = $date;
         $this->_eventFactory = $eventFactory;
         $this->_productFactory = $productFactory;
-        $this->stockItem = $stockItem;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    protected function _isAllowed()
-    {
-        return $this->_authorization->isAllowed('Magebuzz_Events::save');
     }
 
     /**
@@ -81,66 +69,58 @@ class Save extends \Magento\Backend\App\Action
             if ($data['registration_deadline']) {
                 $data['registration_deadline'] = $localeDate->date($data['registration_deadline'])->setTimezone(new \DateTimeZone('UTC'))->format('Y-m-d H:i:s');
             }
-            
+
+            $startTime = strtotime($data['start_time']);
+            $endTime = strtotime($data['end_time']);
+            $registrationDeadline = empty($data['registration_deadline']) ? 0 : strtotime($data['registration_deadline']);
             //Check if time is valid
-            if ($data['start_time'] >= $data['end_time'] || $data['registration_deadline'] >= $data['end_time']) {
-                if ($data['start_time'] >= $data['end_time']) {
-                    $this->messageManager->addError( __('Start Time must be earlier than End Time.'));
-                } 
-                if ($data['registration_deadline'] && $data['registration_deadline'] >= $data['end_time']) {
-                    $this->messageManager->addError( __('Registration Deadline must be earlier than End Time'));
+            if ($startTime >= $endTime || $registrationDeadline >= $endTime) {
+                if ($startTime >= $endTime) {
+                    $this->messageManager->addError(__('Start Time must be earlier than End Time.'));
+                }
+                if ($registrationDeadline >= $endTime) {
+                    $this->messageManager->addError(__('Registration Deadline must be earlier than End Time'));
                 }
                 $this->_getSession()->setFormData($data);
                 if ($id) {
                     return $resultRedirect->setPath('*/*/edit', ['event_id' => $id]);
-                }
-                else {
+                } else {
                     return $resultRedirect->setPath('*/*/new');
                 }
                 return $resultRedirect->setPath('*/*/', ['_current' => true]);
             }
-            
-            //Check if associated products
-            if (!$id && !isset($data['product'])) {
-                $this->messageManager->addError(__('You must associate product before save.'));
-                $this->_getSession()->setFormData($data);
-                return $resultRedirect->setPath('*/*/new');
+
+            //Set progress_status
+            $nowTime = time();
+            $progressStatus = '';
+            if ($startTime > $nowTime) {
+                $progressStatus = 'upcoming';
+            } else if ($startTime <= $nowTime && $nowTime <= $endTime) {
+                $progressStatus = 'happening';
+            } else if ($endTime < $nowTime) {
+                $progressStatus = 'expired';
             }
-            
-            //Check if Number of Participant is valid
-            $productId = null;
-            if (!empty($data['product'])) {
-                $productId = $data['product'];
-            } else if ($id) {
-                $productId = $this->_eventFactory->create()->load($id)->getProductId();
-            }
-            $product = $this->_productFactory->create()->load($productId);
-            if ($product->getId()) {
-                $productQty = $this->stockItem->getStockQty($productId, $product->getStore()->getWebsiteId());
-                if ($data['number_of_participant'] > $productQty) {
-                    $this->messageManager->addError(__('Number of participant must not be larger than quantity of associated product ('.$productQty.').'));
-                    $this->_getSession()->setFormData($data);
-                    if ($id) {
-                        return $resultRedirect->setPath('*/*/edit', ['event_id' => $id]);
-                    }
-                    else {
-                        return $resultRedirect->setPath('*/*/new');
-                    }
-                }
+            $data['progress_status'] = $progressStatus;
+
+            //Process categories data
+            if (isset($data['categories'])) {
+                $data['categories'] = array_keys($this->jsHelper->decodeGridSerializedInput($data['categories']));
             }
 
+            $imageRequest = $this->getRequest()->getFiles('avatar');
+
             //Process upload images
-            $path = $this->_fileSystem->getDirectoryRead(DirectoryList::MEDIA)
-                    ->getAbsolutePath('magebuzz/events/event/avatar/');
             try {
-                if (!empty($_FILES['avatar']['name'])) {
+                if (!empty($imageRequest['name'])) {
+                    $path = $this->_fileSystem->getDirectoryRead(DirectoryList::MEDIA)
+                        ->getAbsolutePath('magebuzz/events/event/avatar/');
                     // remove the old file
                     $oldName = !empty($data['old_avatar']) ? $data['old_avatar'] : '';
                     if ($oldName) {
                         @unlink($path . $oldName);
                     }
                     //find the first available name
-                    $newName = preg_replace('/[^a-zA-Z0-9_\-\.]/', '', $_FILES['avatar']['name']);
+                    $newName = preg_replace('/[^a-zA-Z0-9_\-\.]/', '', $imageRequest['name']);
                     if (substr($newName, 0, 1) == '.') // all non-english symbols
                         $newName = 'event_' . $newName;
                     $i = 0;
@@ -165,9 +145,17 @@ class Save extends \Magento\Backend\App\Action
                 }
             }
 
-            //Process categories data
-            if (isset($data['categories'])) {
-                $data['categories'] = array_keys($this->jsHelper->decodeGridSerializedInput($data['categories']));
+            //Process delete images
+            if (!empty($data['is_delete_avatar'])) {
+                $path = $this->_fileSystem->getDirectoryRead(DirectoryList::MEDIA)
+                    ->getAbsolutePath('magebuzz/events/event/avatar/');
+                // remove the old file
+                $oldName = !empty($data['old_avatar']) ? $data['old_avatar'] : '';
+                if ($oldName) {
+                    @unlink($path . $oldName);
+                }
+                $data['avatar'] = '';
+
             }
 
             $eventModel->setData($data);
@@ -175,13 +163,13 @@ class Save extends \Magento\Backend\App\Action
             $this->_eventManager->dispatch(
                 'events_event_prepare_save', ['event' => $eventModel, 'request' => $this->getRequest()]
             );
-            
+
             try {
                 $eventModel->save();
                 $this->messageManager->addSuccess(__('You saved this Event.'));
                 $this->_objectManager->get('Magento\Backend\Model\Session')->setFormData(false);
                 if ($this->getRequest()->getParam('back')) {
-                    return $resultRedirect->setPath('*/*/edit', ['event_id' => $id, '_current' => true]);
+                    return $resultRedirect->setPath('*/*/edit', ['event_id' => $eventModel->getId(), '_current' => true]);
                 }
                 return $resultRedirect->setPath('*/*/');
             } catch (\Magento\Framework\Exception\LocalizedException $e) {
@@ -200,6 +188,14 @@ class Save extends \Magento\Backend\App\Action
             }
         }
         return $resultRedirect->setPath('*/*/');
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    protected function _isAllowed()
+    {
+        return $this->_authorization->isAllowed('Magebuzz_Events::save');
     }
 
 }

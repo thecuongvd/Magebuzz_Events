@@ -10,8 +10,9 @@ class Index extends Action
 {
     protected $resultPageFactory;
 
-    public function __construct(\Magento\Framework\App\Action\Context $context,
-                                \Magento\Framework\View\Result\PageFactory $resultPageFactory
+    public function __construct(
+        \Magento\Framework\App\Action\Context $context,
+        \Magento\Framework\View\Result\PageFactory $resultPageFactory
     )
     {
         $this->resultPageFactory = $resultPageFactory;

@@ -4,10 +4,22 @@
     <head>
         <css src="Magebuzz_Events::css/jquery.fancybox.css"/>
         <css src="Magebuzz_Events::css/events.css"/>
+        <attribute name="prefix" value="og: http://ogp.me/ns# fb: http://ogp.me/ns/fb# event: http://ogp.me/ns/event#" />
     </head>
     <body>
+        <referenceBlock name="head.additional">
+            <block class="Magebuzz\Events\Block\View" name="opengraph.general" template="Magebuzz_Events::event/view/opengraph/general.phtml">
+                <block class="Magento\Directory\Block\Currency" name="event.opengraph.currency" as="meta.currency" template="Magebuzz_Events::event/view/opengraph/currency.phtml"/>
+            </block>
+        </referenceBlock>
         <referenceContainer name="content">
-            <block class="Magebuzz\Events\Block\View" name="events_index_view" template="view.phtml" cacheable="false" />
+            <container name="event.info.main" htmlTag="div" htmlClass="event-info-main" before="-">
+            	<block class="Magebuzz\Events\Block\View" name="events_index_view" template="view.phtml" cacheable="false" />
+            </container>
+            <container name="event.info.media" htmlTag="div" htmlClass="event media" after="event.info.main">
+                <block class="Magebuzz\Events\Block\View" name="event.info.media.image" template="media.phtml"/>
+            </container>
         </referenceContainer>
+        <move element="page.main.title" destination="event.info.main" before="-"/>
     </body>
 </page>

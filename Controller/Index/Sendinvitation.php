@@ -8,16 +8,13 @@ use Magento\Framework\App\Action\Action;
 
 class Sendinvitation extends Action
 {
-
-    protected $resultPageFactory;
     protected $_eventFactory;
 
-    public function __construct(\Magento\Framework\App\Action\Context $context, 
-            \Magento\Framework\View\Result\PageFactory $resultPageFactory, 
-            \Magebuzz\Events\Model\EventFactory $eventFactory
+    public function __construct(
+        \Magento\Framework\App\Action\Context $context,
+        \Magebuzz\Events\Model\EventFactory $eventFactory
     )
     {
-        $this->resultPageFactory = $resultPageFactory;
         $this->_eventFactory = $eventFactory;
         parent::__construct($context);
     }
@@ -32,9 +29,8 @@ class Sendinvitation extends Action
                 $event->sendInvitationEmail($post['yourname'], $post['friendemail'], $post['invitemessage']);
 
                 $this->messageManager->addSuccess(__('You have sent your invitation to your friend'));
-
                 $resultRedirect = $this->resultRedirectFactory->create();
-            } catch (Exception $e) {
+            } catch (\Exception $e) {
                 $this->messageManager->addError(__('Unable to send you invitation. Please try again later'));
             }
         }

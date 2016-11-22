@@ -12,10 +12,11 @@ class Index extends Action
     protected $resultPageFactory;
     protected $_scopeConfig;
 
-    public function __construct(\Magento\Framework\App\Action\Context $context,
-                                \Magento\Framework\View\Result\PageFactory $resultPageFactory,
-                                \Magento\Framework\Registry $registry,
-                                \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig
+    public function __construct(
+        \Magento\Framework\App\Action\Context $context,
+        \Magento\Framework\View\Result\PageFactory $resultPageFactory,
+        \Magento\Framework\Registry $registry,
+        \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig
     )
     {
         $this->resultPageFactory = $resultPageFactory;

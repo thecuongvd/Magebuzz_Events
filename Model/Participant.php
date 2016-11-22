@@ -25,7 +25,7 @@ class Participant extends \Magento\Framework\Model\AbstractModel
      */
     protected $_eventPrefix = 'events_participant';
 
-    function __construct(
+    public function __construct(
         \Magento\Framework\Model\Context $context,
         \Magento\Framework\Registry $registry,
         \Magento\Framework\Model\ResourceModel\AbstractResource $resource = null,

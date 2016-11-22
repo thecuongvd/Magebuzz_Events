@@ -1,4 +1,4 @@
- <!--@copyright Copyright (c) 2016 www.magebuzz.com-->
+<!--@copyright Copyright (c) 2016 www.magebuzz.com-->
 <?php
 $eventsJson = $block->getEventJson();
 $events = $block->getPagedEvents();
@@ -10,6 +10,8 @@ $events = $block->getPagedEvents();
             url = url + 'mode/' + mode;
             window.location.href = url;
         }
+
+
 
     </script>
 
@@ -66,17 +68,20 @@ $events = $block->getPagedEvents();
         <!--  calendar mode -->
         <div class="class-calendar" id="calendar">
             <!--Quickview-->
-            <?php foreach ($events as $event) { ?>
+            <?php 
+            foreach ($events as $event) { 
+                $event->load($event->getId());
+                ?>
                 <div class="event-quickview" data-event_id="<?php echo $event->getId() ?>">
                     <div class="event-image">
-                        <a href="<?php echo $block->getEventUrl($event); ?>" title="<?php echo $event->getTitle(); ?>">
+                        <a href="<?php echo $event->getEventUrl(); ?>" title="<?php echo $event->getTitle(); ?>">
                             <img src="<?php echo $block->getAvatarUrl($event); ?>"
                                  alt="<?php echo $event->getTitle(); ?>"/>
                         </a>
                     </div>
                     <div class="event-info">
                         <p class="event-title">
-                            <a href="<?php echo $block->getEventUrl($event); ?>"
+                            <a href="<?php echo $event->getEventUrl(); ?>"
                                title="<?php echo $event->getTitle(); ?>"><?php echo $event->getTitle(); ?></a>
                         </p>
                         <div class="desc">
@@ -94,7 +99,7 @@ $events = $block->getPagedEvents();
                             </div>
                         </div>
                         <div class="link-see-more">
-                            <a href="<?php echo $block->getAvatarUrl($event); ?>"
+                            <a href="<?php echo $event->getEventUrl(); ?>"
                                title="<?php echo $event->getTitle(); ?>"
                                class="link-learn"><?php echo __('See More') ?></a>
                         </div>
@@ -106,49 +111,58 @@ $events = $block->getPagedEvents();
         <!--JS for calendar-->
     <?php $locale = $block->getScopeConfig('events/calendar_setting/language'); ?>
         <script type='text/javascript'>
-                require(['jquery', 'fullcalendar', 'moment', 'locale_all'], function($){
-                    var $j = $.noConflict();
-                    $(document).ready(function() {
-                        var date = new Date();
-                        var d = date.getDate();
-                        var m = date.getMonth();
-                        var y = date.getFullYear();
-                        var calendar_mode = '';
-                        var switchMode = '<?php echo $block->getScopeConfig('events/calendar_setting/allow_switch_mode'); ?>';
-                        var defaultMode = '<?php echo $block->getScopeConfig('events/calendar_setting/default_view_mode'); ?>';
-                        if (switchMode == '1') {
-                            calendar_mode = 'month,agendaWeek,agendaDay';
-                        }
-                        var events = <?php echo $eventsJson; ?>;
-                        $('#calendar').fullCalendar({
-                            <?php if ($locale != 'en') { ?>
-                                locale: "<?php echo $locale; ?>",
-                            <?php } ?>
-                            editable: true,
-                            displayEventEnd:true,
-                            disableDragging: true,
-                            header: {
-                                left: 'prev,next today',
-                                center: 'title',
-                                right: calendar_mode
-                            },
-                            defaultView: defaultMode,
-                            eventTextColor: 'white',
-                            timeFormat: 'H:mm',
-                            events: events,
-                            eventMouseover: eventMouseoverFunc,
-                            eventMouseout: eventMouseoutFunc
-                        });
-
-                        function eventMouseoverFunc(event, jsEvent, view ) {
-                            $('.event-quickview[data-event_id="'+event.id+'"]').css({left:jsEvent.clientX,top:jsEvent.clientY}).show();
-                        }
-                        function eventMouseoutFunc(event, jsEvent, view ) {
-                            $('.event-quickview[data-event_id="'+event.id+'"]').hide();
-                        }
-                        $('.event-quickview').hover(function() {$(this).show()}, function() {$(this).hide()});
+            
+            require(['jquery', 'fullcalendar', 'moment'<?php if ($locale != 'en') { ?>, 'locale_all'<?php } ?>], function($){
+                var $j = $.noConflict();
+                $(document).ready(function() {
+                    var date = new Date();
+                    var d = date.getDate();
+                    var m = date.getMonth();
+                    var y = date.getFullYear();
+                    var calendar_mode = '';
+                    var switchMode = '<?php echo $block->getScopeConfig('events/calendar_setting/allow_switch_mode'); ?>';
+                    var defaultMode = '<?php echo $block->getScopeConfig('events/calendar_setting/default_view_mode'); ?>';
+                    if (switchMode == '1') {
+                        calendar_mode = 'month,agendaWeek,agendaDay';
+                    }
+                    var events = <?php echo $eventsJson; ?>;
+                    $('#calendar').fullCalendar({
+                        <?php if ($locale != 'en') { ?>
+                            locale: "<?php echo $locale; ?>",
+                        <?php } ?>
+                        editable: true,
+                        displayEventEnd:true,
+                        disableDragging: true,
+                        header: {
+                            left: 'prev,next today',
+                            center: 'title',
+                            right: calendar_mode
+                        },
+                        defaultView: defaultMode,
+                        eventTextColor: 'white',
+                        timeFormat: 'H:mm',
+                        events: events,
+                        eventMouseover: eventMouseoverFunc,
+                        eventMouseout: eventMouseoutFunc
                     });
+
+                    function eventMouseoverFunc(event, jsEvent, view ) {
+                        var rightDistance = $(window).width() - jsEvent.clientX;
+                        var quickviewWidth = $('.event-quickview[data-event_id="'+event.id+'"]').width();
+                        if (rightDistance > quickviewWidth) {
+                            $('.event-quickview[data-event_id="'+event.id+'"]').css({left:jsEvent.clientX,top:jsEvent.clientY}).show();
+                        } else {
+                            var leftPos = $(window).width() - quickviewWidth;
+                            $('.event-quickview[data-event_id="'+event.id+'"]').css({left:leftPos,top:jsEvent.clientY}).show();
+                        }
+
+                    }
+                    function eventMouseoutFunc(event, jsEvent, view ) {
+                        $('.event-quickview[data-event_id="'+event.id+'"]').hide();
+                    }
+                    $('.event-quickview').hover(function() {$(this).show()}, function() {$(this).hide()});
                 });
+            });
 
         </script>
 
@@ -160,7 +174,7 @@ $events = $block->getPagedEvents();
                 <?php foreach ($events as $event) { ?>
                     <li class="item event event-item">
                         <div class="event-item-info" data-container="event-grid">
-                            <a href="<?php echo $block->getEventUrl($event); ?>"
+                            <a href="<?php echo $event->getEventUrl(); ?>"
                                class="event photo event-item-photo" title="<?php echo $event->getTitle(); ?>">
                                     <span class="event-image-container" style="width:240px;">
                                         <span class="event-image-wrapper" style="padding-bottom: 75%;">
@@ -171,7 +185,7 @@ $events = $block->getPagedEvents();
                             </a>
                             <div class="event details event-item-details">
                                 <h3 class="event-title">
-                                    <a href="<?php echo $block->getEventUrl($event); ?>"
+                                    <a href="<?php echo $event->getEventUrl(); ?>"
                                        title="<?php echo $event->getTitle(); ?>"><?php echo $event->getTitle(); ?></a>
                                 </h3>
                                 <div class="desc">
@@ -189,7 +203,7 @@ $events = $block->getPagedEvents();
                                     </div>
                                 </div>
                                 <div class="link-see-more">
-                                    <a href="<?php echo $block->getEventUrl($event); ?>"
+                                    <a href="<?php echo $event->getEventUrl(); ?>"
                                        title="<?php echo $event->getTitle(); ?>"
                                        class="link-learn"><?php echo __('See More') ?></a>
                                 </div>

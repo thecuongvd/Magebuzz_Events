@@ -21,9 +21,10 @@ class Products extends \Magento\Backend\Block\Widget\Grid\Extended
         \Magento\Catalog\Model\Product\LinkFactory $linkFactory,
         \Magento\Catalog\Model\Product\Attribute\Source\Status $productStatus,
         \Magento\Catalog\Model\Product\Visibility $productVisibility,
-        
+
         array $data = []
-    ) {
+    )
+    {
         $this->_coreRegistry = $coreRegistry;
         $this->_eventFactory = $eventFactory;
         $this->_linkFactory = $linkFactory;
@@ -67,21 +68,6 @@ class Products extends \Magento\Backend\Block\Widget\Grid\Extended
     {
         return $this->_coreRegistry->registry('events_event');
     }
-    
-    
-    /**
-     * Retrieve selected items key
-     *
-     * @return array
-     */
-    protected function _getSelectedProduct()
-    {
-        $eventId = $this->getRequest()->getParam('event_id', 0);
-
-        $event = $this->_eventFactory->create()->load($eventId);
-        $product = [$event->getProduct()];
-        return $product;
-    }
 
     /**
      * Prepare collection
@@ -90,42 +76,48 @@ class Products extends \Magento\Backend\Block\Widget\Grid\Extended
      */
     protected function _prepareCollection()
     {
-        $collection = $this->_linkFactory->create()->getProductCollection();
-        $eventId = $this->getRequest()->getParam('event_id', 0);
-        if ($eventId) {
-            $event = $this->_eventFactory->create()->load($eventId);
-            if ($event->getId()) {
-                $productId = $event->getProduct();
-                $collection->addFieldToFilter('entity_id', $productId);
-            } 
+        $collection = $this->_linkFactory->create()->getProductCollection()
+            ->addAttributeToSelect('*');
+        $eventId = $this->getRequest()->getParam('event_id');
+        $event = $this->_eventFactory->create()->load($eventId);
+        if ($event->getId() && $event->getProductId()) {
+            $productId = $event->getProductId();
+            $collection->addFieldToFilter('entity_id', $productId);
         } else {
             $associatedProductIds = [];
             $events = $this->_eventFactory->create()->getCollection();
             foreach ($events as $event) {
                 $associatedProductIds[] = $event->getProductId();
             }
-            
+
             //Get id of products that have type 'event' and haven't associated with any event
             $eventProductIds = $this->getEventProductIds();
-            foreach ($eventProductIds as $key=>$id) {
+            foreach ($eventProductIds as $key => $id) {
                 if (in_array($id, $associatedProductIds)) {
                     unset($eventProductIds[$key]);
                 }
             }
-                    
+
             $collection->addFieldToFilter('type_id', 'event')
                 ->addAttributeToFilter('status', ['in' => $this->_productStatus->getVisibleStatusIds()])
                 ->addFieldToFilter('entity_id', ['in' => $eventProductIds]);
+            $collection->getSelect()->distinct(true)->join(
+                ['stock_table' => $collection->getTable('cataloginventory_stock_status')],
+                'e.entity_id = stock_table.product_id',
+                []);
+            $collection->getSelect()->where('stock_table.stock_status = 1');
         }
         $this->setCollection($collection);
+
         return parent::_prepareCollection();
     }
-    
-    public function getEventProductIds() {
+
+    public function getEventProductIds()
+    {
         $eventProductIds = [];
         $productCollection = $this->_linkFactory->create()->getProductCollection()
-                ->addFieldToFilter('type_id', 'event')
-                ->addAttributeToFilter('status', ['in' => $this->_productStatus->getVisibleStatusIds()]);
+            ->addFieldToFilter('type_id', 'event')
+            ->addAttributeToFilter('status', ['in' => $this->_productStatus->getVisibleStatusIds()]);
         foreach ($productCollection as $product) {
             $eventProductIds[] = $product->getId();
         }
@@ -140,12 +132,11 @@ class Products extends \Magento\Backend\Block\Widget\Grid\Extended
      */
     protected function _prepareColumns()
     {
-        $event = $this->_coreRegistry->registry('events_event');
         $this->addColumn(
             'in_product',
             [
                 'type' => 'radio',
-                'html_name' => 'product',
+                'html_name' => 'product_associated',
                 'values' => $this->_getSelectedProduct(),
                 'align' => 'center',
                 'index' => 'entity_id',
@@ -194,7 +185,15 @@ class Products extends \Magento\Backend\Block\Widget\Grid\Extended
                 'column_css_class' => 'col-sku'
             ]
         );
-
+        $this->addColumn(
+            'product_quantity',
+            [
+                'header' => __('Quantity'),
+                'index' => 'stock_qty',
+                'header_css_class' => 'col-quantity',
+                'column_css_class' => 'col-quantity'
+            ]
+        );
         $this->addColumn(
             'product_price',
             [
@@ -211,5 +210,19 @@ class Products extends \Magento\Backend\Block\Widget\Grid\Extended
         );
 
         return parent::_prepareColumns();
+    }
+
+    /**
+     * Retrieve selected items key
+     *
+     * @return array
+     */
+    protected function _getSelectedProduct()
+    {
+        $eventId = $this->getRequest()->getParam('event_id', 0);
+
+        $event = $this->_eventFactory->create()->load($eventId);
+        $productIdArr = [$event->getProductId()];
+        return $productIdArr;
     }
 }

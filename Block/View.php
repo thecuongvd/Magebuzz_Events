@@ -7,20 +7,17 @@ namespace Magebuzz\Events\Block;
 
 class View extends \Magento\Framework\View\Element\Template
 {
+
+    protected $_event;
     protected $_coreRegistry = null;
-    protected $_eventsProductFactory;
-    protected $_formKey;
     protected $_eventsHelper;
     protected $_scopeConfig;
     protected $_objectManager;
     protected $_date;
-    protected $_event;
 
     public function __construct(
         \Magento\Framework\View\Element\Template\Context $context,
         \Magento\Framework\Registry $registry,
-        \Magebuzz\Events\Model\Catalog\ProductFactory $eventsProductFactory,
-        \Magento\Framework\Data\Form\FormKey $formKey,
         \Magebuzz\Events\Helper\Data $eventsHelper,
         \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig,
         \Magento\Framework\ObjectManagerInterface $objectManager,
@@ -30,9 +27,6 @@ class View extends \Magento\Framework\View\Element\Template
     {
         parent::__construct($context, $data);
         $this->_coreRegistry = $registry;
-        $this->_eventsProductFactory = $eventsProductFactory;
-
-        $this->_formKey = $formKey;
         $this->_eventsHelper = $eventsHelper;
         $this->_scopeConfig = $scopeConfig;
         $this->_objectManager = $objectManager;
@@ -43,7 +37,9 @@ class View extends \Magento\Framework\View\Element\Template
 
     public function getEvent()
     {
-        return $this->_coreRegistry->registry('current_event');
+        $event = $this->_coreRegistry->registry('events_event');
+        $event->setProduct($event->getProduct());
+        return $event;
     }
 
     public function getIdentities()
@@ -53,23 +49,39 @@ class View extends \Magento\Framework\View\Element\Template
 
     public function _prepareLayout()
     {
+        $event = $this->getEvent();
+        $this->_addBreadcrumbs($event);
+
         return parent::_prepareLayout();
     }
 
-    public function getAvatarUrl()
+    protected function _addBreadcrumbs(\Magebuzz\Events\Model\Event $event)
     {
-        $avatarName = $this->_event->getAvatar();
-        if ($avatarName != '') {
-            $avatarUrl = $this->_eventsHelper->getImageUrl($avatarName, 'magebuzz/events/event/avatar/');
-        } else {
-            $defaultImage = $this->getScopeConfig('events/general_setting/default_image');
-            if ($defaultImage && $this->_eventsHelper->getImageUrl($defaultImage, 'magebuzz/events/')) {
-                $avatarUrl = $this->_eventsHelper->getImageUrl($defaultImage, 'magebuzz/events/');
-            } else {
-                $avatarUrl = $this->getViewFileUrl('Magebuzz_Events::images/default_event.jpg');
-            }
+        if ($breadcrumbsBlock = $this->getLayout()->getBlock('breadcrumbs')) {
+            $breadcrumbsBlock->addCrumb(
+                'home',
+                [
+                    'label' => __('Home'),
+                    'title' => __('Go to Home Page'),
+                    'link' => $this->_storeManager->getStore()->getBaseUrl()
+                ]
+            );
+            $breadcrumbsBlock->addCrumb(
+                'events',
+                [
+                    'label' => __('Events'),
+                    'title' => __('Go to Events Page'),
+                    'link' => $this->getUrl('events')
+                ]
+            );
+            $breadcrumbsBlock->addCrumb(
+                'event',
+                [
+                    'label' => $event->getTitle(),
+                    'title' => $event->getTitle()
+                ]
+            );
         }
-        return $avatarUrl;
     }
 
     public function getScopeConfig($path)
@@ -77,17 +89,9 @@ class View extends \Magento\Framework\View\Element\Template
         return $this->_scopeConfig->getValue($path, \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
     }
 
-    public function getPrice()
+    public function getPriceWithCurrency()
     {
-        return $this->_objectManager->get('Magento\Framework\Pricing\Helper\Data')->currency(number_format($this->_event->getPrice(), 2), true, false);
-    }
-
-    public function getEventUrl()
-    {
-//            $url_path = 'event/' . $this->_event->getUrlKey() . '.html';
-//            return $this->getUrl($url_path);
-
-        return $this->getUrl('*/*/view', array('event_id' => $this->_event->getId()));
+        return $this->_objectManager->get('Magento\Framework\Pricing\Helper\Data')->currency(number_format($this->_event->getProduct()->getPrice(), 2), true, false);
     }
 
     public function getFavoriteImageSrc()
@@ -101,7 +105,7 @@ class View extends \Magento\Framework\View\Element\Template
 
     public function isFavorited()
     {
-        $customerId = $this->getCurrentCustomerId();
+        $customerId = $this->getCustomerId();
         if (empty($customerId)) {
             return false;
         }
@@ -113,82 +117,70 @@ class View extends \Magento\Framework\View\Element\Template
         return false;
     }
 
-
-    public function getCurrentCustomerId()
+    public function getCustomerId()
     {
         return $this->_eventsHelper->getCustomerId();
     }
 
-    public function isAllowRegisterEvent()
+    public function getAvatarUrl()
     {
-        $endTime = $this->_date->timestamp($this->_event->getEndTime());
-        $registrationDeadline = $this->_date->timestamp($this->_event->getRegistrationDeadline());
-        $currentTime = $this->_date->gmtTimestamp();
-
-        $isStillNotDeadline = true;
-        if ($registrationDeadline = $this->_event->getRegistrationDeadline()) {
-            if ($this->_date->timestamp($registrationDeadline) < $currentTime) {
-                $isStillNotDeadline = false;
-            }
+        $avatarUrl = $this->_event->getAvatarUrl();
+        if ($avatarUrl == '') {
+            $avatarUrl = $this->getViewFileUrl('Magebuzz_Events::images/default_event.jpg');
         }
-
-        $allowRegister = false;
-        if ($this->_event->getAllowRegister() == '1' && $endTime > $currentTime && $isStillNotDeadline && $this->getRemainSlotCount() > 0) {
-            $allowRegister = true;
-        }
-        return $allowRegister;
+        return $avatarUrl;
     }
 
-    public function getRemainSlotCount()
+    public function getFormattedTime($time)
     {
-        $remainSlotCount = ((int)$this->_event->getNumberOfParticipant() - (int)$this->getRegisteredCount());
-        return $remainSlotCount;
+        $timestamp = $this->_date->timestamp($time);
+        return date('M d, Y g:i A', $timestamp);
+    }
+    
+    public function getFacebookButton() {
+        $facebookID = '1082368948492595';
+        $like_button = true;
+
+        return '
+            <div class="facebook_button social-button">
+                <div id="fb-root"></div>
+                <script>
+                    (function(d, s, id) {
+                        var js, fjs = d.getElementsByTagName(s)[0];
+                        if (d.getElementById(id)) return;
+                        js = d.createElement(s); js.id = id;
+                        js.src = "//connect.facebook.net/en_US/sdk.js#xfbml=1&version=v2.5&appId=' . $facebookID . '";
+                        fjs.parentNode.insertBefore(js, fjs);
+                    }(document, \'script\', \'facebook-jssdk\'));
+                </script>
+                <div class="fb-like" data-layout="button_count" data-width="400" data-show-faces="false"  data-href="' . $this->_event->getEventUrl() . '"  data-send="' . $like_button . '"></div>
+            </div>';
     }
 
-    public function getRegisteredCount()
-    {
-        if ($this->_event->getPrice() > 0) {
-            $productId = (int)$this->_event->getProductId();
-            if ($productId && $productId > 0) {
-                $product = $this->_eventsProductFactory->create()->load($productId);
-                if ($product->getId()) {
-                    return $product->getOrderedQty();
-                }
-            }
-            return 0;
-        } else {
-            $participantIds = $this->_event->getParticipantIds();
-            return count($participantIds);
-        }
+    public function getTwitterButton() {
+        return "
+            <div class='twitter_button social-button'>
+                <a href='https://twitter.com/share' class='twitter-share-button' data-url='" . $this->_event->getEventUrl() . "' >Tweet</a>
+                <script>
+                    !function(d,s,id){
+                        var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';
+                        if(!d.getElementById(id)){
+                            js=d.createElement(s);
+                            js.id=id;
+                            js.src=p+'://platform.twitter.com/widgets.js';
+                            fjs.parentNode.insertBefore(js,fjs);
+                        }
+                    }(document, 'script', 'twitter-wjs');
+                </script>
+            </div>";
     }
 
-    public function getAddToCartUrl()
-    {
-        $productId = (int)$this->_event->getProduct();
-        return $this->getUrl('events/index/addtocart', ['product' => $productId, 'formkey' => $this->_formKey->getFormKey()]);
-    }
-
-    public function getRegisterUrl()
-    {
-        return $this->getUrl('*/register/index', array('event_id' => $this->_event->getId()));
-    }
-
-    public function getStartTime()
-    {
-        $timestamp = $this->_date->timestamp($this->_event->getStartTime());
-        return date('Y, M d g:i A', $timestamp);
-    }
-
-    public function getEndTime()
-    {
-        $timestamp = $this->_date->timestamp($this->_event->getEndTime());
-        return date('Y, M d g:i A', $timestamp);
-    }
-
-    public function getRegistrationDeadline()
-    {
-        $timestamp = $this->_date->timestamp($this->_event->getRegistrationDeadline());
-        return date('Y, M d g:i A', $timestamp);
+    public function getGooglePlusButton() {
+        return '
+            <div class="google_button social-button">
+                <div class="g-plusone" data-size="medium"  data-annotation="bubble"></div>
+            </div>
+            <script src="https://apis.google.com/js/platform.js" async defer></script>';
     }
 
 }

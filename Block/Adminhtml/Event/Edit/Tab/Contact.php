@@ -5,11 +5,9 @@
 
 namespace Magebuzz\Events\Block\Adminhtml\Event\Edit\Tab;
 
-use Magento\Backend\Block\Widget\Form;
 use Magento\Backend\Block\Widget\Form\Generic;
-use Magento\Backend\Block\Widget\Tab\TabInterface;
 
-class Contact extends Generic implements TabInterface
+class Contact extends Generic
 {
 
     protected $_systemStore;
@@ -28,26 +26,6 @@ class Contact extends Generic implements TabInterface
         $this->_objectConverter = $objectConverter;
         $this->_eventsHelper = $eventsHelper;
         parent::__construct($context, $registry, $formFactory, $data);
-    }
-
-    public function getTabLabel()
-    {
-        return __('Contact');
-    }
-
-    public function getTabTitle()
-    {
-        return __('Contact');
-    }
-
-    public function canShowTab()
-    {
-        return true;
-    }
-
-    public function isHidden()
-    {
-        return false;
     }
 
     protected function _prepareForm()

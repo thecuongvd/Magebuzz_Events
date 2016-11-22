@@ -4,9 +4,6 @@
  */
 namespace Magebuzz\Events\Controller\Adminhtml\Event;
 
-use Magento\Backend\App\Action;
-use Magento\TestFramework\ErrorLog\Logger;
-
 class Delete extends \Magento\Backend\App\Action
 {
 

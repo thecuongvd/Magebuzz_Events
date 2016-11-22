@@ -26,8 +26,6 @@ class ProductGrid extends \Magento\Backend\App\Action
     public function execute()
     {
         $resultLayout = $this->resultLayoutFactory->create();
-//        $resultLayout->getLayout()->getBlock('events.edit.tab.productgrid')
-//            ->setProducts($this->getRequest()->getPost('products', null));
         return $resultLayout;
     }
 

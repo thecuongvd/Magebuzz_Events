@@ -11,15 +11,14 @@ use Magento\Framework\Model\AbstractModel;
  */
 class Event extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
 {
-
     protected $_eventStoreTable;
     protected $_categoryEventTable;
     protected $_participantTable;
     protected $_productEventTable;
-    protected $_productFactory;
     protected $_favoriteTable;
     protected $_customerTable;
     protected $_date;
+    protected $_productFactory;
 
     public function __construct(
         \Magento\Framework\Model\ResourceModel\Db\Context $context,
@@ -63,6 +62,14 @@ class Event extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
         $connection->delete($this->_favoriteTable, $favCondition);
     }
 
+    public function getEventAssociatedPrd($productId)
+    {
+        $select = $this->getConnection()->select()->from(
+            $this->getTable($this->_productEventTable), 'event_id')
+            ->where('entity_id = ?', $productId);
+        return $this->getConnection()->fetchOne($select);
+    }
+
     protected function _construct()
     {
         $this->_init('mb_events', 'event_id');
@@ -95,14 +102,15 @@ class Event extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
             $object->setRegistrationDeadline($registrationDeadline);
         }
 
-        // load event available in stores
-        $object->setStores($this->getStoreIds((int)$object->getId()));
-
-        // load categories associate to this event
-        $object->setCategories($this->getCategoryIds((int)$object->getId()));
-
-        // load product associate to this event
-        $object->setProduct($this->getProductId((int)$object->getId()));
+        if ($object->getId()) {
+            // load event available in stores
+            $object->setStores($this->getStoreIds((int)$object->getId()));
+            // load categories associate to this event
+            $object->setCategories($this->getCategoryIds((int)$object->getId()));
+            // load product associate to this event
+            $object->setProductId($this->getProductId((int)$object->getId()));
+            $object->setProduct($this->getProduct((int)$object->getId()));
+        }
 
         return $this;
     }
@@ -129,6 +137,16 @@ class Event extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
             $this->getTable($this->_productEventTable), 'entity_id')
             ->where('event_id = ?', $eventId);
         return $this->getConnection()->fetchOne($select);
+    }
+
+    public function getProduct($eventId)
+    {
+        $productId = $this->getProductId($eventId);
+        if ($productId) {
+            return $this->_productFactory->create()->load($productId);
+        } else {
+            return null;
+        }
     }
 
     protected function _beforeSave(AbstractModel $object)
@@ -168,24 +186,26 @@ class Event extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
 
         //save event_categories
         $categories = $object->getCategories();
-        if (!empty($categories)) {
-            $condition = ['event_id = ?' => $object->getId()];
+        if (!($categories === null)) {
+            $condition = ['event_id = ?' => (int)$object->getId()];
             $connection->delete($this->_categoryEventTable, $condition);
 
             $insertedCategoryIds = [];
-            foreach ($categories as $categoryId) {
-                if (in_array($categoryId, $insertedCategoryIds)) {
-                    continue;
-                }
+            if ($categories) {
+                foreach ($categories as $categoryId) {
+                    if (in_array($categoryId, $insertedCategoryIds)) {
+                        continue;
+                    }
 
-                $insertedCategoryIds[] = $categoryId;
-                $categoryInsert = ['category_id' => $categoryId, 'event_id' => $object->getId()];
-                $connection->insert($this->_categoryEventTable, $categoryInsert);
+                    $insertedCategoryIds[] = $categoryId;
+                    $categoryInsert = ['category_id' => $categoryId, 'event_id' => $object->getId()];
+                    $connection->insert($this->_categoryEventTable, $categoryInsert);
+                }
             }
         }
 
         //save event_product
-        $productId = $object->getProduct();
+        $productId = $object->getProductAssociated();
         if (!empty($productId)) {
             $condition = ['event_id = ?' => $object->getId()];
             $connection->delete($this->_productEventTable, $condition);
@@ -193,9 +213,6 @@ class Event extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
             $productInsert = ['entity_id' => $productId, 'event_id' => $object->getId()];
             $connection->insert($this->_productEventTable, $productInsert);
         }
-
-        //save quantity of associated product equal number of participants
-//        $this->_productFactory->create()->load($this->getProductId($object->getId()))->setQty($object->getNumberOfParticipant());
 
         return $this;
     }

@@ -1,0 +1,14 @@
+<?php
+/**
+ * @copyright Copyright (c) 2016 www.magebuzz.com
+ */
+?>
+<meta property="og:type" content="og:product" />
+<meta property="og:title" content="<?php /* @escapeNotVerified */ echo $block->stripTags($block->getEvent()->getTitle()); ?>" />
+<meta property="og:image" content="<?php /* @escapeNotVerified */ echo $block->stripTags($block->getAvatarUrl()); ?>" />
+<meta property="og:description" content="<?php /* @escapeNotVerified */ echo $block->stripTags($block->getEvent()->getDescription()); ?>" />
+<meta property="og:url" content="<?php /* @escapeNotVerified */ echo $block->stripTags($block->getEvent()->getEventUrl()); ?>" />
+<?php if ($priceAmount = $block->getEvent()->getPrice()):?>
+<meta property="product:price:amount" content="<?php /* @escapeNotVerified */ echo $priceAmount; ?>"/>
+<?php echo $block->getChildHtml('meta.currency'); ?>
+<?php endif;?>

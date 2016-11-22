@@ -52,9 +52,9 @@ class Edit extends \Magento\Backend\App\Action
         /** @var \Magento\Backend\Model\View\Result\Page $resultPage */
         $resultPage = $this->_initAction();
         $resultPage->addBreadcrumb(
-            $id ? __('Edit Events Category') : __('New Events Category'), $id ? __('Edit Events Category') : __('New Events Category')
+            $id ? __('Edit Event Category') : __('New Event Category'), $id ? __('Edit Event Category') : __('New Event Category')
         );
-        $resultPage->getConfig()->getTitle()->prepend(__('Events Category'));
+        $resultPage->getConfig()->getTitle()->prepend(__('Event Category'));
         $resultPage->getConfig()->getTitle()
             ->prepend($model->getId() ? __('Edit Category ') . $model->getCategoryTitle() : __('New Category'));
 
@@ -72,8 +72,8 @@ class Edit extends \Magento\Backend\App\Action
         /** @var \Magento\Backend\Model\View\Result\Page $resultPage */
         $resultPage = $this->resultPageFactory->create();
         $resultPage->setActiveMenu('Magebuzz_Events::manage_categories')
-            ->addBreadcrumb(__('Events Categories'), __('Events Categories'))
-            ->addBreadcrumb(__('Manage Events Categories'), __('Manage Events Categories'));
+            ->addBreadcrumb(__('Event Categories'), __('Event Categories'))
+            ->addBreadcrumb(__('Manage Event Categories'), __('Manage Event Categories'));
         return $resultPage;
     }
 

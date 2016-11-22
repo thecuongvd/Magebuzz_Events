@@ -12,9 +12,11 @@
                 <show_upcoming_events>1</show_upcoming_events>
                 <allow_send_invitation>1</allow_send_invitation>
                 <invitation_email>events_general_setting_invitation_email</invitation_email>
+                <is_send_registered_email>1</is_send_registered_email>
+                <registered_email>events_general_setting_registered_email</registered_email>
             </general_setting>
             <calendar_setting>
-                <page_title>Events Calendar</page_title>
+                <page_title>Event Calendar</page_title>
                 <default_view_mode>month</default_view_mode>
                 <show_event_color>1</show_event_color>
                 <allow_switch_mode>1</allow_switch_mode>

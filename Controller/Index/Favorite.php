@@ -9,15 +9,16 @@ use Magento\Framework\App\Action\Action;
 class Favorite extends Action
 {
     protected $_eventFactory;
-    protected $_customerSession;
+    protected $_eventsHelper;
 
-    public function __construct(\Magento\Framework\App\Action\Context $context,
-                                \Magebuzz\Events\Model\EventFactory $eventFactory,
-                                \Magento\Customer\Model\Session $customerSession
+    public function __construct(
+        \Magento\Framework\App\Action\Context $context,
+        \Magebuzz\Events\Model\EventFactory $eventFactory,
+        \Magebuzz\Events\Helper\Data $eventsHelper
     )
     {
         $this->_eventFactory = $eventFactory;
-        $this->_customerSession = $customerSession;
+        $this->_eventsHelper = $eventsHelper;
         parent::__construct($context);
     }
 
@@ -26,22 +27,22 @@ class Favorite extends Action
         $resultRedirect = $this->resultRedirectFactory->create();
         $eventId = $this->getRequest()->getParam('event_id');
         $action = $this->getRequest()->getParam('action');
-        $currentCustomerId = $this->_customerSession->getCustomerId();
+        $currentCustomerId = $this->_eventsHelper->getCustomerId();
 
         if (!$currentCustomerId) {
-            $this->messageManager->addError(__('You must log in before add to favorite.'));
+            $this->messageManager->addError(__('You must sign in to save this event to "My Events" in your account dashboard.'));
             return $resultRedirect->setPath('*/*/view', ['event_id' => $eventId]);
         }
 
         try {
             if ($action == 'add') {
                 $this->_eventFactory->create()->load($eventId)->addFavorite($currentCustomerId);
-                $this->messageManager->addSuccess(__('This event have been added to favorite successfully.'));
+                $this->messageManager->addSuccess(__('This event has been added successfully to "My Events" in your account dashboard.'));
             } else if ($action == 'remove') {
                 $this->_eventFactory->create()->load($eventId)->removeFavorite($currentCustomerId);
                 $this->messageManager->addSuccess(__('This event have been removed from favorite successfully.'));
             }
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             $this->messageManager->addException($e, __('There was problem when ' . ($action == 'add') ? 'add to favorite' : 'remove from favorite' . '. Please try again.'));
         } finally {
             return $resultRedirect->setPath('*/*/view', ['event_id' => $eventId]);
