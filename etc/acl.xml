@@ -10,7 +10,7 @@
                     <resource id="Magebuzz_Events::settings" title="Settings" sortOrder="10"></resource>
                 </resource>
                 
-                <!-- below part of our system configuration settings -->
+                <!-- system config settings -->
                 <resource id="Magento_Backend::stores">
                     <resource id="Magento_Backend::stores_settings">
                         <resource id="Magento_Backend::config">

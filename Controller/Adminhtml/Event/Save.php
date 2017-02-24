@@ -106,42 +106,43 @@ class Save extends \Magento\Backend\App\Action
             if (isset($data['categories'])) {
                 $data['categories'] = array_keys($this->jsHelper->decodeGridSerializedInput($data['categories']));
             }
-
-            $imageRequest = $this->getRequest()->getFiles('avatar');
-
+            
             //Process upload images
-            try {
-                if (!empty($imageRequest['name'])) {
-                    $path = $this->_fileSystem->getDirectoryRead(DirectoryList::MEDIA)
-                        ->getAbsolutePath('magebuzz/events/event/avatar/');
-                    // remove the old file
-                    $oldName = !empty($data['old_avatar']) ? $data['old_avatar'] : '';
-                    if ($oldName) {
-                        @unlink($path . $oldName);
-                    }
-                    //find the first available name
-                    $newName = preg_replace('/[^a-zA-Z0-9_\-\.]/', '', $imageRequest['name']);
-                    if (substr($newName, 0, 1) == '.') // all non-english symbols
-                        $newName = 'event_' . $newName;
-                    $i = 0;
-                    while (file_exists($path . $newName)) {
-                        $newName = ++$i . '_' . $newName;
-                    }
+            if (empty($data['is_delete_avatar'])) {
+                $imageRequest = $this->getRequest()->getFiles('avatar');
+                try {
+                    if (!empty($imageRequest['name'])) {
+                        $path = $this->_fileSystem->getDirectoryRead(DirectoryList::MEDIA)
+                            ->getAbsolutePath('magebuzz/events/event/avatar/');
+                        // remove the old file
+                        $oldName = !empty($data['old_avatar']) ? $data['old_avatar'] : '';
+                        if ($oldName) {
+                            @unlink($path . $oldName);
+                        }
+                        //find the first available name
+                        $newName = preg_replace('/[^a-zA-Z0-9_\-\.]/', '', $imageRequest['name']);
+                        if (substr($newName, 0, 1) == '.') // all non-english symbols
+                            $newName = 'event_' . $newName;
+                        $i = 0;
+                        while (file_exists($path . $newName)) {
+                            $newName = ++$i . '_' . $newName;
+                        }
 
-                    /** @var $uploader \Magento\MediaStorage\Model\File\Uploader */
-                    $uploader = $this->_fileUploaderFactory->create(['fileId' => 'avatar']);
-                    $uploader->setAllowedExtensions(['jpg', 'jpeg', 'gif', 'png']);
-                    $uploader->setAllowRenameFiles(true);
-                    $uploader->save($path, $newName);
+                        /** @var $uploader \Magento\MediaStorage\Model\File\Uploader */
+                        $uploader = $this->_fileUploaderFactory->create(['fileId' => 'avatar']);
+                        $uploader->setAllowedExtensions(['jpg', 'jpeg', 'gif', 'png']);
+                        $uploader->setAllowRenameFiles(true);
+                        $uploader->save($path, $newName);
 
-                    $data['avatar'] = $newName;
-                } else {
-                    $oldName = !empty($data['old_avatar']) ? $data['old_avatar'] : '';
-                    $data['avatar'] = $oldName;
-                }
-            } catch (\Exception $e) {
-                if ($e->getCode() != \Magento\MediaStorage\Model\File\Uploader::TMP_NAME_EMPTY) {
-                    $this->_logger->critical($e);
+                        $data['avatar'] = $newName;
+                    } else {
+                        $oldName = !empty($data['old_avatar']) ? $data['old_avatar'] : '';
+                        $data['avatar'] = $oldName;
+                    }
+                } catch (\Exception $e) {
+                    if ($e->getCode() != \Magento\MediaStorage\Model\File\Uploader::TMP_NAME_EMPTY) {
+                        $this->_logger->critical($e);
+                    }
                 }
             }
 

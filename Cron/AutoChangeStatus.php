@@ -31,7 +31,7 @@ class AutoChangeStatus
      */
     public function __construct(
         \Magento\Framework\Stdlib\DateTime\DateTime $date,
-        \Magebuzz\Events\Model\ResourceModel\Event\CollectionFactory $eventFactory,
+        \Magebuzz\Events\Model\EventFactory $eventFactory,
         \Psr\Log\LoggerInterface $logger
     )
     {

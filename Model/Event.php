@@ -19,7 +19,7 @@ class Event extends \Magento\Framework\Model\AbstractModel
     protected $_cacheTag = 'events_event';
 
     /**
-     * Prefix of model events names
+     * Prefix of model name
      *
      * @var string
      */

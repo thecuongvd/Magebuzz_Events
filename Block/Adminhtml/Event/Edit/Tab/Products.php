@@ -90,38 +90,20 @@ class Products extends \Magento\Backend\Block\Widget\Grid\Extended
                 $associatedProductIds[] = $event->getProductId();
             }
 
-            //Get id of products that have type 'event' and haven't associated with any event
-            $eventProductIds = $this->getEventProductIds();
-            foreach ($eventProductIds as $key => $id) {
-                if (in_array($id, $associatedProductIds)) {
-                    unset($eventProductIds[$key]);
-                }
-            }
-
             $collection->addFieldToFilter('type_id', 'event')
-                ->addAttributeToFilter('status', ['in' => $this->_productStatus->getVisibleStatusIds()])
-                ->addFieldToFilter('entity_id', ['in' => $eventProductIds]);
+                ->addAttributeToFilter('status', ['in' => $this->_productStatus->getVisibleStatusIds()]);
+            if ($associatedProductIds) {
+                $collection->addFieldToFilter('entity_id', ['nin' => $associatedProductIds]);
+            }
             $collection->getSelect()->distinct(true)->join(
                 ['stock_table' => $collection->getTable('cataloginventory_stock_status')],
                 'e.entity_id = stock_table.product_id',
-                []);
-            $collection->getSelect()->where('stock_table.stock_status = 1');
+                [])
+                    ->where('stock_table.stock_status = 1');
         }
         $this->setCollection($collection);
 
         return parent::_prepareCollection();
-    }
-
-    public function getEventProductIds()
-    {
-        $eventProductIds = [];
-        $productCollection = $this->_linkFactory->create()->getProductCollection()
-            ->addFieldToFilter('type_id', 'event')
-            ->addAttributeToFilter('status', ['in' => $this->_productStatus->getVisibleStatusIds()]);
-        foreach ($productCollection as $product) {
-            $eventProductIds[] = $product->getId();
-        }
-        return $eventProductIds;
     }
 
     /**
